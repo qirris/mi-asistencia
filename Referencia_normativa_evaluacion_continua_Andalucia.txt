@@ -1,0 +1,206 @@
+GUÍA NORMATIVA
+
+Evaluación continua
+y asistencia
+================================
+Normativa aplicable en Andalucía · Modalidad presencial
+Ámbitos incluidos: ESO · Bachillerato · Formación Profesional de Grado Básico · Grado Medio · Grado Superior
+Fecha de revisión: 6 de noviembre de 2026
+
+
+
+PROPÓSITO DEL DOCUMENTO
+Este documento reúne las reglas autonómicas que deben consultarse antes de construir una calculadora o herramienta web sobre asistencia y pérdida del derecho a la evaluación continua. Está redactado como material de contexto para entregarlo a otra IA o a un equipo de desarrollo. No contiene código ni sustituye la normativa oficial ni los documentos internos del centro.
+
+IDEA CENTRAL / No existe un único porcentaje de faltas aplicable a todas las enseñanzas en Andalucía. En FP presencial sí hay una exigencia autonómica expresa de asistencia mínima del 80 %; en ESO y Bachillerato hay que consultar además las reglas del centro y no trasladarles automáticamente el porcentaje de FP.
+
+Alcance: Andalucía, enseñanzas presenciales y centros que imparten las etapas indicadas. Se han consultado las versiones consolidadas disponibles y las publicaciones oficiales localizadas a la fecha de revisión. Para un caso real, prevalece el texto normativo vigente y la documentación oficial del centro.
+
+1. RESUMEN EJECUTIVO
+====================
+
+Enseñanza | Regla práctica | Norma principal
+ESO | Evaluación continua durante el proceso de aprendizaje. No se identifica un porcentaje autonómico general de faltas que, por sí solo, haga perder la evaluación continua. En los IES dependientes de la Consejería, el Plan de Convivencia fija el máximo de faltas por curso o materia a efectos de evaluación y promoción. | Orden de 30/05/2023, art. 13; Decreto 327/2010, art. 34.3.
+Bachillerato | Evaluación continua. No hay un porcentaje autonómico general de faltas que se pueda aplicar a todo Bachillerato. En los IES, consultar el máximo fijado por el Plan de Convivencia para cada curso o materia. | Orden de 30/05/2023, art. 15; Decreto 327/2010, art. 34.3.
+FP Grado Básico | Es un ciclo de FP de Grado D y forma parte de la educación básica. Para la evaluación continua presencial se aplica la regla de asistencia mínima del 80 % de la duración del módulo, ámbito o proyecto. | Decreto 147/2025, arts. 4 y 5; Orden 18/09/2025, art. 2.4-2.6.
+FP Grado Medio | Como Grado D de FP, se aplica la asistencia mínima del 80 % de la duración total del módulo/ámbito/proyecto en modalidad presencial. | Decreto 147/2025, arts. 4 y 6; Orden 18/09/2025, art. 2.4-2.6.
+FP Grado Superior | Como Grado D de FP, se aplica la asistencia mínima del 80 % de la duración total del módulo/ámbito/proyecto en modalidad presencial. | Decreto 147/2025, arts. 4 y 6; Orden 18/09/2025, art. 2.4-2.6.
+
+
+NO CONFUNDIR TRES REGLAS DISTINTAS / 1) Asistencia mínima de FP para evaluación continua (80 %). 2) Máximo de faltas que el Plan de Convivencia de un IES fija para efectos de evaluación y promoción. 3) Umbral de absentismo escolar en ESO (25 horas mensuales de faltas injustificadas o equivalente). No son intercambiables ni tienen el mismo efecto jurídico.
+
+
+2. ESO Y BACHILLERATO
+=====================
+
+2.1. EDUCACIÓN SECUNDARIA OBLIGATORIA (ESO)
+===========================================
+La Orden de 30 de mayo de 2023, en su versión consolidada vigente desde el 1 de septiembre de 2026, establece que la evaluación es continua, competencial, formativa, integradora, diferenciada y objetiva. Su artículo 13 describe la evaluación continua como la que se realiza durante todo el proceso de aprendizaje y regula las sesiones de evaluación continua.
+Consecuencia para la herramienta: la Orden autonómica de evaluación de ESO no fija por sí misma un porcentaje universal (por ejemplo, 20 % o 25 %) de ausencias para perder la evaluación continua. No debe inventarse ese porcentaje.
+Regla de centro en IES: el artículo 34.3 del Decreto 327/2010 dispone que los Planes de Convivencia de los institutos establecerán el número máximo de faltas de asistencia por curso o materia a efectos de evaluación y promoción. El decreto se aplica a los institutos de educación secundaria dependientes de la Consejería de Educación. Por ello, la cifra concreta debe obtenerse del Plan de Convivencia vigente del IES y leerse en su contexto.
+Qué no debe concluirse: el artículo 34.3 no crea un porcentaje andaluz común ni dice literalmente que toda superación de un número de faltas equivalga, en cualquier centro y situación, a una pérdida automática del derecho a evaluación continua. La herramienta debe reproducir exactamente la regla publicada por el centro y mostrar su fuente.
+
+2.2. BACHILLERATO
+=================
+El Decreto 103/2023 y la Orden de 30 de mayo de 2023 establecen una evaluación continua, diferenciada por materias. El artículo 15 de la Orden describe el proceso de evaluación continua. La Orden dispone asimismo que los criterios y procedimientos de evaluación, calificación, promoción y titulación se integren en el Proyecto educativo y se comuniquen al alumnado al comienzo del curso.
+Regla de centro en IES: cuando se trate de un instituto al que se aplica el Decreto 327/2010, el artículo 34.3 remite al Plan de Convivencia para fijar el número máximo de faltas por curso o materia a efectos de evaluación y promoción. No hay que transformar esa regla en un porcentaje regional único.
+
+MATIZ ESPECÍFICO DE BACHILLERATO / El artículo 16.3 del Decreto 103/2023 permite excepcionalmente titular con una materia no superada si se cumplen todas las condiciones que enumera; una de ellas es que no haya existido inasistencia continuada y no justificada en esa materia. Esto es un requisito de una vía excepcional de titulación, no un umbral general de pérdida de evaluación continua.
+
+
+3. FORMACIÓN PROFESIONAL: GRADO BÁSICO, MEDIO Y SUPERIOR
+========================================================
+La regulación autonómica específica aplicable a los Grados D y E se articula principalmente mediante el Decreto 147/2025, de 17 de septiembre, y la Orden de 18 de septiembre de 2025 sobre evaluación, certificación, acreditación y titulación. La Orden se aplica a todos los centros del Sistema de FP de Andalucía, públicos y privados, que impartan enseñanzas de Grados D o E.
+
+3.1. ENSEÑANZAS CUBIERTAS
+=========================
+Grado D: ciclos formativos de Grado Básico, Grado Medio y Grado Superior. El Decreto 147/2025 identifica expresamente estos tres niveles.
+Los ciclos de Grado Básico forman parte de la educación básica, en calidad de educación secundaria obligatoria, pero siguen siendo ciclos de FP de Grado D y tienen una regulación específica de FP para la evaluación y asistencia.
+La regla de evaluación continua del 80 % en presencial se extiende a los módulos, ámbitos o proyectos de los Grados D y E comprendidos en la Orden de 18/09/2025. Para el producto solicitado, las categorías principales son Básica, Medio y Superior.
+
+3.2. REGLA AUTONÓMICA DE ASISTENCIA MÍNIMA
+==========================================
+Norma principal: artículo 2.4 de la Orden de 18 de septiembre de 2025.
+
+EXIGENCIA EN MODALIDAD PRESENCIAL / La evaluación continua requiere asistencia regular y obligatoria de, al menos, el 80 % de la duración total del módulo, ámbito o proyecto. Se computan tanto las horas en el centro docente como las de la fase de formación en empresa u organismo equiparado, cuando corresponda. El cómputo se realiza desde la fecha en la que el alumnado se matriculó.
+
+El 80 % es un requisito de asistencia para que pueda existir evaluación continua en FP presencial. Su complemento aritmético es un 20 % de ausencias, pero la Orden también encarga a cada centro que concrete en su Proyecto educativo el porcentaje de incumplimiento que determina la pérdida del derecho. Por ello, la herramienta debe presentar ambos datos y no suponer que basta con aplicar una regla genérica del 20 % sin consultar el centro.
+Cómputo de ausencias justificadas e injustificadas: la Dirección General de FP aclara en su documento oficial de preguntas frecuentes de 23 de marzo de 2026 que, a efectos de pérdida de evaluación continua en FP, la normativa andaluza no diferencia entre ausencias justificadas e injustificadas: se computan ambas. El centro debe seguir registrándolas separadamente en Séneca para otros efectos, por ejemplo, becas.
+
+3.3. QUÉ OCURRE SI SE PIERDE EL DERECHO A EVALUACIÓN CONTINUA
+=============================================================
+1. La pérdida puede afectar a uno o varios módulos, ámbitos o proyectos, según la situación concreta.
+2. El alumnado mantiene el derecho a realizar las pruebas objetivas que el equipo docente considere oportunas, vinculadas a los criterios de evaluación de los resultados de aprendizaje no superados y a lo previsto en la programación didáctica y en el Proyecto educativo del centro.
+3. No se pueden realizar actividades prácticas o pruebas objetivas que, a criterio del equipo docente, impliquen riesgo para el propio alumnado, para el grupo o para las instalaciones del centro.
+4. La pérdida y sus consecuencias deben notificarse en el momento en que se produzcan, por un medio que deje constancia, con arreglo a los artículos 40 a 46 de la Ley 39/2015 y usando el modelo del Anexo I de la Orden.
+5. La Orden concreta que la notificación la efectúa el profesorado que ejerce la tutoría, con el visto bueno de la dirección; si el alumno o alumna es menor de edad, se comunica a sus representantes legales.
+
+IMPORTANTE / Perder la evaluación continua no significa quedar sin evaluación ni suspender automáticamente el módulo. Existe una vía de evaluación objetiva alternativa. El cómo y cuándo se aplica debe estar definido por el centro en su Proyecto educativo y en la programación didáctica.
+
+
+4. CÁLCULO DE ASISTENCIA PARA FP PRESENCIAL
+===========================================
+El cálculo debe hacerse por módulo, ámbito o proyecto, no mezclando automáticamente todas las horas del curso. Se debe utilizar la duración correspondiente desde la fecha de matrícula y sumar, cuando proceda, la asistencia en el centro y en la empresa u organismo equiparado.
+
+Variable | Definición para el cálculo
+H_total | Duración total del módulo/ámbito/proyecto computable desde la fecha de matrícula.
+H_asistidas | Horas asistidas en el centro + horas asistidas en empresa/organismo equiparado, cuando correspondan.
+H_ausencia | Horas de ausencia justificadas + horas de ausencia injustificadas. Para FP, ambas cuentan en el cómputo de evaluación continua.
+% asistencia | (H_asistidas ÷ H_total) × 100.
+% ausencia | (H_ausencia ÷ H_total) × 100.
+Requisito legal básico | % asistencia ≥ 80 % para poder seguir la evaluación continua en la modalidad presencial.
+
+
+4.1. EJEMPLO ILUSTRATIVO
+========================
+Supóngase un módulo con 200 horas computables desde la matrícula y 25 horas de ausencia registradas (justificadas y no justificadas sumadas):
+
+Cálculo | Operación | Resultado
+Horas asistidas | 200 − 25 | 175 h
+% de asistencia | 175 ÷ 200 × 100 | 87,5 %
+% de ausencia | 25 ÷ 200 × 100 | 12,5 %
+Mínimo exigido | 80 % | Cumple el requisito básico
+
+Este ejemplo comprueba únicamente el requisito porcentual de asistencia. Para decidir el estado final de pérdida de evaluación continua, todavía hay que aplicar la regla concreta del Proyecto educativo del centro y el procedimiento de la programación didáctica.
+
+4.2. PARÁMETROS QUE NUNCA DEBEN FIJARSE POR DEFECTO
+===================================================
+El porcentaje de incumplimiento del centro que provoca la pérdida de evaluación continua.
+La unidad de cómputo que utilice el centro (horas, sesiones u otra unidad definida en sus documentos), sin convertirla por intuición.
+La duración total del módulo/ámbito/proyecto en el periodo de matrícula del alumno.
+El procedimiento alternativo de pruebas objetivas: contenido, fechas, criterios y condiciones de seguridad.
+La forma de notificación, el momento y quién debe recibirla.
+
+5. ABSENTISMO ESCOLAR: REGLA SEPARADA DE LA EVALUACIÓN
+======================================================
+La Orden de 19 de septiembre de 2005, artículo 5.2, considera situación de absentismo escolar cuando, al cabo de un mes, las faltas de asistencia sin justificar alcanzan cinco días lectivos en Primaria y veinticinco horas de clase en Educación Secundaria Obligatoria, o el equivalente al 25 % de días lectivos o de horas de clase, respectivamente. El artículo 5.3 permite actuar de inmediato cuando el equipo docente aprecia que la falta de asistencia puede representar un riesgo para la educación del alumno o alumna.
+
+NO ES UN UMBRAL DE PÉRDIDA DE EVALUACIÓN CONTINUA / Las 25 horas mensuales son un criterio de detección/actuación del protocolo de absentismo en ESO y se refieren a faltas sin justificar. No deben usarse como límite de evaluación continua, ni trasladarse automáticamente a Bachillerato o a FP de Grado Medio/Superior. En FP, el cómputo para la evaluación continua sigue la regla específica de la Orden de 18/09/2025 y cuenta ausencias justificadas e injustificadas.
+
+
+6. REQUISITOS NORMATIVOS PARA LA IA QUE CONSTRUYA LA HERRAMIENTA
+================================================================
+La futura aplicación debe funcionar mediante reglas distintas según la enseñanza. No debe presentar una única calculadora porcentual común a ESO, Bachillerato y FP.
+
+6.1. SELECTOR DE ENSEÑANZA
+==========================
+ESO.
+Bachillerato.
+FP Grado Básico.
+FP Grado Medio.
+FP Grado Superior.
+
+6.2. DATOS QUE DEBE PEDIR
+=========================
+Enseñanza, curso y modalidad presencial.
+Tipo de centro y, cuando corresponda, identificación del IES.
+Materia (ESO/Bachillerato) o módulo/ámbito/proyecto (FP).
+Total de horas o sesiones previsto para el elemento evaluado y fecha de matrícula/inicio de cómputo cuando sea FP.
+Ausencias por horas o sesiones, con desglose de justificadas e injustificadas.
+En FP: horas de asistencia en el centro y en la fase de formación en empresa, si procede.
+Regla exacta del Plan de Convivencia (ESO/Bachillerato en IES) o del Proyecto educativo de FP: porcentaje/umbral, unidad de cómputo y alcance.
+Procedimiento de evaluación alternativo recogido en la programación didáctica de FP.
+
+6.3. COMPORTAMIENTO OBLIGATORIO
+===============================
+1. Identificar la norma aplicable a la etapa antes de calcular.
+2. En FP presencial, calcular los porcentajes de asistencia y ausencia por módulo/ámbito/proyecto e incluir todas las ausencias en el cómputo de evaluación continua, sin dejar de mostrar el desglose justificadas/no justificadas.
+3. Solicitar o permitir introducir la regla concreta del centro. Si no se facilita, mostrar: “No se puede determinar el resultado definitivo sin consultar el Proyecto educativo / Plan de Convivencia / programación didáctica del centro”.
+4. En ESO y Bachillerato, no asignar automáticamente el 20 % de FP. Aplicar solo el límite concreto y documentado del centro, dentro de su ámbito de aplicación.
+5. Mostrar por separado el absentismo de ESO (faltas injustificadas mensuales) y no mezclarlo con el estado de evaluación continua.
+6. Explicar el cálculo: horas totales, horas asistidas, horas ausentes, porcentajes, límite aplicado y fuente normativa/documental.
+7. No emitir una declaración jurídica definitiva cuando falte el documento del centro, la unidad de cómputo o existan reglas contradictorias; indicar el dato pendiente y recomendar revisión por el centro.
+8. Guardar la fecha de vigencia de cada regla y permitir actualizarla cuando cambie la normativa.
+
+ESTADOS DE RESULTADO RECOMENDADOS / • “Cumple el mínimo autonómico de asistencia” (FP). / • “No cumple el mínimo autonómico de asistencia” (FP). / • “Se aproxima al límite definido por el centro”. / • “Posible pérdida conforme a la regla del centro: requiere revisar el documento aplicable”. / • “No se puede determinar: falta la regla del centro”. / • “Alerta de absentismo ESO” (salida independiente, basada solo en faltas injustificadas mensuales).
+
+
+7. DOCUMENTOS QUE HABRÁ QUE CONSEGUIR DE CADA CENTRO
+====================================================
+Plan de Centro y, en particular, Proyecto educativo y Plan de Convivencia vigentes.
+Reglamento de Organización y Funcionamiento, si contiene reglas de asistencia, justificación o cómputo.
+Programación didáctica de la materia/módulo/ámbito/proyecto correspondiente.
+Calendario, horario y duración lectiva real del módulo o materia.
+En FP, distribución entre centro y empresa/organismo equiparado y criterio del centro para el porcentaje de incumplimiento.
+Modelo de comunicación/notificación del centro, junto con el Anexo I de la Orden de FP cuando proceda.
+Regla de calidad de los datos: la aplicación debe pedir que el usuario identifique el documento, curso académico, apartado y página de donde sale el umbral del centro. Si solo se introduce un número sin fuente, debe etiquetarlo como dato no verificado.
+
+8. FUENTES OFICIALES Y NORMATIVA CONSULTADA
+===========================================
+Los enlaces siguientes llevan al BOJA, al repositorio oficial de normativa consolidada de la Junta de Andalucía o al portal oficial de la Consejería. Se recomienda abrir el texto consolidado más reciente antes de cerrar una implementación.
+[1] Orden de 18 de septiembre de 2025 sobre evaluación, certificación, acreditación y titulación de los Grados D y E de FP en Andalucía. BOJA, Boletín 180 Complementario n.º 1, 18/09/2025. Referencia esencial: artículo 2, apartados 1 y 4 a 6; Anexo I. Consultar texto oficial · Norma autonómica de FP
+[2] Decreto 147/2025, de 17 de septiembre, de ordenación de las enseñanzas de Grados D y E de FP en Andalucía. BOJA, Boletín 179 Complementario n.º 1, 17/09/2025. Referencias: artículos 4, 5, 6 y 27. Consultar texto oficial · Norma autonómica de FP
+[3] Documento de preguntas frecuentes sobre la aplicación de la normativa en Formación Profesional. Dirección General de Formación Profesional y Educación Permanente, 23/03/2026. Aclaración administrativa, no norma con rango reglamentario: cómputo de ausencias justificadas e injustificadas y vía alternativa de evaluación. Consultar texto oficial · Documento oficial de aclaraciones
+[4] Orden de 30 de mayo de 2023 de ESO. Texto consolidado de la Junta, versión vigente desde 01/09/2026. Referencias: artículos 10 a 13, especialmente artículo 13 sobre evaluación continua. Consultar texto oficial · Texto consolidado vigente
+[5] Orden de 30 de mayo de 2023 de Bachillerato. Texto consolidado de la Junta, versión vigente desde 01/09/2026. Referencias: artículos 12, 13 y 15. Consultar texto oficial · Texto consolidado vigente
+[6] Decreto 103/2023, de 9 de mayo, de ordenación y currículo de Bachillerato en Andalucía. BOJA n.º 90, 15/05/2023. Referencia especial: artículo 16.3.b, requisito de no inasistencia continuada y no justificada para la vía excepcional de titulación con una materia pendiente. Consultar texto oficial · Norma autonómica
+[7] Decreto 327/2010, de 13 de julio, Reglamento Orgánico de los Institutos de Educación Secundaria. Texto consolidado vigente desde 31/08/2026. Referencias: artículo 1 (ámbito) y artículo 34.2-3 (justificación de faltas y máximo fijado por el Plan de Convivencia por curso o materia a efectos de evaluación/promoción). Consultar texto oficial · Texto consolidado vigente
+[8] Orden de 19 de septiembre de 2005 sobre prevención, seguimiento y control del absentismo escolar. Texto consolidado vigente desde 13/01/2006. Referencia: artículo 5.2-3 (faltas injustificadas y umbral mensual de absentismo en ESO). Consultar texto oficial · Texto consolidado vigente
+
+9. PRECAUCIONES DE INTERPRETACIÓN
+=================================
+La normativa estatal básica también resulta aplicable y complementa la autonómica. Entre otras: Ley Orgánica 2/2006, modificada por Ley Orgánica 3/2020; Real Decreto 217/2022 (ESO); Real Decreto 243/2022 (Bachillerato); Ley Orgánica 3/2022 y Real Decreto 659/2023 (FP).
+La Orden de FP de 18/09/2025 y el Decreto 147/2025 se refieren al nuevo sistema de Grados D y E. Si el caso real corresponde a una oferta/plan antiguo en régimen transitorio o a una enseñanza no incluida en esos grados, debe verificarse la norma transitoria específica antes de calcular.
+El documento FAQ de FP de marzo de 2026 es una aclaración oficial de la Dirección General, útil para interpretar el cómputo de faltas, pero no sustituye el texto de la Orden ni el Proyecto educativo del centro.
+El Decreto 327/2010 regula los IES dependientes de la Consejería. Para centros de otra titularidad o tipología, comprobar expresamente el régimen orgánico que les resulte aplicable y sus documentos internos; no extender mecánicamente el artículo 34.3 a cualquier centro sin verificarlo.
+La pérdida de evaluación continua, la evaluación negativa de una materia/módulo, el absentismo escolar, la promoción y la titulación son conceptos distintos. La aplicación debe mantenerlos separados.
+
+CONCLUSIÓN PARA EL DESARROLLO / La futura herramienta necesita una capa normativa por etapa y una capa configurable por centro. En FP se puede calcular automáticamente el requisito del 80 % y contrastarlo con la regla de pérdida definida por el centro. En ESO y Bachillerato, el cálculo solo puede cerrarse tras incorporar el máximo de faltas que corresponda según el centro y su normativa aplicable. Si falta ese dato, la respuesta correcta es “no se puede determinar con la información disponible”.
+
+Fin del documento. Fecha de comprobación de enlaces y normas: 06/11/2026. Las páginas consolidadas consultadas indican vigencia a 01/09/2026 para las Órdenes curriculares de ESO y Bachillerato y a 31/08/2026 para el Decreto 327/2010.
+
+
+ENLACES OFICIALES DIRECTOS
+========================
+[1] Orden de 18 de septiembre de 2025 (FP): https://www.juntadeandalucia.es/boja/2025/180/c01/1
+[2] Decreto 147/2025 (FP): https://www.juntadeandalucia.es/boja/2025/217901/1
+[3] Preguntas frecuentes oficiales de FP (23/03/2026): https://www.juntadeandalucia.es/educacion/portales/documents/270701/3483906/260323%20-%20FAQ.pdf/64850700-5e4c-ceec-293a-6082c0b5c63c?version=1.0
+[4] Orden de 30 de mayo de 2023 (ESO), texto consolidado: https://ws040.juntadeandalucia.es/sedeboja/lconsolidada/eli/es-an/o/2023/05/30/%28911285642%29/con/20260901/spa/html/LE0000755237_20260901.html
+[5] Orden de 30 de mayo de 2023 (Bachillerato), texto consolidado: https://ws040.juntadeandalucia.es/sedeboja/lconsolidada/eli/es-an/o/2023/05/30/%281065718309%29/con/20260901/spa/html/LE0000755232_20260901.html
+[6] Decreto 103/2023 (Bachillerato): https://www.juntadeandalucia.es/boja/2023/90/4
+[7] Decreto 327/2010 (IES), texto consolidado: https://ws040.juntadeandalucia.es/sedeboja/lconsolidada/eli/es-an/d/2010/07/13/327/con/20260831/spa/html/LE0000422784_20260831.html
+[8] Orden de 19 de septiembre de 2005 (absentismo), texto consolidado: https://ws040.juntadeandalucia.es/sedeboja/lconsolidada/eli/es-an/o/2005/09/19/%281401437649%29/con/20060113/spa/html/LE0000219382_20060113.html
+
+NOTA DE USO
+===========
+Este archivo es una transcripción en texto plano del documento de referencia. Antes de desarrollar o aplicar reglas a un caso concreto, debe comprobarse la versión vigente de cada norma y el Plan de Convivencia o Proyecto educativo del centro correspondiente.
