@@ -12,7 +12,7 @@ Web app responsive e instalable (PWA) para que estudiantes de Andalucía control
 - **Gestión de asignaturas**: alta, edición, archivado y eliminación con confirmación. Cálculo automático de horas planificadas (horas/semana × semanas), corregible manualmente. Sin duplicados.
 - **Registro de faltas**: asignatura, fecha, horas, tipo (justificada / no justificada) y motivo opcional. Edición y eliminación con recálculo inmediato.
 - **Historial** con filtros por asignatura, tipo y rango de fechas.
-- **Horario**: resumen semanal y extracción de texto desde una foto mediante OCR (Tesseract.js), siempre con texto editable y revisión manual.
+- **Horario escolar semanal interactivo**: cuadrícula tradicional (lunes–viernes, franjas horarias configurables, entrada/salida, recreos y días independientes), conectado directamente a las asignaturas (nombre, horas y colores pastel). Cálculo automático del resumen semanal de horas. Diseño responsive con pestañas y vista vertical en móviles.
 - **Cálculos informativos** con fórmula visible, datos utilizados y límite aplicado.
 - **PWA**: manifest, service worker con caché del *app shell*, iconos 192/512 e instalación en móvil.
 - **Datos locales**: `localStorage`, exportación/importación JSON con validación y borrado total con doble confirmación.
@@ -24,7 +24,6 @@ Web app responsive e instalable (PWA) para que estudiantes de Andalucía control
 - HTML5, CSS3 y JavaScript Vanilla (sin frameworks ni backend).
 - `localStorage` para la persistencia.
 - Service Worker + Web App Manifest para la PWA.
-- Tesseract.js cargado bajo demanda desde CDN para el OCR.
 - Sin dependencias npm ni proceso de compilación.
 
 ---
@@ -51,7 +50,7 @@ mi-asistencia/
 │   └── js/
 │       ├── attendance.js       # Etapas y cálculos de asistencia
 │       ├── storage.js          # Persistencia, migración y normalización
-│       ├── ocr.js              # Carga de Tesseract.js y extracción de texto
+│       ├── schedule.js         # Horario escolar, franjas y resumen de horas
 │       └── app.js              # Render, eventos e inicialización
 └── tests/
     ├── attendance.test.js      # Pruebas de cálculos y render
@@ -97,7 +96,7 @@ Comprobaciones adicionales de sintaxis:
 node --check src/js/app.js
 node --check src/js/attendance.js
 node --check src/js/storage.js
-node --check src/js/ocr.js
+node --check src/js/schedule.js
 node --check service-worker.js
 ```
 
@@ -162,7 +161,6 @@ La referencia normativa utilizada está en [`docs/referencia-normativa-evaluacio
 
 ## Limitaciones conocidas
 
-- **OCR**: requiere conexión a Internet la primera vez (Tesseract.js y sus modelos se descargan de una CDN) y puede confundir letras, números, días y horas. El texto extraído siempre debe revisarse.
 - **Almacenamiento local**: los datos no se sincronizan entre dispositivos ni se conservan si se limpia el navegador.
 - **Cálculos**: son orientativos y dependen de los datos introducidos por el usuario. No emiten una resolución oficial.
 - **Instalación**: la prueba real de instalación y el funcionamiento offline deben verificarse en cada navegador/dispositivo tras publicar.

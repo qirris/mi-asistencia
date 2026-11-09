@@ -51,6 +51,7 @@ function render() {
   renderAsignaturas();
   renderFaltas();
   renderHorario();
+  renderDashboardNow();
   renderHistorial();
   renderConfig();
 }
@@ -71,7 +72,7 @@ function subjectCard(a) {
     <article class="subject tone-${e.tone}">
       <div class="subject-top">
         <div>
-          <div class="subject-name">${esc(a.nombre)}</div>
+          <div class="subject-name"><span class="color-dot sc-${a.color}"></span>${esc(a.nombre)}</div>
           <div class="subject-meta">${meta.length ? meta.join(' · ') : 'Sin datos semanales'}</div>
         </div>
         <span class="badge ${e.tone}">${e.label}</span>
@@ -142,7 +143,7 @@ function asigCardAdmin(a) {
     <article class="subject tone-${e.tone}">
       <div class="subject-top">
         <div>
-          <div class="subject-name">${esc(a.nombre)}${a.archivada ? ' <span class="badge gray">Archivada</span>' : ''}</div>
+          <div class="subject-name"><span class="color-dot sc-${a.color}"></span>${esc(a.nombre)}${a.archivada ? ' <span class="badge gray">Archivada</span>' : ''}</div>
           <div class="subject-meta">${a.horasSemanales ? fmt(a.horasSemanales) + ' h/sem' : '—'} · ${a.semanas ? a.semanas + ' semanas' : '—'} · Total ${fmt(c.horasPlanificadas)} h</div>
         </div>
         <span class="badge ${e.tone}">${e.label}</span>
@@ -212,25 +213,6 @@ function renderFaltas() {
     : '';
 }
 
-function renderHorario() {
-  const activas = state.asignaturas.filter(a => !a.archivada);
-  const cont = $('#horario-list');
-  if (activas.length === 0) {
-    cont.innerHTML = `<div class="empty"><strong>Sin horario configurado</strong>Añade asignaturas o usa el OCR para leer una foto de tu horario.</div>`;
-    return;
-  }
-  cont.innerHTML = activas.map(a => `
-    <article class="subject">
-      <div class="subject-top">
-        <div>
-          <div class="subject-name">${esc(a.nombre)}</div>
-          <div class="subject-meta">${a.horasSemanales ? fmt(a.horasSemanales) + ' horas/semana' : 'Horas semanales sin definir'}</div>
-        </div>
-        <span class="badge gray">${a.semanas ? a.semanas + ' sem' : '—'}</span>
-      </div>
-    </article>
-  `).join('');
-}
 
 function renderHistorial() {
   const filtroAsig = $('#filtro-asig');
@@ -332,9 +314,11 @@ function bindAsignaturas() {
       return toast('Ya existe una asignatura con ese nombre');
     }
 
+    const color = $('#asig-color').value || PALETA[state.asignaturas.length % PALETA.length];
     state.asignaturas.push({
       id: uid(),
       nombre,
+      color,
       horasSemanales: isNaN(h) ? null : h,
       semanas: isNaN(s) ? null : s,
       horasTotales: tot,
@@ -346,6 +330,7 @@ function bindAsignaturas() {
     semanas.value = '';
     total.value = '';
     manualTotalAdd = false;
+    setColorPicker('#asig-color-picker', '#asig-color', PALETA[state.asignaturas.length % PALETA.length]);
     toast('Asignatura añadida');
     render();
   });
@@ -370,7 +355,20 @@ function bindAsignaturas() {
     if (del) {
       const a = state.asignaturas.find(x => x.id === del.dataset.delete);
       if (!a) return;
-      if (!confirm('¿Eliminar «' + a.nombre + '» y todas sus faltas? Esta acción no se puede deshacer.')) return;
+
+      const usos = casillasDeAsignatura(a.id);
+      if (usos > 0) {
+        const vaciar = confirm('«' + a.nombre + '» está colocada en ' + usos + ' casilla(s) del horario.\n\nAceptar: eliminar la asignatura, sus faltas y vaciar esas casillas.\nCancelar: elegir otra opción.');
+        if (vaciar) {
+          limpiarCasillasAsignatura(a.id);
+        } else {
+          const conservar = confirm('¿Eliminar «' + a.nombre + '» y sus faltas, conservando las casillas como «Asignatura eliminada»?\n\nAceptar: conservar las casillas.\nCancelar: no eliminar nada.');
+          if (!conservar) return;
+        }
+      } else if (!confirm('¿Eliminar «' + a.nombre + '» y todas sus faltas? Esta acción no se puede deshacer.')) {
+        return;
+      }
+
       state.asignaturas = state.asignaturas.filter(x => x.id !== a.id);
       state.faltas = state.faltas.filter(f => f.asignaturaId !== a.id);
       saveState();
@@ -388,6 +386,7 @@ function openEdit(id) {
   manualTotalDlg = false;
   $('#dlg-title').textContent = 'Editar asignatura';
   $('#dlg-nombre').value = a.nombre;
+  setColorPicker('#dlg-color-picker', '#dlg-color', a.color);
   $('#dlg-horas').value = a.horasSemanales == null ? '' : a.horasSemanales;
   $('#dlg-semanas').value = a.semanas == null ? '' : a.semanas;
   $('#dlg-total').value = a.horasTotales == null ? '' : a.horasTotales;
@@ -425,6 +424,7 @@ function bindDialog() {
     if (isNaN(tot) || tot <= 0) return toast('El total de horas debe ser mayor que 0');
 
     a.nombre = nombre;
+    a.color = $('#dlg-color').value || a.color || 'azul';
     a.horasSemanales = isNaN(h) ? null : h;
     a.semanas = isNaN(s) ? null : s;
     a.horasTotales = tot;
@@ -614,7 +614,7 @@ function deleteAll() {
   if (!confirm('¿Borrar TODOS los datos? Se eliminarán asignaturas, faltas y configuración.')) return;
   if (!confirm('Esta acción no se puede deshacer. ¿Confirmar borrado definitivo?')) return;
   localStorage.setItem(STORAGE_KEY + '_backup_' + Date.now(), localStorage.getItem(STORAGE_KEY) || '');
-  state = JSON.parse(JSON.stringify(DEFAULT_STATE));
+  state = normalizeState(JSON.parse(JSON.stringify(DEFAULT_STATE)));
   saveState();
   toast('Todos los datos borrados');
   render();
@@ -661,12 +661,15 @@ function promptInstall() {
 /* ---------- Inicio ---------- */
 function init() {
   loadState();
+  initColorPicker('#asig-color-picker', '#asig-color');
+  initColorPicker('#dlg-color-picker', '#dlg-color');
+  setColorPicker('#asig-color-picker', '#asig-color', PALETA[state.asignaturas.length % PALETA.length]);
   bindNav();
   bindAsignaturas();
   bindDialog();
   bindDialogFalta();
   bindFaltas();
-  bindOCR();
+  bindSchedule();
   bindHistorial();
   bindConfig();
   setupInstall();
