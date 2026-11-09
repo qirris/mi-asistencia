@@ -346,14 +346,33 @@
       <section class="view" id="view-historial">
         <div class="view-header">
           <h2>Historial</h2>
-          <p>Todas tus faltas registradas</p>
+          <p>Consulta tus faltas y revisa tu asistencia.</p>
         </div>
 
-        <div class="card" style="margin-bottom:1rem">
-          <div class="form-row">
+        <div class="stats-grid" id="history-stats" style="margin-bottom:1.25rem"></div>
+
+        <!-- Calendario mensual -->
+        <div class="card" style="margin-bottom:1.25rem">
+          <div class="schedule-config-head" style="margin-bottom:.75rem">
+            <h3 class="section-title" style="margin-top:0" id="cal-month-title">Mes Año</h3>
+            <div style="display:flex;gap:.35rem;">
+              <button class="btn btn-ghost btn-sm" id="cal-prev" type="button">◀</button>
+              <button class="btn btn-ghost btn-sm" id="cal-today" type="button">Hoy</button>
+              <button class="btn btn-ghost btn-sm" id="cal-next" type="button">▶</button>
+            </div>
+          </div>
+          <div class="calendar-grid" id="cal-grid"></div>
+        </div>
+
+        <div class="card" style="margin-bottom:1.25rem">
+          <div class="schedule-config-head" style="margin-bottom:.75rem">
+            <h3 class="section-title" style="margin-top:0">Filtros y búsqueda</h3>
+            <button class="btn btn-ghost btn-sm" id="btn-limpiar-filtros" type="button">Limpiar filtros</button>
+          </div>
+          <div class="form-row three" style="grid-template-columns:repeat(auto-fit, minmax(160px, 1fr))">
             <div class="field">
               <label for="filtro-asig">Asignatura</label>
-              <select id="filtro-asig"><option value="">Todas</option></select>
+              <select id="filtro-asig"><option value="">Todas las asignaturas</option></select>
             </div>
             <div class="field">
               <label for="filtro-tipo">Tipo</label>
@@ -361,6 +380,13 @@
                 <option value="">Todos</option>
                 <option value="justificada">Justificada</option>
                 <option value="no_justificada">No justificada</option>
+              </select>
+            </div>
+            <div class="field">
+              <label for="filtro-orden">Ordenación</label>
+              <select id="filtro-orden">
+                <option value="recientes">Más recientes primero</option>
+                <option value="antiguos">Más antiguos primero</option>
               </select>
             </div>
           </div>
@@ -374,9 +400,9 @@
               <input type="date" id="filtro-hasta">
             </div>
           </div>
-          <button class="btn btn-ghost btn-sm" id="btn-limpiar-filtros" type="button" style="margin-top:.85rem">Limpiar filtros</button>
         </div>
 
+        <h3 class="section-title">Registro de ausencias</h3>
         <div id="historial-list" class="history-list"></div>
       </section>
 
@@ -665,6 +691,17 @@
     </div>
   </dialog>
 
+  <!-- Dialog detalle de día del historial -->
+  <dialog id="dialog-history-day" aria-labelledby="dlg-day-title">
+    <div class="dialog-body">
+      <div class="dialog-head">
+        <h3 id="dlg-day-title">Ausencias</h3>
+        <button class="btn btn-ghost btn-sm" id="dlg-day-close" type="button">Cerrar</button>
+      </div>
+      <div id="dlg-day-body"></div>
+    </div>
+  </dialog>
+
   <div id="toast" class="toast" role="status" aria-live="polite"></div>
 
   <script>
@@ -680,6 +717,7 @@
   <script src="src/js/storage.js"></script>
   <script src="src/js/schedule.js"></script>
   <script src="src/js/tasks.js"></script>
+  <script src="src/js/history.js"></script>
   <script src="src/js/app.js"></script>
 </body>
 </html>
