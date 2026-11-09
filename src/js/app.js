@@ -353,6 +353,26 @@ function bindAsignaturas() {
     }
   }
 
+  const formCard = $('#asig-form-card');
+  const btnToggle = $('#btn-toggle-asig-form');
+  const btnCancel = $('#btn-cancel-asig');
+
+  if (btnToggle && formCard) {
+    btnToggle.addEventListener('click', () => {
+      formCard.classList.toggle('hidden');
+      if (!formCard.classList.contains('hidden')) {
+        nombreInput.focus();
+      }
+    });
+  }
+
+  if (btnCancel && formCard) {
+    btnCancel.addEventListener('click', () => {
+      clearFormErrors(formCard);
+      formCard.classList.add('hidden');
+    });
+  }
+
   $('#btn-add-asig').addEventListener('click', () => {
     const cardEl = nombreInput.closest('.card') || nombreInput.parentElement;
     clearFormErrors(cardEl);
@@ -402,6 +422,7 @@ function bindAsignaturas() {
     horasInput.value = '';
     setColorPicker('#asig-color-picker', '#asig-color', PALETA[state.asignaturas.length % PALETA.length]);
     updatePreview();
+    if (formCard) formCard.classList.add('hidden');
     toast('Asignatura añadida');
     render();
   });
