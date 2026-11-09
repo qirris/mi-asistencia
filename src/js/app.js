@@ -163,7 +163,11 @@ function renderAsignaturas() {
   const archivadas = state.asignaturas.filter(a => a.archivada);
   let html = '';
   if (activas.length === 0) {
-    html += `<div class="empty"><strong>Sin asignaturas activas</strong>Añade tu primera asignatura con el formulario de arriba.</div>`;
+    html += `<div class="empty-state-card">
+      <div class="esc-icon">📚</div>
+      <h3>¡Vamos a organizar tus clases!</h3>
+      <p>Primero añade las asignaturas que tienes y después podrás colocarlas en tu horario y registrar tus faltas.</p>
+    </div>`;
   } else {
     html += activas.map(asigCardAdmin).join('');
   }
@@ -284,53 +288,62 @@ function bindNav() {
 
 /* ---------- Eventos: asignaturas ---------- */
 function bindAsignaturas() {
-  const horas = $('#asig-horas');
-  const semanas = $('#asig-semanas');
-  const total = $('#asig-total');
+  const nombreInput = $('#asig-nombre');
+  const horasInput = $('#asig-horas');
+  const colorInput = $('#asig-color');
+  const previewName = $('#preview-name');
+  const previewHours = $('#preview-hours');
+  const previewDot = $('#preview-dot');
 
-  function recalc() {
-    if (manualTotalAdd) return;
-    const h = parseFloat(horas.value);
-    const s = parseFloat(semanas.value);
-    if (!isNaN(h) && !isNaN(s)) total.value = (h * s) || '';
+  function updatePreview() {
+    const nombre = nombreInput.value.trim() || 'Nombre de la asignatura';
+    const horas = parseFloat(horasInput.value) || 4;
+    const color = colorInput.value || 'azul';
+    previewName.textContent = nombre;
+    previewHours.textContent = horas + ' h/sem';
+    previewDot.className = 'color-dot sc-' + color;
   }
-  horas.addEventListener('input', recalc);
-  semanas.addEventListener('input', recalc);
-  total.addEventListener('input', () => { manualTotalAdd = total.value !== ''; });
+
+  if (nombreInput) nombreInput.addEventListener('input', updatePreview);
+  if (horasInput) horasInput.addEventListener('input', updatePreview);
+  if (colorInput) {
+    const observer = new MutationObserver(updatePreview);
+    observer.observe(colorInput, { attributes: true });
+    // También actualizamos al hacer clic en la paleta
+    const picker = $('#asig-color-picker');
+    if (picker) {
+      picker.addEventListener('click', () => setTimeout(updatePreview, 10));
+    }
+  }
 
   $('#btn-add-asig').addEventListener('click', () => {
-    const nombre = $('#asig-nombre').value.trim();
-    const h = parseFloat(horas.value);
-    const s = parseFloat(semanas.value);
-    let tot = parseFloat(total.value);
+    const nombre = nombreInput.value.trim();
+    const h = parseFloat(horasInput.value);
 
     if (!nombre) return toast('Escribe un nombre de asignatura');
-    if (isNaN(tot)) {
-      if (!isNaN(h) && !isNaN(s)) tot = h * s;
-      else return toast('Indica horas semanales y semanas, o el total');
-    }
-    if (tot <= 0) return toast('El total de horas debe ser mayor que 0');
+    if (isNaN(h) || h <= 0) return toast('Indica cuántas horas tienes por semana');
     if (state.asignaturas.some(a => !a.archivada && a.nombre.toLowerCase() === nombre.toLowerCase())) {
       return toast('Ya existe una asignatura con ese nombre');
     }
 
-    const color = $('#asig-color').value || PALETA[state.asignaturas.length % PALETA.length];
+    const color = colorInput.value || PALETA[state.asignaturas.length % PALETA.length];
+    const semanas = 30; // Estándar académico predeterminado
+    const horasTotales = h * semanas;
+
     state.asignaturas.push({
       id: uid(),
       nombre,
       color,
-      horasSemanales: isNaN(h) ? null : h,
-      semanas: isNaN(s) ? null : s,
-      horasTotales: tot,
+      horasSemanales: h,
+      semanas,
+      horasTotales,
       archivada: false
     });
     saveState();
-    $('#asig-nombre').value = '';
-    horas.value = '';
-    semanas.value = '';
-    total.value = '';
-    manualTotalAdd = false;
+    nombreInput.value = '';
+    horasInput.value = '';
     setColorPicker('#asig-color-picker', '#asig-color', PALETA[state.asignaturas.length % PALETA.length]);
+    updatePreview();
     toast('Asignatura añadida');
     render();
   });
@@ -383,31 +396,14 @@ function openEdit(id) {
   const a = state.asignaturas.find(x => x.id === id);
   if (!a) return;
   editingId = id;
-  manualTotalDlg = false;
   $('#dlg-title').textContent = 'Editar asignatura';
   $('#dlg-nombre').value = a.nombre;
   setColorPicker('#dlg-color-picker', '#dlg-color', a.color);
   $('#dlg-horas').value = a.horasSemanales == null ? '' : a.horasSemanales;
-  $('#dlg-semanas').value = a.semanas == null ? '' : a.semanas;
-  $('#dlg-total').value = a.horasTotales == null ? '' : a.horasTotales;
   $('#dialog-asig').showModal();
 }
 
 function bindDialog() {
-  const horas = $('#dlg-horas');
-  const semanas = $('#dlg-semanas');
-  const total = $('#dlg-total');
-
-  function recalc() {
-    if (manualTotalDlg) return;
-    const h = parseFloat(horas.value);
-    const s = parseFloat(semanas.value);
-    if (!isNaN(h) && !isNaN(s)) total.value = (h * s) || '';
-  }
-  horas.addEventListener('input', recalc);
-  semanas.addEventListener('input', recalc);
-  total.addEventListener('input', () => { manualTotalDlg = total.value !== ''; });
-
   $('#dlg-close').addEventListener('click', () => $('#dialog-asig').close());
   $('#dlg-cancel').addEventListener('click', () => $('#dialog-asig').close());
 
@@ -417,17 +413,15 @@ function bindDialog() {
     const nombre = $('#dlg-nombre').value.trim();
     if (!nombre) return toast('El nombre no puede estar vacío');
 
-    const h = parseFloat(horas.value);
-    const s = parseFloat(semanas.value);
-    let tot = parseFloat(total.value);
-    if (isNaN(tot) && !isNaN(h) && !isNaN(s)) tot = h * s;
-    if (isNaN(tot) || tot <= 0) return toast('El total de horas debe ser mayor que 0');
+    const h = parseFloat($('#dlg-horas').value);
+    if (isNaN(h) || h <= 0) return toast('Las horas semanales deben ser mayores que 0');
 
+    const semanas = a.semanas || 30;
     a.nombre = nombre;
     a.color = $('#dlg-color').value || a.color || 'azul';
-    a.horasSemanales = isNaN(h) ? null : h;
-    a.semanas = isNaN(s) ? null : s;
-    a.horasTotales = tot;
+    a.horasSemanales = h;
+    a.semanas = semanas;
+    a.horasTotales = h * semanas;
     saveState();
     $('#dialog-asig').close();
     toast('Cambios guardados');
