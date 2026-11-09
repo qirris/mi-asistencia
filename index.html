@@ -29,6 +29,7 @@
       <button class="nav-btn" data-view="asignaturas" type="button">Asignaturas</button>
       <button class="nav-btn" data-view="faltas" type="button">Faltas</button>
       <button class="nav-btn" data-view="horario" type="button">Horario</button>
+      <button class="nav-btn" data-view="tareas" type="button">Mis tareas</button>
       <button class="nav-btn" data-view="historial" type="button">Historial</button>
       <button class="nav-btn" data-view="config" type="button">Ajustes</button>
     </nav>
@@ -42,6 +43,7 @@
         </div>
         <div class="stats-grid" id="dash-stats"></div>
         <div id="dash-now"></div>
+        <div id="dash-tasks-preview"></div>
         <p class="legal" id="dash-formula" style="margin-bottom:1rem"></p>
         <div id="dash-subjects"></div>
       </section>
@@ -210,6 +212,61 @@
 
         <h3 class="section-title">Resumen de horas</h3>
         <div id="horario-resumen" class="schedule-summary"></div>
+      </section>
+
+      <!-- ===================== MIS TAREAS ===================== -->
+      <section class="view" id="view-tareas">
+        <div class="view-header" style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:1rem;">
+          <div>
+            <h2>Mis tareas</h2>
+            <p>Organiza tus deberes, exámenes, trabajos y notas personales.</p>
+          </div>
+          <button class="btn" id="btn-global-add-task" type="button">➕ Nueva actividad</button>
+        </div>
+
+        <div class="stats-grid" id="tasks-stats" style="margin-bottom:1.25rem"></div>
+
+        <div class="card" style="margin-bottom:1.25rem">
+          <h3 class="section-title" style="margin-top:0">Filtros</h3>
+          <div class="form-row three" style="grid-template-columns:repeat(auto-fit, minmax(180px, 1fr))">
+            <div class="field">
+              <label for="task-filtro-asig">Asignatura</label>
+              <select id="task-filtro-asig"><option value="">Todas las asignaturas</option></select>
+            </div>
+            <div class="field">
+              <label for="task-filtro-tipo">Tipo</label>
+              <select id="task-filtro-tipo">
+                <option value="">Todos los tipos</option>
+                <option value="deberes">Deberes</option>
+                <option value="estudiar">Estudiar</option>
+                <option value="examen">Examen</option>
+                <option value="trabajo">Trabajo</option>
+                <option value="proyecto">Proyecto</option>
+                <option value="otros">Otros</option>
+                <option value="nota">Nota personal</option>
+              </select>
+            </div>
+            <div class="field">
+              <label for="task-filtro-estado">Estado</label>
+              <select id="task-filtro-estado">
+                <option value="pendiente">Pendientes</option>
+                <option value="completada">Completadas</option>
+                <option value="todos">Todas</option>
+              </select>
+            </div>
+            <div class="field">
+              <label for="task-filtro-prioridad">Prioridad</label>
+              <select id="task-filtro-prioridad">
+                <option value="">Todas</option>
+                <option value="alta">Alta</option>
+                <option value="normal">Normal</option>
+                <option value="baja">Baja</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <div id="tasks-list" class="tasks-list"></div>
       </section>
 
       <!-- ===================== HISTORIAL ===================== -->
@@ -461,6 +518,80 @@
     </div>
   </dialog>
 
+  <!-- Dialog detalle de clase -->
+  <dialog id="dialog-class-detail" aria-labelledby="dlg-class-title">
+    <div class="dialog-body" style="max-height:85vh; overflow-y:auto;">
+      <div class="dialog-head">
+        <h3 id="dlg-class-title">Detalle de clase</h3>
+        <button class="btn btn-ghost btn-sm" id="dlg-class-close" type="button">Cerrar</button>
+      </div>
+      <div id="dialog-class-body"></div>
+    </div>
+  </dialog>
+
+  <!-- Dialog de tarea / nota -->
+  <dialog id="dialog-task" aria-labelledby="dlg-task-title">
+    <div class="dialog-body" style="max-height:85vh; overflow-y:auto;">
+      <div class="dialog-head">
+        <h3 id="dlg-task-title">Nueva actividad o nota</h3>
+        <button class="btn btn-ghost btn-sm" id="dlg-task-close" type="button">Cerrar</button>
+      </div>
+      <div class="form-grid">
+        <div class="field">
+          <label for="dlg-task-titulo">Título *</label>
+          <input type="text" id="dlg-task-titulo" placeholder="Ej: Ejercicios página 45">
+        </div>
+        <div class="field">
+          <label for="dlg-task-asig">Asignatura *</label>
+          <select id="dlg-task-asig"></select>
+        </div>
+        <div class="form-row">
+          <div class="field">
+            <label for="dlg-task-tipo">Tipo de actividad</label>
+            <select id="dlg-task-tipo">
+              <option value="deberes">Deberes</option>
+              <option value="estudiar">Estudiar</option>
+              <option value="examen">Examen</option>
+              <option value="trabajo">Trabajo</option>
+              <option value="proyecto">Proyecto</option>
+              <option value="otros">Otros</option>
+              <option value="nota">Nota personal</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="dlg-task-prioridad">Prioridad</label>
+            <select id="dlg-task-prioridad">
+              <option value="normal">Normal</option>
+              <option value="alta">Alta</option>
+              <option value="baja">Baja</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="field">
+            <label for="dlg-task-fecha">Fecha de entrega (opcional)</label>
+            <input type="date" id="dlg-task-fecha">
+          </div>
+          <div class="field">
+            <label for="dlg-task-estado">Estado</label>
+            <select id="dlg-task-estado">
+              <option value="pendiente">Pendiente</option>
+              <option value="completada">Completada</option>
+            </select>
+          </div>
+        </div>
+        <div class="field">
+          <label for="dlg-task-desc">Descripción / Notas (opcional)</label>
+          <textarea id="dlg-task-desc" placeholder="Detalles, páginas, instrucciones..."></textarea>
+        </div>
+        <div class="dialog-actions" style="margin-top:1rem">
+          <button class="btn btn-ghost" id="dlg-task-cancel" type="button">Cancelar</button>
+          <button class="btn" id="dlg-task-save" type="button">Guardar actividad</button>
+        </div>
+      </div>
+    </div>
+  </dialog>
+
   <div id="toast" class="toast" role="status" aria-live="polite"></div>
 
   <script>
@@ -475,6 +606,7 @@
   <script src="src/js/attendance.js"></script>
   <script src="src/js/storage.js"></script>
   <script src="src/js/schedule.js"></script>
+  <script src="src/js/tasks.js"></script>
   <script src="src/js/app.js"></script>
 </body>
 </html>

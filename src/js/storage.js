@@ -11,9 +11,20 @@ const DEFAULT_STATE = {
   etapa: 'fp_superior',
   asignaturas: [],
   faltas: [],
+  tareas: [],
   config: { criterio: { tipo: '', valor: null } },
   horario: null
 };
+
+/* ---------- Utilidades ---------- */
+function uid() {
+  return Date.now().toString(36) + Math.random().toString(36).slice(2, 8);
+}
+function todayISO() {
+  const d = new Date();
+  const local = new Date(d.getTime() - d.getTimezoneOffset() * 60000);
+  return local.toISOString().slice(0, 10);
+}
 
 /* ---------- Persistencia ---------- */
 function loadState() {
@@ -96,6 +107,25 @@ function normalizeState(input) {
         horas: Number(f.horas) || 0,
         tipo: f.tipo === 'justificada' ? 'justificada' : 'no_justificada',
         motivo: String(f.motivo || '')
+      }))
+    : [];
+
+  out.tareas = Array.isArray(out.tareas)
+    ? out.tareas.filter(t => t && t.id && t.asignaturaId).map(t => ({
+        id: String(t.id),
+        asignaturaId: String(t.asignaturaId),
+        asignaturaNombre: String(t.asignaturaNombre || ''),
+        slotKey: t.slotKey ? String(t.slotKey) : '',
+        dia: String(t.dia || ''),
+        horaInicio: String(t.horaInicio || ''),
+        horaFin: String(t.horaFin || ''),
+        fechaCreacion: String(t.fechaCreacion || todayISO()),
+        fechaEntrega: String(t.fechaEntrega || ''),
+        tipo: ['deberes', 'estudiar', 'examen', 'trabajo', 'proyecto', 'otros', 'nota'].includes(t.tipo) ? t.tipo : 'deberes',
+        prioridad: ['baja', 'normal', 'alta'].includes(t.prioridad) ? t.prioridad : 'normal',
+        estado: t.estado === 'completada' ? 'completada' : 'pendiente',
+        titulo: String(t.titulo || ''),
+        descripcion: String(t.descripcion || '')
       }))
     : [];
 
