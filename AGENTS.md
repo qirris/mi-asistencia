@@ -10,6 +10,8 @@ Punto de entrada del proyecto. Proyecto: web app responsive e instalable (PWA) p
 ### Estado actual
 - Dashboard PWA completo con vistas: Inicio, Asignaturas, Faltas, Horario, Historial y Ajustes.
 - Datos en `localStorage` con migración segura y copias JSON.
+- Código organizado en `src/css/` y `src/js/`; pruebas en `tests/`.
+- Repositorio privado: <https://github.com/qirris/mi-asistencia>.
 - Pendiente: prueba real de instalación PWA en dispositivo y revisión visual móvil.
 
 ### Reglas duras

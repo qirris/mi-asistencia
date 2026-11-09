@@ -11,11 +11,14 @@ Web app responsive e instalable (PWA) para estudiantes de Andalucía que permite
 - Vistas: Inicio, Asignaturas, Faltas, Horario, Historial y Ajustes.
 - PWA: manifest, service worker, iconos 192/512 e instalación con `beforeinstallprompt`.
 - Datos en `localStorage` con migración segura desde la versión anterior.
+- Carpeta local renombrada de `evaluacion` a `mi-asistencia`.
+- Repositorio privado de GitHub: <https://github.com/qirris/mi-asistencia>.
+- Código organizado por responsabilidades en `src/css/` y `src/js/`.
 
 ## 3. Tecnologías y arquitectura
 - HTML5 + CSS3 + JavaScript Vanilla (sin frameworks).
-- Archivos: `index.html`, `styles.css`, `app.js`, `manifest.webmanifest`, `service-worker.js`, `assets/icons/`.
-- OCR: `Tesseract.js` vía CDN (requiere Internet en el primer uso; no se anuncia como offline).
+- Archivos: `index.html`, `src/css/styles.css`, `src/js/attendance.js`, `src/js/storage.js`, `src/js/ocr.js`, `src/js/app.js`, `manifest.webmanifest`, `service-worker.js`, `assets/icons/`, `docs/`, `tests/`.
+- OCR: `Tesseract.js` cargado bajo demanda desde CDN (requiere Internet; no se anuncia como offline).
 - Persistencia: `localStorage` clave `miAsistenciaState`; migración desde clave antigua `asistenciaData` con copia `asistenciaData_backup`.
 - Cálculo de asistencia global ponderado por horas.
 
@@ -45,10 +48,16 @@ Web app responsive e instalable (PWA) para estudiantes de Andalucía que permite
 - Nuevo `styles.css` mobile-first (sidebar en escritorio, tabs en móvil).
 - Nuevo `app.js` con modelo de datos, normalización, cálculos, render y eventos.
 - Nuevo `manifest.webmanifest` con scope e iconos maskable.
-- Nuevo `service-worker.js` con caché v2, limpieza de versiones y fallback.
+- Nuevo `service-worker.js` con caché v3, limpieza de versiones y fallback.
 - Iconos PNG 192/512 generados en `assets/icons/`.
 - `script.js` renombrado a `app.js`; `style.css` renombrado a `styles.css`.
 - Creado `README.md` con estructura, pruebas, publicación e instalación.
+- Carpeta local renombrada de `evaluacion` a `mi-asistencia`.
+- Reorganización: `src/css/styles.css` y `src/js/{attendance,storage,ocr,app}.js`.
+- OCR corregido: Tesseract.js se carga bajo demanda desde CDN.
+- Documento normativo movido a `docs/` con nombre kebab-case.
+- Añadidos `.gitignore`, `.gitattributes` y pruebas en `tests/`.
+- Repositorio privado creado en GitHub y sincronizado con `main`.
 
 ## 7. Decisiones tomadas
 - Mantener JavaScript Vanilla y sin backend.
@@ -58,22 +67,20 @@ Web app responsive e instalable (PWA) para estudiantes de Andalucía que permite
 - Migración con copia de seguridad antes de transformar datos antiguos.
 
 ## 8. Pruebas verificadas (09/11/2026)
-- `node --check app.js` → OK.
-- `node --check service-worker.js` → OK.
+- `node --check` en `src/js/app.js`, `src/js/attendance.js`, `src/js/storage.js`, `src/js/ocr.js` y `service-worker.js` → OK.
 - `manifest.webmanifest` validado como JSON → OK.
-- Comprobación de IDs: los 60 IDs usados en `app.js` existen en `index.html` → OK.
-- Prueba funcional en Node (vm): asistencia FP 80 % → 80,00 %; ausencia 20 % → estado «cerca del límite»; ESO con criterio 15 % → «límite superado»; ESO sin criterio → «falta criterio»; asistencia global ponderada 88,89 %; `normalizeState` corrige etapa inválida → OK.
-- Prueba de humo: `render()` completo de todas las vistas con DOM simulado → sin errores.
-- Servidor local `python -m http.server 8080`: todos los recursos (HTML, CSS, JS, manifest, service worker e iconos) responden 200 con MIME type correcto → OK.
+- `node tests/check-ids.js`: los 60 IDs usados en JS existen en `index.html` → OK.
+- `node tests/attendance.test.js`: asistencia FP 80 % → 80,00 %; ausencia 20 % → «cerca del límite»; ESO con criterio 15 % → «límite superado»; ESO sin criterio → «falta criterio»; asistencia global ponderada 88,89 %; `normalizeState` corrige etapa inválida; `render()` completo sin errores → OK.
+- Servidor local `python -m http.server 8080`: todos los recursos responden 200 con MIME type correcto → OK.
 - Pendiente: prueba visual en dispositivos y prueba de instalación PWA real desde el navegador (Chrome/Edge/Android/iOS).
 
 ## 9. Errores y problemas pendientes
-- El OCR depende de CDN: sin Internet no está disponible (documentado en la UI y README).
+- El OCR depende de CDN: sin Internet no está disponible (documentado en la UI y README). Ahora se carga bajo demanda para no bloquear la app.
 - No hay sincronización entre dispositivos (limitación de `localStorage`, documentada).
 - Falta prueba real de instalación PWA en Android/iOS.
 
 ## 10. Próximos pasos
-- Servir la app en localhost y verificar instalación PWA + funcionamiento offline.
+- Publicar en HTTPS y verificar instalación PWA + funcionamiento offline.
 - Revisar diseño en móvil real y ajustar si hay desbordamiento.
 - Opcional: empaquetar Tesseract.js y modelos de idioma localmente para OCR offline.
 - Opcional: exportar/importar también desde la vista Inicio.
@@ -86,3 +93,7 @@ Web app responsive e instalable (PWA) para estudiantes de Andalucía que permite
 - 06/11/2026: Mejora de diseño y citación de fuentes.
 - 06/11/2026: Añadido flujo de subida de foto (IA en chat).
 - 09/11/2026: Reescritura como dashboard PWA «Mi Asistencia» (vistas, localStorage, OCR, backups, manifest, service worker, iconos, README).
+- 09/11/2026: Carpeta renombrada a `mi-asistencia`; repositorio privado creado y primer push.
+- 09/11/2026: Reorganización en `src/css/` y `src/js/` por responsabilidades.
+- 09/11/2026: Corrección del OCR con carga de Tesseract.js bajo demanda.
+- 09/11/2026: Pruebas añadidas en `tests/` y README profesional.
