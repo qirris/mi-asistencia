@@ -317,8 +317,8 @@ function renderHorario() {
   if (salidasCont) {
     salidasCont.innerHTML = h.dias.map(d => `
       <div class="field">
-        <label for="salida-${d.key}">${d.label}</label>
-        <input type="time" id="salida-${d.key}" data-salida-dia="${d.key}" value="${salidaDia(h, d.key)}">
+        <label for="salida-${d}">${diaLabel(d)}</label>
+        <input type="time" id="salida-${d}" data-salida-dia="${d}" value="${salidaDia(h, d)}">
       </div>
     `).join('');
   }
@@ -517,7 +517,13 @@ function renderResumenHorario() {
   </div>`;
 
   if (!filas.length) {
-    cont.innerHTML = totalHtml + `<div class="empty"><strong>Sin asignaturas en el horario</strong>Toca una casilla de la semana para colocar tu primera asignatura.</div>`;
+    cont.innerHTML = totalHtml + `
+      <div class="empty-state-card" style="margin-top:1rem">
+        <div class="esc-icon">📅</div>
+        <h3>Sin asignaturas en el horario</h3>
+        <p>Toca una casilla de la semana para colocar tu primera asignatura y calcular automáticamente tus horas semanales.</p>
+      </div>
+    `;
     return;
   }
   cont.innerHTML = totalHtml + filas.join('');
