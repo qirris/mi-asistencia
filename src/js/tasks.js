@@ -1,11 +1,11 @@
 /* ============================================================
    Mi Asistencia — tasks.js
-   Gestión completa de agenda académica (deberes, exámenes, trabajos, notas)
-   vinculada a clases del horario y asignaturas.
+   Gestión completa de agenda académica: deberes, exámenes, trabajos, notas.
    ============================================================ */
 
 let editingTaskId = null;
 let activeSlotContext = null;
+let taskActiveTab = 'pendiente';
 
 const TIPOS_TAREA = {
   deberes: { label: 'Deberes', badge: 'blue', icon: '📝' },
@@ -33,12 +33,22 @@ function diasHasta(fechaStr) {
   return Math.ceil(diffTime / (1000 * 60 * 60 * 24));
 }
 
+function formatoEntrega(fechaStr) {
+  if (!fechaStr) return 'Sin fecha de entrega';
+  const d = diasHasta(fechaStr);
+  if (d === 0) return 'Hoy';
+  if (d === 1) return 'Mañana';
+  if (d > 1 && d <= 7) return `En ${d} días`;
+  if (d < 0) return `Vencida (${Math.abs(d)}d)`;
+  return `Entrega: ${fechaStr}`;
+}
+
 function calcularEstadoVisualTask(t) {
   if (t.estado === 'completada') return { tone: 'green', label: 'Completada', cls: 'ok' };
   const d = diasHasta(t.fechaEntrega);
-  if (d != null && d < 0) return { tone: 'red', label: 'Vencida (' + Math.abs(d) + 'd)', cls: 'over' };
-  if (t.prioridad === 'alta') return { tone: 'red', label: 'Prioridad alta', cls: 'over' };
-  if (d != null && d <= 2) return { tone: 'yellow', label: 'Próxima (' + (d === 0 ? 'hoy' : d + 'd') + ')', cls: 'miss' };
+  if (d != null && d < 0) return { tone: 'red', label: 'Vencida', cls: 'over' };
+  if (t.prioridad === 'alta') return { tone: 'red', label: 'Urgente', cls: 'over' };
+  if (d != null && d <= 2) return { tone: 'yellow', label: d === 0 ? 'Hoy' : `En ${d}d`, cls: 'miss' };
   return { tone: 'blue', label: 'Pendiente', cls: 'none' };
 }
 
@@ -296,7 +306,7 @@ function renderTaskMiniCard(t) {
       <input type="checkbox" data-toggletask="${t.id}" ${t.estado === 'completada' ? 'checked' : ''} aria-label="Marcar completada">
       <div class="tmi-main">
         <div class="tmi-title">${tipoInfo.icon} ${esc(t.titulo)}</div>
-        <div class="tmi-sub">${tipoInfo.label}${t.fechaEntrega ? ' · Entrega: ' + esc(t.fechaEntrega) : ''}</div>
+        <div class="tmi-sub">${tipoInfo.label}${t.fechaEntrega ? ' · ' + formatoEntrega(t.fechaEntrega) : ''}</div>
       </div>
       <span class="badge ${st.tone}">${st.label}</span>
       <button class="btn btn-ghost btn-sm" type="button" data-edittask="${t.id}" aria-label="Editar">✎</button>
@@ -311,6 +321,7 @@ function renderMisTareas() {
   const pendientes = tareas.filter(t => t.estado === 'pendiente');
   const completadas = tareas.filter(t => t.estado === 'completada');
   const prioridadAlta = pendientes.filter(t => t.prioridad === 'alta');
+  const examenesPendientes = pendientes.filter(t => t.tipo === 'examen');
   const proximas = pendientes.filter(t => {
     const d = diasHasta(t.fechaEntrega);
     return d != null && d >= 0 && d <= 3;
@@ -322,7 +333,7 @@ function renderMisTareas() {
       <div class="stat">
         <span class="stat-label">Pendientes</span>
         <span class="stat-value">${pendientes.length}</span>
-        <span class="stat-sub">actividades</span>
+        <span class="stat-sub">por completar</span>
       </div>
       <div class="stat">
         <span class="stat-label">Próximas (3 días)</span>
@@ -330,9 +341,9 @@ function renderMisTareas() {
         <span class="stat-sub">vencimiento cercano</span>
       </div>
       <div class="stat">
-        <span class="stat-label">Prioridad alta</span>
-        <span class="stat-value">${prioridadAlta.length}</span>
-        <span class="stat-sub">urgentes</span>
+        <span class="stat-label">Exámenes</span>
+        <span class="stat-value">${examenesPendientes.length}</span>
+        <span class="stat-sub">pendientes</span>
       </div>
       <div class="stat">
         <span class="stat-label">Completadas</span>
@@ -352,13 +363,18 @@ function renderMisTareas() {
 
   const fa = filtroAsig ? filtroAsig.value : '';
   const ft = $('#task-filtro-tipo') ? $('#task-filtro-tipo').value : '';
-  const fe = $('#task-filtro-estado') ? $('#task-filtro-estado').value : 'pendiente';
   const fp = $('#task-filtro-prioridad') ? $('#task-filtro-prioridad').value : '';
 
   let lista = [...tareas];
+  // Filtrar por pestaña activa (pendiente, completada, todos)
+  if (taskActiveTab === 'pendiente') {
+    lista = lista.filter(t => t.estado === 'pendiente');
+  } else if (taskActiveTab === 'completada') {
+    lista = lista.filter(t => t.estado === 'completada');
+  }
+
   if (fa) lista = lista.filter(t => t.asignaturaId === fa);
   if (ft) lista = lista.filter(t => t.tipo === ft);
-  if (fe && fe !== 'todos') lista = lista.filter(t => t.estado === fe);
   if (fp) lista = lista.filter(t => t.prioridad === fp);
 
   lista.sort((a, b) => {
@@ -373,11 +389,22 @@ function renderMisTareas() {
   if (!cont) return;
 
   if (lista.length === 0) {
+    let emptyTitle = '¡Todo organizado!';
+    let emptyDesc = 'No hay actividades ni notas que coincidan con los filtros seleccionados.';
+    if (taskActiveTab === 'pendiente' && tareas.length === 0) {
+      emptyTitle = 'Sin tareas pendientes';
+      emptyDesc = '¡Felicidades! Estás al día con todas tus actividades académicas.';
+    } else if (taskActiveTab === 'completada') {
+      emptyTitle = 'Sin historial completado';
+      emptyDesc = 'Las actividades que marques como completadas aparecerán aquí.';
+    }
+
     cont.innerHTML = `
       <div class="empty-state-card">
         <div class="esc-icon">🎯</div>
-        <h3>¡Todo organizado!</h3>
-        <p>No hay actividades ni notas que coincidan con los filtros seleccionados. Puedes añadir una nueva tarea pulsando el botón superior o desde tu horario.</p>
+        <h3>${emptyTitle}</h3>
+        <p>${emptyDesc}</p>
+        <button class="btn btn-sm" type="button" onclick="openTaskDialog()">➕ Añadir primera tarea</button>
       </div>
     `;
     return;
@@ -396,7 +423,7 @@ function renderMisTareas() {
           <div class="tc-info">
             <span class="badge ${tipoInfo.badge}">${tipoInfo.icon} ${tipoInfo.label}</span>
             <span class="badge ${st.tone}">${st.label}</span>
-            ${t.prioridad === 'alta' ? '<span class="badge red">Alta</span>' : ''}
+            ${t.prioridad === 'alta' ? '<span class="badge red">Prioridad alta</span>' : ''}
           </div>
           <div class="tc-actions">
             <button class="btn btn-ghost btn-sm" type="button" data-edittask="${t.id}" aria-label="Editar">Editar</button>
@@ -408,7 +435,7 @@ function renderMisTareas() {
         <div class="tc-footer">
           <span>📚 <strong>${esc(a ? a.nombre : t.asignaturaNombre || 'Asignatura')}</strong></span>
           ${t.dia ? `<span>📅 ${diaLabel(t.dia)} (${t.horaInicio}–${t.horaFin})</span>` : ''}
-          ${t.fechaEntrega ? `<span>⏰ Entrega: ${esc(t.fechaEntrega)}</span>` : ''}
+          ${t.fechaEntrega ? `<span>⏰ ${formatoEntrega(t.fechaEntrega)}</span>` : ''}
         </div>
       </div>
     `;
@@ -431,7 +458,7 @@ function renderDashboardTasks() {
 
   if (proximas.length === 0) {
     cont.innerHTML = `
-      <div class="card" style="margin-top:1rem">
+      <div class="dash-card">
         <h3 class="section-title" style="margin-top:0">Próximas tareas</h3>
         <p class="muted" style="font-size:0.85rem">¡Todo al día! No tienes tareas pendientes en este momento.</p>
       </div>
@@ -440,7 +467,7 @@ function renderDashboardTasks() {
   }
 
   cont.innerHTML = `
-    <div class="card" style="margin-top:1rem">
+    <div class="dash-card">
       <div class="schedule-config-head" style="margin-bottom:.5rem">
         <h3 class="section-title" style="margin-top:0">Próximas tareas (${tareas.length} pendientes)</h3>
         <button class="btn btn-ghost btn-sm" type="button" onclick="document.querySelector('.nav-btn[data-view=\"tareas\"]').click()">Ver todas</button>
@@ -464,7 +491,34 @@ function bindTasks() {
   const cancelBtn = $('#dlg-task-cancel');
   if (cancelBtn) cancelBtn.addEventListener('click', () => $('#dialog-task').close());
 
-  ['#task-filtro-asig', '#task-filtro-tipo', '#task-filtro-estado', '#task-filtro-prioridad'].forEach(sel => {
+  // Tabs de estado
+  const tabsContainer = $('#task-state-tabs');
+  if (tabsContainer) {
+    tabsContainer.addEventListener('click', (e) => {
+      const tab = e.target.closest('[data-statustab]');
+      if (!tab) return;
+      taskActiveTab = tab.dataset.statustab;
+      Array.from(tabsContainer.querySelectorAll('[data-statustab]')).forEach(b => {
+        const on = b.dataset.statustab === taskActiveTab;
+        b.classList.toggle('active', on);
+        b.setAttribute('aria-selected', on ? 'true' : 'false');
+      });
+      renderMisTareas();
+    });
+  }
+
+  // Reset filtros
+  const btnReset = $('#btn-reset-task-filters');
+  if (btnReset) {
+    btnReset.addEventListener('click', () => {
+      $('#task-filtro-asig').value = '';
+      $('#task-filtro-tipo').value = '';
+      $('#task-filtro-prioridad').value = '';
+      renderMisTareas();
+    });
+  }
+
+  ['#task-filtro-asig', '#task-filtro-tipo', '#task-filtro-prioridad'].forEach(sel => {
     const el = $(sel);
     if (el) el.addEventListener('change', renderMisTareas);
   });
