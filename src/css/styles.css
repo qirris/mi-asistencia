@@ -925,3 +925,79 @@ dialog::backdrop { background: rgba(15, 23, 42, .45); }
 .sp-title { font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.04em; color: var(--muted); font-weight: 800; margin-bottom: 0.35rem; }
 .sp-content { display: flex; align-items: center; gap: 0.6rem; font-size: 0.95rem; }
 .sp-content strong { flex: 1; }
+
+/* ============================================================
+   Dashboard Premium SaaS
+   ============================================================ */
+.dash-welcome {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  background: linear-gradient(135deg, #ffffff, #f8fafc);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  padding: 1.25rem 1.5rem;
+  margin-bottom: 1.25rem;
+  flex-wrap: wrap;
+}
+.dw-info h2 { font-size: 1.25rem; font-weight: 800; color: var(--text); }
+.dw-info p { font-size: 0.88rem; color: var(--muted); margin-top: 0.2rem; }
+
+.dash-grid-main {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1.25rem;
+  margin-top: 1.25rem;
+}
+@media (min-width: 900px) {
+  .dash-grid-main {
+    grid-template-columns: 1.2fr 1fr;
+  }
+}
+.dash-col-left, .dash-col-right {
+  display: grid;
+  gap: 1.25rem;
+  align-content: start;
+}
+
+.dash-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  padding: 1.25rem;
+}
+
+.dash-class-item {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.75rem 0.85rem;
+  border-radius: 10px;
+  background: #f8fafc;
+  border: 1px solid var(--border);
+  margin-bottom: 0.5rem;
+}
+.dash-class-item.active-class {
+  background: var(--primary-soft);
+  border-color: #bfdbfe;
+}
+.dc-time { font-size: 0.78rem; font-weight: 800; color: var(--muted); white-space: nowrap; }
+.dc-name { font-weight: 700; flex: 1; }
+
+.alert-banner {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.85rem 1rem;
+  border-radius: 12px;
+  font-size: 0.88rem;
+  font-weight: 600;
+  margin-bottom: 1rem;
+  border: 1px solid transparent;
+}
+.alert-banner.warn { background: var(--yellow-soft); color: #78350f; border-color: #fde68a; }
+.alert-banner.danger { background: var(--red-soft); color: #7f1d1d; border-color: #fecaca; }
+.alert-banner.info { background: var(--primary-soft); color: #1e3a8a; border-color: #bfdbfe; }

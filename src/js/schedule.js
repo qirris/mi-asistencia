@@ -529,50 +529,6 @@ function renderResumenHorario() {
   cont.innerHTML = totalHtml + filas.join('');
 }
 
-function renderDashboardNow() {
-  const cont = $('#dash-now');
-  if (!cont || !state || !state.horario) return;
-  const h = state.horario;
-  const now = new Date();
-  const jsDay = now.getDay();
-  const dayKey = jsDay >= 1 && jsDay <= 6 ? DIAS[jsDay - 1].key : 'domingo';
-  const min = now.getHours() * 60 + now.getMinutes();
-
-  let label = 'Ahora';
-  let value = 'Sin clase';
-  let time = '';
-
-  if (!h.dias.includes(dayKey)) {
-    value = 'Hoy no es día lectivo';
-  } else {
-    const franjas = h.franjas.filter(f => franjaActivaEnDia(h, f, dayKey));
-    const actual = franjas.find(f => min >= toMin(f.inicio) && min < toMin(f.fin));
-    const f = actual || franjas.find(x => toMin(x.inicio) > min);
-
-    if (!f) {
-      value = 'No quedan clases hoy';
-    } else {
-      label = actual ? 'Ahora' : 'Siguiente';
-      time = f.inicio + '–' + f.fin;
-      if (f.tipo === 'recreo') {
-        value = 'Recreo';
-      } else {
-        const c = getCasilla(h, dayKey, f.id);
-        const a = c && c.asignaturaId ? asignaturaPorId(c.asignaturaId) : null;
-        value = a ? a.nombre : 'Sin asignatura';
-      }
-    }
-  }
-
-  cont.innerHTML = `<div class="now-card">
-    <div>
-      <span class="now-label">${label}</span>
-      <div class="now-value">${esc(value)}</div>
-    </div>
-    <span class="now-time">${esc(time)}</span>
-  </div>`;
-}
-
 /* ---------- Selector de color reutilizable ---------- */
 function initColorPicker(containerSel, inputSel) {
   const cont = $(containerSel);
@@ -917,6 +873,6 @@ function bindSchedule() {
   }
 
   if (typeof setInterval === 'function') {
-    setInterval(renderDashboardNow, 60000);
+    setInterval(renderDashboardClassesToday, 60000);
   }
 }
