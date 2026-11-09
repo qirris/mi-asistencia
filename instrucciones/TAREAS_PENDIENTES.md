@@ -22,3 +22,27 @@
 ## Repositorio
 - [x] Repositorio privado `qirris/mi-asistencia` creado y sincronizado en `main`.
 - [ ] Publicar en HTTPS para probar la instalación PWA (opcional).
+
+## Futuro (Trabajo futuro planificado — NO implementar todavía)
+
+### 1. Sistema de cuentas opcional (Prioridad: futura)
+- [ ] Permitir utilizar Mi Asistencia sin registrarse (Modo local en `localStorage`).
+- [ ] Permitir crear una cuenta voluntariamente de forma opcional.
+- [ ] Permitir a los usuarios registrados acceder a sus datos desde diferentes dispositivos (Modo con cuenta).
+- [ ] Explicar claramente en la interfaz las diferencias entre ambos modos.
+
+### 2. Copias de seguridad avanzadas (Prioridad: futura)
+- [ ] Exportar los datos personales a un archivo.
+- [ ] Importar una copia de seguridad recuperando asignaturas, horarios, faltas y configuración.
+- [ ] Comprobar compatibilidad de copias entre versiones y avisar antes de sobrescribir información.
+
+### 3. Sincronización entre dispositivos (Prioridad: futura)
+- [ ] Sincronización segura de datos para usuarios registrados entre ordenador, tablet y móvil sin alterar el modo local.
+
+### 4. Privacidad y protección de datos (Prioridad: futura)
+- [ ] Minimizar datos personales solicitados y proteger credenciales con autenticación segura.
+- [ ] Permitir eliminar una cuenta y sus datos asociados.
+- [ ] Documentar información almacenada y evaluar obligaciones de protección de datos aplicables.
+
+### 5. Arquitectura prevista (Futura)
+- [ ] Conservar doble modalidad (aplicación local sin registro y aplicación con cuenta opcional y sincronización) sin obligar a abandonar el modo local ni depender permanentemente de Internet.
