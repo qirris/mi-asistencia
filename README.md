@@ -8,7 +8,7 @@ Web app responsive e instalable (PWA) para que estudiantes de Andalucía control
 
 ## Funcionalidades y Secciones
 
-Mi Asistencia se organiza en seis secciones principales con una interfaz SaaS moderna, elegante y coherente:
+Mi Asistencia se organiza en seis secciones principales con una interfaz moderna, elegante y coherente:
 
 1. **Dashboard (Inicio)**: Resumen general de la actividad académica con saludo dinámico, fecha actual, tarjetas estadísticas con cifras tabulares, alertas de asistencia y de tareas urgentes, listado de clases del día en curso y resumen global de asistencia.
 2. **Asignaturas**: Gestión de materias con formulario desplegable, previsualización en tiempo real, selector de color pastel y cálculo automático de horas planificadas.
@@ -52,7 +52,7 @@ mi-asistencia/
 │   └── TAREAS_PENDIENTES.md
 ├── src/
 │   ├── css/
-│   │   └── styles.css          # Sistema de diseño unificado SaaS
+│   │   └── styles.css          # Sistema de diseño unificado y moderno
 │   └── js/
 │       ├── attendance.js       # Etapas y cálculos de asistencia
 │       ├── storage.js          # Persistencia, migración y normalización
