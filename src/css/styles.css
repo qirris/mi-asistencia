@@ -111,6 +111,9 @@ button, input, select, textarea { font: inherit; }
   font-weight: 600;
   cursor: pointer;
   white-space: nowrap;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
   transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
 }
 .nav-btn:hover { background: var(--gray-soft); color: var(--text); }
