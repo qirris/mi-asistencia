@@ -9,7 +9,7 @@
   --primary-soft: #eff6ff;
   --bg: #f8fafc;
   --card: #ffffff;
-  --text: #1e293b;
+  --text: #0f172a;
   --muted: #64748b;
   --border: #e2e8f0;
   --green: #15803d;
@@ -19,8 +19,8 @@
   --red: #b91c1c;
   --red-soft: #fee2e2;
   --gray-soft: #f1f5f9;
-  --radius: 12px;
-  --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -2px rgba(0, 0, 0, 0.05);
+  --radius: 14px;
+  --shadow: 0 10px 25px -5px rgba(15, 23, 42, 0.04), 0 8px 10px -6px rgba(15, 23, 42, 0.03);
   --safe-bottom: env(safe-area-inset-bottom, 0px);
   --safe-top: env(safe-area-inset-top, 0px);
 }
@@ -31,7 +31,7 @@ html, body { margin: 0; padding: 0; }
 
 body {
   font-family: 'Inter', 'Segoe UI', system-ui, -apple-system, sans-serif;
-  background: var(--bg);
+  background: radial-gradient(circle at 50% 0%, #fdfdfd 0%, #f1f5f9 100%);
   color: var(--text);
   line-height: 1.5;
   -webkit-font-smoothing: antialiased;
@@ -39,7 +39,7 @@ body {
   min-height: 100vh;
 }
 
-h1, h2, h3, h4 { margin: 0; line-height: 1.25; }
+h1, h2, h3, h4 { margin: 0; line-height: 1.25; letter-spacing: -0.025em; font-weight: 800; }
 p { margin: 0; }
 
 button, input, select, textarea { font: inherit; }
@@ -454,15 +454,23 @@ dialog::backdrop { background: rgba(15, 23, 42, .45); }
    Horario escolar semanal
    ============================================================ */
 
-/* Paleta pastel por asignatura */
-.sc-azul     { --sc-bg:#dbeafe; --sc-border:#93c5fd; --sc-text:#1e40af; --sc-dot:#60a5fa; }
-.sc-verde    { --sc-bg:#dcfce7; --sc-border:#86efac; --sc-text:#166534; --sc-dot:#4ade80; }
-.sc-morado   { --sc-bg:#ede9fe; --sc-border:#c4b5fd; --sc-text:#5b21b6; --sc-dot:#a78bfa; }
-.sc-naranja  { --sc-bg:#ffedd5; --sc-border:#fdba74; --sc-text:#9a3412; --sc-dot:#fb923c; }
-.sc-rosa     { --sc-bg:#fce7f3; --sc-border:#f9a8d4; --sc-text:#9d174d; --sc-dot:#f472b6; }
-.sc-turquesa { --sc-bg:#ccfbf1; --sc-border:#5eead4; --sc-text:#115e59; --sc-dot:#2dd4bf; }
-.sc-amarillo { --sc-bg:#fef9c3; --sc-border:#fde047; --sc-text:#854d0e; --sc-dot:#facc15; }
-.sc-gris     { --sc-bg:#f1f5f9; --sc-border:#cbd5e1; --sc-text:#334155; --sc-dot:#94a3b8; }
+/* Paleta pastel por asignatura con gradientes suaves vivos */
+.sc-azul     { --sc-bg:#eff6ff; --sc-border:#bfdbfe; --sc-text:#1e40af; --sc-dot:#3b82f6; background: linear-gradient(135deg, #eff6ff, #ffffff); }
+.sc-verde    { --sc-bg:#f0fdf4; --sc-border:#bbf7d0; --sc-text:#166534; --sc-dot:#22c55e; background: linear-gradient(135deg, #f0fdf4, #ffffff); }
+.sc-morado   { --sc-bg:#f5f3ff; --sc-border:#ddd6fe; --sc-text:#5b21b6; --sc-dot:#8b5cf6; background: linear-gradient(135deg, #f5f3ff, #ffffff); }
+.sc-naranja  { --sc-bg:#fff7ed; --sc-border:#fed7aa; --sc-text:#9a3412; --sc-dot:#f97316; background: linear-gradient(135deg, #fff7ed, #ffffff); }
+.sc-rosa     { --sc-bg:#fdf2f8; --sc-border:#fbcfe8; --sc-text:#9d174d; --sc-dot:#ec4899; background: linear-gradient(135deg, #fdf2f8, #ffffff); }
+.sc-turquesa { --sc-bg:#f0fdfa; --sc-border:#99f6e4; --sc-text:#115e59; --sc-dot:#14b8a6; background: linear-gradient(135deg, #f0fdfa, #ffffff); }
+.sc-amarillo { --sc-bg:#fefce8; --sc-border:#fef08a; --sc-text:#854d0e; --sc-dot:#eab308; background: linear-gradient(135deg, #fefce8, #ffffff); }
+.sc-gris     { --sc-bg:#f8fafc; --sc-border:#e2e8f0; --sc-text:#334155; --sc-dot:#64748b; background: linear-gradient(135deg, #f8fafc, #ffffff); }
+
+.card, .subject, .task-card, .stat {
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+.card:hover, .subject:hover, .task-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 30px -10px rgba(15, 23, 42, 0.08);
+}
 
 .color-dot {
   display: inline-block;
