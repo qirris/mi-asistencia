@@ -1106,3 +1106,66 @@ dialog::backdrop { background: rgba(15, 23, 42, 0.5); backdrop-filter: blur(4px)
   margin-top: 3px;
   font-variant-numeric: tabular-nums;
 }
+
+
+/* Dirección visual: agenda escolar clara, práctica y tranquila */
+:root {
+  --primary: #245b78;
+  --primary-dark: #19465f;
+  --primary-soft: #e8f0f4;
+  --bg: #f5f6f4;
+  --card: #ffffff;
+  --text: #202a30;
+  --muted: #65727a;
+  --border: #dce2e3;
+  --gray-soft: #f0f2f1;
+  --radius: 12px;
+  --shadow: 0 1px 2px rgba(28, 43, 51, .04);
+  --shadow-hover: 0 2px 8px rgba(28, 43, 51, .08);
+}
+
+body { background: var(--bg); }
+h1, h2, h3, h4 { font-weight: 600; letter-spacing: -0.015em; }
+.app-header, .app-nav { background: #fff; backdrop-filter: none; }
+.brand { gap: 12px; }
+.brand .logo {
+  border-radius: 10px;
+  background: var(--primary);
+  box-shadow: none;
+  font-weight: 600;
+}
+.nav-btn { border-radius: 8px; transition: background-color .16s ease, color .16s ease; }
+.nav-btn.active { background: var(--primary-soft); color: var(--primary-dark); box-shadow: inset 2px 0 var(--primary); }
+.card, .stat, .subject, .dash-card, .summary-stat, .task-card, .dash-welcome,
+.history-item, .empty-state-card { box-shadow: var(--shadow); }
+.card:hover, .stat:hover, .subject:hover, .dash-card:hover, .task-card:hover,
+.history-item:hover, .summary-row:hover { transform: none; box-shadow: var(--shadow-hover); }
+.stat .stat-label, .summary-stat .label, .sg-head, .cal-header-day,
+.now-card .now-label, .sp-title { text-transform: none; letter-spacing: 0; font-weight: 500; }
+.stat .stat-value, .subject-name, .tc-title, .tc-info, .dc-name,
+.summary-stat .value, .summary-row .sr-name, .mobile-class .mc-name,
+.franja-item .fi-time, .class-detail-header h3 { font-weight: 600; letter-spacing: 0; }
+.btn {
+  background: var(--primary);
+  border-radius: 9px;
+  box-shadow: none;
+  font-weight: 600;
+  transition: background-color .16s ease, border-color .16s ease, color .16s ease;
+}
+.btn:hover { background: var(--primary-dark); transform: none; box-shadow: none; }
+.btn:active { transform: translateY(1px); }
+.btn:focus-visible { outline: 3px solid #a9c3d0; outline-offset: 2px; }
+.btn-ghost, .btn-secondary { background: #fff; box-shadow: none; }
+.btn-ghost:hover, .btn-secondary:hover { background: var(--gray-soft); box-shadow: none; }
+input:focus, select:focus, textarea:focus { box-shadow: 0 0 0 3px var(--primary-soft); }
+.dash-welcome { background: #fff; }
+.dash-class-item.active-class { background: var(--primary-soft); border-color: #c7d8e0; box-shadow: none; }
+.alert-banner { box-shadow: none; }
+.sg-cell:hover, .cal-day:hover { transform: none; box-shadow: var(--shadow-hover); }
+.day-tab, .day-check { border-radius: 8px; transition: background-color .16s ease, color .16s ease, border-color .16s ease; }
+.day-tab.active { background: var(--primary-soft); color: var(--primary-dark); border-color: #c7d8e0; box-shadow: none; }
+.progress > span, .progress.tone-yellow > span, .progress.tone-red > span { background: currentColor; }
+@media (min-width: 900px) {
+  .app-nav { padding: 24px 12px; }
+  .nav-btn { border-radius: 8px; padding: 10px 12px; }
+}
