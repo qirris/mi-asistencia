@@ -14,6 +14,7 @@ Web app responsive e instalable (PWA) para estudiantes de Andalucía que permite
 - PWA: manifest, service worker con caché del app shell, iconos 192/512 e instalación.
 - Datos 100% locales en `localStorage` (clave `miAsistenciaState`) con migración segura y copias JSON.
 - La aplicación se publica como sitio estático en GitHub Pages; los datos académicos permanecen en el navegador.
+- Marca propia vectorial de calendario y asistencia en la cabecera, favicon y manifiesto de instalación.
 
 ## 3. Tecnologías y arquitectura
 - HTML5 + CSS3 + JavaScript Vanilla (sin frameworks ni dependencias npm).
