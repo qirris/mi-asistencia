@@ -1,26 +1,7 @@
 /* ============================================================
    Mi Asistencia — app.js
-   Lógica de datos, cálculos, render y funcionalidades.
+   Inicialización, render de vistas e interacción general.
    ============================================================ */
-
-const STORAGE_KEY = 'miAsistenciaState';
-const LEGACY_KEY = 'asistenciaData';
-
-const ETAPAS = {
-  eso: { label: 'ESO', tipo: 'secundaria' },
-  bachillerato: { label: 'Bachillerato', tipo: 'secundaria' },
-  fp_basico: { label: 'FP Grado Básico', tipo: 'fp' },
-  fp_medio: { label: 'FP Grado Medio', tipo: 'fp' },
-  fp_superior: { label: 'FP Grado Superior', tipo: 'fp' }
-};
-
-const DEFAULT_STATE = {
-  version: 2,
-  etapa: 'fp_superior',
-  asignaturas: [],
-  faltas: [],
-  config: { criterio: { tipo: '', valor: null } }
-};
 
 let state = null;
 let editingId = null;
@@ -61,138 +42,6 @@ function toast(msg) {
   t.classList.add('show');
   clearTimeout(toastTimer);
   toastTimer = setTimeout(() => t.classList.remove('show'), 2600);
-}
-
-/* ---------- Persistencia ---------- */
-function loadState() {
-  const raw = localStorage.getItem(STORAGE_KEY);
-  if (raw) {
-    try {
-      const parsed = JSON.parse(raw);
-      state = normalizeState(parsed);
-      return;
-    } catch (e) {
-      console.warn('Estado corrupto, se reinicia.', e);
-    }
-  }
-  state = JSON.parse(JSON.stringify(DEFAULT_STATE));
-  migrateLegacy();
-}
-
-function migrateLegacy() {
-  const raw = localStorage.getItem(LEGACY_KEY);
-  if (!raw) return;
-  try {
-    const old = JSON.parse(raw);
-    if (!old || !Array.isArray(old.asignaturas) || old.asignaturas.length === 0) return;
-    state.etapa = old.nivel === 'eso' ? 'eso' : 'fp_superior';
-    state.asignaturas = old.asignaturas.map((a, i) => ({
-      id: uid(),
-      nombre: a.nombre || ('Materia ' + (i + 1)),
-      horasSemanales: null,
-      semanas: null,
-      horasTotales: Number(a.total) || 0,
-      archivada: false
-    }));
-    state.faltas = [];
-    old.asignaturas.forEach((a, i) => {
-      const h = Number(a.faltas) || 0;
-      if (h > 0 && state.asignaturas[i]) {
-        state.faltas.push({
-          id: uid(),
-          asignaturaId: state.asignaturas[i].id,
-          fecha: todayISO(),
-          horas: h,
-          tipo: 'no_justificada',
-          motivo: 'Migrado desde versión anterior'
-        });
-      }
-    });
-    // Conservar copia de los datos antiguos antes de migrar
-    localStorage.setItem(LEGACY_KEY + '_backup', raw);
-    saveState();
-  } catch (e) {
-    console.warn('No se pudo migrar la versión anterior.', e);
-  }
-}
-
-function saveState() {
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
-}
-
-function normalizeState(input) {
-  const out = Object.assign({}, DEFAULT_STATE, input || {});
-  if (!ETAPAS[out.etapa]) out.etapa = 'fp_superior';
-
-  out.asignaturas = Array.isArray(out.asignaturas)
-    ? out.asignaturas.filter(a => a && a.id).map(a => ({
-        id: String(a.id),
-        nombre: String(a.nombre || 'Sin nombre'),
-        horasSemanales: a.horasSemanales == null || a.horasSemanales === '' ? null : Number(a.horasSemanales),
-        semanas: a.semanas == null || a.semanas === '' ? null : Number(a.semanas),
-        horasTotales: Number(a.horasTotales) || 0,
-        archivada: !!a.archivada
-      }))
-    : [];
-
-  out.faltas = Array.isArray(out.faltas)
-    ? out.faltas.filter(f => f && f.id && f.asignaturaId).map(f => ({
-        id: String(f.id),
-        asignaturaId: String(f.asignaturaId),
-        fecha: String(f.fecha || todayISO()),
-        horas: Number(f.horas) || 0,
-        tipo: f.tipo === 'justificada' ? 'justificada' : 'no_justificada',
-        motivo: String(f.motivo || '')
-      }))
-    : [];
-
-  out.config = Object.assign({ criterio: { tipo: '', valor: null } }, out.config || {});
-  out.config.criterio = Object.assign({ tipo: '', valor: null }, (out.config || {}).criterio || {});
-  return out;
-}
-
-/* ---------- Cálculos ---------- */
-function calcAsignatura(a) {
-  const horasPlanificadas = Number(a.horasTotales) || 0;
-  const faltas = state.faltas.filter(f => f.asignaturaId === a.id);
-  const horasAusencia = faltas.reduce((s, f) => s + (Number(f.horas) || 0), 0);
-  const horasAsistidas = Math.max(0, horasPlanificadas - horasAusencia);
-  const pct = horasPlanificadas > 0 ? (horasAsistidas / horasPlanificadas) * 100 : null;
-  const pctAusencia = horasPlanificadas > 0 ? (horasAusencia / horasPlanificadas) * 100 : null;
-  return { horasPlanificadas, horasAusencia, horasAsistidas, pct, pctAusencia };
-}
-
-function estadoAsignatura(a, c) {
-  const tipo = ETAPAS[state.etapa] ? ETAPAS[state.etapa].tipo : 'fp';
-  if (!c.horasPlanificadas) {
-    return { tone: 'gray', label: 'Faltan datos' };
-  }
-  if (tipo === 'fp') {
-    if (c.pctAusencia > 20) return { tone: 'red', label: 'Límite superado (80%)' };
-    if (c.pctAusencia >= 15) return { tone: 'yellow', label: 'Cerca del límite' };
-    return { tone: 'green', label: 'Sin riesgo' };
-  }
-  const crit = state.config.criterio || {};
-  if (!crit.tipo || crit.valor == null || crit.valor === '') {
-    return { tone: 'gray', label: 'Falta criterio del centro' };
-  }
-  const valor = Number(crit.valor);
-  if (crit.tipo === 'porcentaje') {
-    if (c.pctAusencia > valor) return { tone: 'red', label: 'Límite superado' };
-    if (c.pctAusencia >= valor * 0.75) return { tone: 'yellow', label: 'Cerca del límite' };
-    return { tone: 'green', label: 'Sin riesgo' };
-  }
-  if (c.horasAusencia > valor) return { tone: 'red', label: 'Límite superado' };
-  if (c.horasAusencia >= valor * 0.75) return { tone: 'yellow', label: 'Cerca del límite' };
-  return { tone: 'green', label: 'Sin riesgo' };
-}
-
-function calcGlobal() {
-  const activas = state.asignaturas.filter(a => !a.archivada && Number(a.horasTotales) > 0);
-  const totalPlan = activas.reduce((s, a) => s + Number(a.horasTotales), 0);
-  const totalAsist = activas.reduce((s, a) => s + calcAsignatura(a).horasAsistidas, 0);
-  const pct = totalPlan > 0 ? (totalAsist / totalPlan) * 100 : null;
-  return { totalPlan, totalAsist, pct, activas };
 }
 
 /* ---------- Render ---------- */
@@ -610,35 +459,6 @@ function bindFaltas() {
     $('#falta-motivo').value = '';
     toast('Falta registrada');
     render();
-  });
-}
-
-/* ---------- Eventos: OCR ---------- */
-function bindOCR() {
-  $('#btn-ocr').addEventListener('click', async () => {
-    const file = $('#ocr-file').files[0];
-    const status = $('#ocr-status');
-    if (!file) return toast('Selecciona una foto primero');
-
-    if (typeof Tesseract === 'undefined') {
-      status.textContent = 'El OCR no está disponible (sin conexión o CDN bloqueada). Puedes escribir el horario manualmente.';
-      status.className = 'note danger';
-      return;
-    }
-
-    status.textContent = 'Procesando imagen... puede tardar unos segundos.';
-    status.className = 'note info';
-
-    try {
-      const result = await Tesseract.recognize(file, 'spa');
-      const text = (result && result.data && result.data.text) ? result.data.text.trim() : '';
-      $('#ocr-text').value = text;
-      status.textContent = 'Texto extraído. Revísalo y corrige los errores antes de usarlo.';
-      status.className = 'note warn';
-    } catch (err) {
-      status.textContent = 'No se pudo procesar la imagen: ' + err.message;
-      status.className = 'note danger';
-    }
   });
 }
 

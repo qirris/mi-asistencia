@@ -2,12 +2,15 @@
    Cachea los recursos esenciales para funcionar sin conexión.
    El OCR (Tesseract.js desde CDN) NO funciona offline en esta versión. */
 
-const CACHE_VERSION = 'mi-asistencia-v2';
+const CACHE_VERSION = 'mi-asistencia-v3';
 const APP_SHELL = [
   './',
   './index.html',
-  './styles.css',
-  './app.js',
+  './src/css/styles.css',
+  './src/js/attendance.js',
+  './src/js/storage.js',
+  './src/js/ocr.js',
+  './src/js/app.js',
   './manifest.webmanifest',
   './assets/icons/icon-192.png',
   './assets/icons/icon-512.png'
