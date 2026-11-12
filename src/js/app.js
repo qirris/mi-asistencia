@@ -229,7 +229,7 @@ function renderDashboardClassesToday() {
     return `
       <div class="dash-class-item ${isNow ? 'active-class' : ''} ${!a ? 'unassigned' : ''} ${colorClass}">
         <span class="dc-time">${f.inicio}–${f.fin}</span>
-        <span class="dc-name">${esc(a ? nombre : 'Añadir asignatura')}</span>
+        <span class="dc-name">${esc(nombre)}</span>
         ${isNow ? '<span class="badge blue">En curso</span>' : ''}
         ${count > 0 ? `<span class="badge red">${count} pendiente${count === 1 ? '' : 's'}</span>` : ''}
       </div>
