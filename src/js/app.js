@@ -227,9 +227,9 @@ function renderDashboardClassesToday() {
     const count = countTareasPendientesSlot(dayKey + '|' + f.id);
 
     return `
-      <div class="dash-class-item ${isNow ? 'active-class' : ''} ${colorClass}">
+      <div class="dash-class-item ${isNow ? 'active-class' : ''} ${!a ? 'unassigned' : ''} ${colorClass}">
         <span class="dc-time">${f.inicio}–${f.fin}</span>
-        <span class="dc-name">${esc(nombre)}</span>
+        <span class="dc-name">${esc(a ? nombre : 'Añadir asignatura')}</span>
         ${isNow ? '<span class="badge blue">En curso</span>' : ''}
         ${count > 0 ? `<span class="badge red">${count} pendiente${count === 1 ? '' : 's'}</span>` : ''}
       </div>
@@ -245,7 +245,11 @@ function renderDashboardAttendanceSummary() {
   const g = calcGlobal();
 
   if (g.activas.length === 0) {
-    cont.innerHTML = `<p class="muted" style="font-size:0.85rem">Añade asignaturas para ver el resumen de asistencia.</p>`;
+    cont.innerHTML = `
+      <div class="dash-setup">
+        <p>Aún no tienes asignaturas. Empieza por añadir una para consultar aquí tu asistencia.</p>
+        <button class="btn btn-secondary btn-sm" type="button" data-dashboard-action="asignaturas">Añadir asignatura</button>
+      </div>`;
     return;
   }
 
@@ -276,7 +280,11 @@ function renderDashboardSubjects() {
   const activas = state.asignaturas.filter(a => !a.archivada);
 
   if (activas.length === 0) {
-    cont.innerHTML = `<p class="muted" style="font-size:0.85rem">No hay asignaturas registradas.</p>`;
+    cont.innerHTML = `
+      <div class="dash-setup">
+        <p>Añade tus módulos para tener a mano tu progreso y el control de asistencia.</p>
+        <button class="btn btn-secondary btn-sm" type="button" data-dashboard-action="asignaturas">Crear primera asignatura</button>
+      </div>`;
     return;
   }
 
@@ -319,7 +327,7 @@ function renderDashboardRecentActivity() {
   const recientes = items.slice(0, 4);
 
   if (recientes.length === 0) {
-    cont.innerHTML = `<p class="muted" style="font-size:0.85rem">Sin actividad reciente registrada.</p>`;
+    cont.innerHTML = `<p class="muted" style="font-size:0.85rem">Cuando registres una falta o añadas una tarea, aparecerá aquí.</p>`;
     return;
   }
 
@@ -439,11 +447,19 @@ function renderConfig() {
 
 /* ---------- Eventos: navegación ---------- */
 function bindNav() {
-  $$('.nav-btn').forEach(btn => {
+  document.addEventListener('click', (event) => {
+    const action = event.target.closest('[data-dashboard-action]');
+    if (!action) return;
+    const view = action.dataset.dashboardAction;
+    const navButton = document.querySelector('.nav-btn[data-view="' + view + '"]');
+    if (navButton) navButton.click();
+  });
+
+  document.querySelectorAll('.nav-btn').forEach(btn => {
     btn.addEventListener('click', () => {
       const view = btn.dataset.view;
-      $$('.nav-btn').forEach(b => b.classList.toggle('active', b === btn));
-      $$('.view').forEach(v => v.classList.toggle('active', v.id === 'view-' + view));
+      document.querySelectorAll('.nav-btn').forEach(b => b.classList.toggle('active', b === btn));
+      document.querySelectorAll('.view').forEach(v => v.classList.toggle('active', v.id === 'view-' + view));
       window.scrollTo({ top: 0, behavior: 'smooth' });
     });
   });

@@ -1152,41 +1152,29 @@ input:focus, select:focus, textarea:focus { box-shadow: 0 0 0 3px var(--primary-
 @media (min-width: 900px) { .app-nav { padding: 24px 12px; } .nav-btn { border-radius: 8px; padding: 10px 12px; } }
 
 
-/* Ajustes de claridad y controles para pantallas táctiles */
-.btn-danger, .btn-danger:hover {
-  background: #fff;
-  color: var(--red);
-  border: 1px solid #d99a96;
-  box-shadow: none;
+/* Inicio y navegación móvil: estados vacíos con siguiente paso claro */
+.app-nav { scroll-behavior: smooth; }
+.nav-btn { min-height: 44px; }
+.dash-setup {
+  display: grid;
+  gap: .55rem;
+  padding: 1rem 0;
 }
-.btn-danger:hover { background: #fbefed; border-color: var(--red); }
-.btn-danger:focus-visible { outline-color: #d99a96; }
-.btn-danger-solid, .btn-danger-solid:hover { background: var(--red); color: #fff; }
-.btn-danger-solid:hover { background: #8f2925; }
+.dash-setup p { max-width: 42rem; color: var(--muted); }
+.dash-setup .btn { justify-self: start; margin-top: .15rem; }
+.dash-class-item.unassigned { background: #f8f8f6; border-style: dashed; color: var(--muted); }
+.dash-class-item.unassigned .dc-name { font-weight: 500; }
 
 @media (max-width: 899px) {
-  .nav-btn { min-height: 44px; }
-  .btn-sm { min-height: 44px; }
+  .app-nav {
+    position: sticky;
+    top: calc(58px + var(--safe-top));
+    padding: .45rem .75rem;
+    gap: .3rem;
+    scroll-padding-inline: .75rem;
+    overscroll-behavior-inline: contain;
+  }
+  .app-nav::after { content: ""; flex: 0 0 .25rem; }
+  .nav-btn { padding: .55rem .85rem; }
+  .app-main { padding-top: 1rem; }
 }
-
-.subject, .task-card, .mobile-class, .summary-row {
-  border-left-width: 1px;
-}
-.mobile-class.sc-azul, .mobile-class.sc-verde, .mobile-class.sc-morado,
-.mobile-class.sc-naranja, .mobile-class.sc-rosa, .mobile-class.sc-turquesa,
-.mobile-class.sc-amarillo, .mobile-class.sc-gris {
-  border-left-color: var(--sc-border);
-}
-
-.sc-azul, .sc-verde, .sc-morado, .sc-naranja, .sc-rosa, .sc-turquesa, .sc-amarillo, .sc-gris {
-  background: var(--sc-bg);
-}
-.now-card { background: var(--primary-soft); border-color: #c7d8e0; }
-.progress > span { background: var(--green); }
-.progress.tone-yellow > span { background: var(--yellow); }
-.progress.tone-red > span { background: var(--red); }
-.progress.tone-gray > span { background: #8a969b; }
-
-:root { --selection: #d9e8ee; }
-::selection { background: var(--selection); color: var(--text); }
-a { text-underline-offset: .18em; text-decoration-thickness: 1px; }
