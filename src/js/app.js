@@ -11,7 +11,36 @@ let manualTotalAdd = false;
 let manualTotalDlg = false;
 let toastTimer = null;
 
-/* ---------- Utilidades ---------- */
+/* ---------- Utilidades y Validación ---------- */
+function clearFormErrors(formElement) {
+  if (!formElement) return;
+  formElement.querySelectorAll('.field-error').forEach(el => el.classList.remove('field-error'));
+  formElement.querySelectorAll('[aria-invalid]').forEach(el => {
+    el.removeAttribute('aria-invalid');
+    el.removeAttribute('aria-describedby');
+  });
+  formElement.querySelectorAll('.field-error-msg').forEach(el => el.remove());
+}
+
+function setFieldError(inputEl, message) {
+  if (!inputEl) return;
+  inputEl.setAttribute('aria-invalid', 'true');
+  const fieldDiv = inputEl.closest('.field') || inputEl.parentElement;
+  if (fieldDiv) fieldDiv.classList.add('field-error');
+  
+  let errId = inputEl.id ? inputEl.id + '-error' : 'err-' + Math.random().toString(36).slice(2, 6);
+  inputEl.setAttribute('aria-describedby', errId);
+  
+  let msgEl = fieldDiv.querySelector('.field-error-msg');
+  if (!msgEl) {
+    msgEl = document.createElement('div');
+    msgEl.id = errId;
+    msgEl.className = 'field-error-msg';
+    fieldDiv.appendChild(msgEl);
+  }
+  msgEl.textContent = message;
+}
+
 function uid() {
   return Date.now().toString(36) + Math.random().toString(36).slice(2, 8);
 }
@@ -239,7 +268,13 @@ function renderHistorial() {
 
   const cont = $('#historial-list');
   if (items.length === 0) {
-    cont.innerHTML = `<div class="empty"><strong>Sin registros</strong>No hay faltas que coincidan con los filtros.</div>`;
+    cont.innerHTML = `
+      <div class="empty-state-card">
+        <div class="esc-icon">📋</div>
+        <h3>Sin registros en el historial</h3>
+        <p>No hay faltas que coincidan con los filtros seleccionados o todavía no has registrado ninguna ausencia.</p>
+      </div>
+    `;
     return;
   }
   cont.innerHTML = items.map(f => {
@@ -319,13 +354,34 @@ function bindAsignaturas() {
   }
 
   $('#btn-add-asig').addEventListener('click', () => {
+    const cardEl = nombreInput.closest('.card') || nombreInput.parentElement;
+    clearFormErrors(cardEl);
+
     const nombre = nombreInput.value.trim();
     const h = parseFloat(horasInput.value);
 
-    if (!nombre) return toast('Escribe un nombre de asignatura');
-    if (isNaN(h) || h <= 0) return toast('Indica cuántas horas tienes por semana');
-    if (state.asignaturas.some(a => !a.archivada && a.nombre.toLowerCase() === nombre.toLowerCase())) {
-      return toast('Ya existe una asignatura con ese nombre');
+    let hasError = false;
+    let firstErr = null;
+
+    if (!nombre) {
+      setFieldError(nombreInput, 'Escribe el nombre de la asignatura.');
+      if (!firstErr) firstErr = nombreInput;
+      hasError = true;
+    } else if (state.asignaturas.some(a => !a.archivada && a.nombre.toLowerCase() === nombre.toLowerCase())) {
+      setFieldError(nombreInput, 'Ya existe una asignatura con este nombre.');
+      if (!firstErr) firstErr = nombreInput;
+      hasError = true;
+    }
+
+    if (isNaN(h) || h <= 0) {
+      setFieldError(horasInput, 'Indica un número válido de horas semanales.');
+      if (!firstErr) firstErr = horasInput;
+      hasError = true;
+    }
+
+    if (hasError) {
+      if (firstErr) firstErr.focus();
+      return toast('Revisa los campos marcados en rojo');
     }
 
     const color = colorInput.value || PALETA[state.asignaturas.length % PALETA.length];
@@ -410,13 +466,34 @@ function bindDialog() {
   $('#dlg-cancel').addEventListener('click', () => $('#dialog-asig').close());
 
   $('#dlg-save').addEventListener('click', () => {
+    const dialogEl = $('#dialog-asig');
+    clearFormErrors(dialogEl);
+
     const a = state.asignaturas.find(x => x.id === editingId);
     if (!a) return;
-    const nombre = $('#dlg-nombre').value.trim();
-    if (!nombre) return toast('El nombre no puede estar vacío');
+    const nombreInput = $('#dlg-nombre');
+    const horasInput = $('#dlg-horas');
+    const nombre = nombreInput.value.trim();
+    const h = parseFloat(horasInput.value);
 
-    const h = parseFloat($('#dlg-horas').value);
-    if (isNaN(h) || h <= 0) return toast('Las horas semanales deben ser mayores que 0');
+    let hasError = false;
+    let firstErr = null;
+
+    if (!nombre) {
+      setFieldError(nombreInput, 'El nombre no puede estar vacío.');
+      if (!firstErr) firstErr = nombreInput;
+      hasError = true;
+    }
+    if (isNaN(h) || h <= 0) {
+      setFieldError(horasInput, 'Las horas semanales deben ser mayores que 0.');
+      if (!firstErr) firstErr = horasInput;
+      hasError = true;
+    }
+
+    if (hasError) {
+      if (firstErr) firstErr.focus();
+      return toast('Revisa los campos marcados en rojo');
+    }
 
     const semanas = a.semanas || 30;
     a.nombre = nombre;
@@ -425,7 +502,7 @@ function bindDialog() {
     a.semanas = semanas;
     a.horasTotales = h * semanas;
     saveState();
-    $('#dialog-asig').close();
+    dialogEl.close();
     toast('Cambios guardados');
     render();
   });
@@ -434,15 +511,42 @@ function bindDialog() {
 /* ---------- Eventos: faltas ---------- */
 function bindFaltas() {
   $('#btn-add-falta').addEventListener('click', () => {
-    const asignaturaId = $('#falta-asig').value;
-    const fecha = $('#falta-fecha').value;
-    const horas = parseFloat($('#falta-horas').value);
+    const cardEl = $('#faltas-form-card');
+    clearFormErrors(cardEl);
+
+    const asignaturaEl = $('#falta-asig');
+    const fechaEl = $('#falta-fecha');
+    const horasEl = $('#falta-horas');
+
+    const asignaturaId = asignaturaEl.value;
+    const fecha = fechaEl.value;
+    const horas = parseFloat(horasEl.value);
     const tipo = $('#falta-tipo').value;
     const motivo = $('#falta-motivo').value.trim();
 
-    if (!asignaturaId) return toast('Selecciona una asignatura');
-    if (!fecha) return toast('Selecciona una fecha');
-    if (isNaN(horas) || horas <= 0) return toast('Las horas deben ser mayores que 0');
+    let hasError = false;
+    let firstErr = null;
+
+    if (!asignaturaId) {
+      setFieldError(asignaturaEl, 'Selecciona una asignatura.');
+      if (!firstErr) firstErr = asignaturaEl;
+      hasError = true;
+    }
+    if (!fecha) {
+      setFieldError(fechaEl, 'Selecciona una fecha.');
+      if (!firstErr) firstErr = fechaEl;
+      hasError = true;
+    }
+    if (isNaN(horas) || horas <= 0) {
+      setFieldError(horasEl, 'Las horas deben ser mayores que 0.');
+      if (!firstErr) firstErr = horasEl;
+      hasError = true;
+    }
+
+    if (hasError) {
+      if (firstErr) firstErr.focus();
+      return toast('Revisa los campos marcados en rojo');
+    }
 
     const a = state.asignaturas.find(x => x.id === asignaturaId);
     if (a && horas > Number(a.horasTotales)) {
@@ -451,7 +555,7 @@ function bindFaltas() {
 
     state.faltas.push({ id: uid(), asignaturaId, fecha, horas, tipo, motivo });
     saveState();
-    $('#falta-horas').value = '';
+    horasEl.value = '';
     $('#falta-motivo').value = '';
     toast('Falta registrada');
     render();

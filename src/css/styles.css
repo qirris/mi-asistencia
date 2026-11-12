@@ -4,12 +4,12 @@
    ============================================================ */
 
 :root {
-  --primary: #2563eb;
-  --primary-dark: #1d4ed8;
-  --primary-soft: #dbeafe;
-  --bg: #f1f5f9;
+  --primary: #3b82f6;
+  --primary-dark: #2563eb;
+  --primary-soft: #eff6ff;
+  --bg: #f8fafc;
   --card: #ffffff;
-  --text: #0f172a;
+  --text: #1e293b;
   --muted: #64748b;
   --border: #e2e8f0;
   --green: #15803d;
@@ -19,8 +19,8 @@
   --red: #b91c1c;
   --red-soft: #fee2e2;
   --gray-soft: #f1f5f9;
-  --radius: 14px;
-  --shadow: 0 1px 2px rgba(15, 23, 42, .06), 0 8px 24px rgba(15, 23, 42, .06);
+  --radius: 12px;
+  --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -2px rgba(0, 0, 0, 0.05);
   --safe-bottom: env(safe-area-inset-bottom, 0px);
   --safe-top: env(safe-area-inset-top, 0px);
 }
@@ -222,31 +222,46 @@ button, input, select, textarea { font: inherit; }
 .btn {
   border: 0;
   border-radius: 10px;
-  padding: 0.65rem 1rem;
+  padding: 0.6rem 1rem;
   font-weight: 700;
   font-size: 0.9rem;
   cursor: pointer;
   background: var(--primary);
   color: #fff;
-  transition: background .15s, transform .05s;
+  transition: background .15s, transform .05s, box-shadow .15s;
   min-height: 44px;
   display: inline-flex; align-items: center; justify-content: center; gap: 0.4rem;
+  box-shadow: 0 2px 4px rgba(59, 130, 246, 0.2);
 }
 .btn:hover { background: var(--primary-dark); }
 .btn:active { transform: translateY(1px); }
 .btn:focus-visible { outline: 3px solid var(--primary-soft); outline-offset: 2px; }
 
-.btn-ghost {
-  background: transparent;
-  color: var(--primary-dark);
+.btn-ghost, .btn-secondary {
+  background: #f8fafc;
+  color: var(--text);
   border: 1px solid var(--border);
+  box-shadow: none;
 }
-.btn-ghost:hover { background: var(--gray-soft); }
+.btn-ghost:hover, .btn-secondary:hover { background: var(--gray-soft); border-color: #cbd5e1; }
 
-.btn-danger { background: var(--red); }
-.btn-danger:hover { background: #991b1b; }
+.btn-danger {
+  background: transparent;
+  color: var(--red);
+  border: 1px solid #fecaca;
+  box-shadow: none;
+  font-weight: 600;
+}
+.btn-danger:hover { background: var(--red-soft); border-color: #f87171; }
 
-.btn-sm { padding: 0.4rem 0.7rem; font-size: 0.8rem; min-height: 36px; }
+.btn-danger-solid {
+  background: var(--red);
+  color: #fff;
+  border: 0;
+}
+.btn-danger-solid:hover { background: #991b1b; }
+
+.btn-sm { padding: 0.35rem 0.65rem; font-size: 0.8rem; min-height: 36px; }
 .btn-block { width: 100%; }
 
 .hidden { display: none !important; }
@@ -274,6 +289,19 @@ input:focus, select:focus, textarea:focus {
 }
 textarea { min-height: 110px; resize: vertical; }
 
+.field.field-error input,
+.field.field-error select,
+.field.field-error textarea {
+  border-color: var(--red);
+  box-shadow: 0 0 0 3px var(--red-soft);
+}
+.field-error-msg {
+  font-size: 0.75rem;
+  color: var(--red);
+  font-weight: 600;
+  margin-top: 0.2rem;
+}
+
 .form-row { display: grid; gap: 0.85rem; }
 
 /* ---------- Sections / helpers ---------- */
@@ -288,6 +316,22 @@ textarea { min-height: 110px; resize: vertical; }
   background: #fff;
 }
 .empty strong { color: var(--text); display: block; margin-bottom: 0.35rem; }
+
+.empty-state-card {
+  text-align: center;
+  padding: 2.5rem 1.5rem;
+  background: #fff;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.75rem;
+}
+.empty-state-card .esc-icon { font-size: 2.5rem; line-height: 1; margin-bottom: 0.25rem; }
+.empty-state-card h3 { font-size: 1.15rem; font-weight: 700; color: var(--text); }
+.empty-state-card p { font-size: 0.9rem; color: var(--muted); max-width: 420px; line-height: 1.5; }
 
 .note {
   font-size: 0.8rem;
@@ -759,6 +803,17 @@ dialog::backdrop { background: rgba(15, 23, 42, .45); }
 }
 .summary-row .sr-name { flex: 1; font-weight: 700; font-size: .88rem; min-width: 120px; }
 .summary-row .sr-data { font-size: .76rem; color: var(--muted); white-space: nowrap; }
+
+@media (max-width: 480px) {
+  .summary-row {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.35rem;
+  }
+  .summary-row .sr-name { min-width: 0; width: 100%; }
+  .summary-row .sr-data { white-space: normal; width: 100%; }
+  .summary-status { align-self: flex-start; }
+}
 .summary-status {
   font-size: .7rem;
   font-weight: 800;

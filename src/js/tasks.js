@@ -179,10 +179,32 @@ function openTaskEditDialog(id) {
 }
 
 function guardarTareaModal() {
-  const titulo = $('#dlg-task-titulo').value.trim();
-  const asignaturaId = $('#dlg-task-asig').value;
-  if (!titulo) return toast('Escribe un título para la actividad');
-  if (!asignaturaId) return toast('Selecciona una asignatura');
+  const dialogEl = $('#dialog-task');
+  clearFormErrors(dialogEl);
+
+  const tituloInput = $('#dlg-task-titulo');
+  const asigSelect = $('#dlg-task-asig');
+  const titulo = tituloInput.value.trim();
+  const asignaturaId = asigSelect.value;
+
+  let hasError = false;
+  let firstErr = null;
+
+  if (!titulo) {
+    setFieldError(tituloInput, 'Escribe un título para la actividad.');
+    if (!firstErr) firstErr = tituloInput;
+    hasError = true;
+  }
+  if (!asignaturaId) {
+    setFieldError(asigSelect, 'Selecciona una asignatura.');
+    if (!firstErr) firstErr = asigSelect;
+    hasError = true;
+  }
+
+  if (hasError) {
+    if (firstErr) firstErr.focus();
+    return toast('Revisa los campos marcados en rojo');
+  }
 
   const a = asignaturaPorId(asignaturaId);
   const tipo = $('#dlg-task-tipo').value;
@@ -214,7 +236,7 @@ function guardarTareaModal() {
     toast('Actividad creada');
   }
 
-  $('#dialog-task').close();
+  dialogEl.close();
   render();
 }
 
