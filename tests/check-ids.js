@@ -1,0 +1,21 @@
+/* Comprueba que todos los IDs usados en el JavaScript existen en index.html.
+   Ejecutar desde la raíz del proyecto: node tests/check-ids.js */
+
+const fs = require('fs');
+const html = fs.readFileSync('index.html', 'utf8');
+const js = [
+  'src/js/attendance.js',
+  'src/js/storage.js',
+  'src/js/ocr.js',
+  'src/js/app.js'
+].map(f => fs.readFileSync(f, 'utf8')).join('\n');
+
+const ids = new Set([...html.matchAll(/id="([^"]+)"/g)].map(m => m[1]));
+const used = [...js.matchAll(/\$\('#([^']+)'\)/g)].map(m => m[1]);
+const missing = [...new Set(used)].filter(id => !ids.has(id));
+
+console.log('IDs en HTML:', ids.size);
+console.log('IDs usados en JS:', new Set(used).size);
+console.log(missing.length ? 'FALTAN: ' + missing.join(', ') : 'OK: todos los IDs existen');
+
+if (missing.length) process.exitCode = 1;
