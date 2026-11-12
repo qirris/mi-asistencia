@@ -1001,3 +1001,49 @@ dialog::backdrop { background: rgba(15, 23, 42, .45); }
 .alert-banner.warn { background: var(--yellow-soft); color: #78350f; border-color: #fde68a; }
 .alert-banner.danger { background: var(--red-soft); color: #7f1d1d; border-color: #fecaca; }
 .alert-banner.info { background: var(--primary-soft); color: #1e3a8a; border-color: #bfdbfe; }
+
+/* ============================================================
+   Calendario mensual (Historial)
+   ============================================================ */
+.calendar-grid {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  gap: 6px;
+}
+.cal-header-day {
+  text-align: center;
+  font-size: 0.74rem;
+  font-weight: 800;
+  color: var(--muted);
+  text-transform: uppercase;
+  padding: 0.35rem 0;
+}
+.cal-day {
+  aspect-ratio: 1;
+  background: #fff;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 0.25rem;
+  cursor: pointer;
+  position: relative;
+  transition: transform .08s, box-shadow .15s, border-color .15s;
+  min-height: 44px;
+}
+.cal-day:hover { border-color: var(--primary); box-shadow: 0 2px 8px rgba(59,130,246,.15); }
+.cal-day.other-month { background: #f8fafc; opacity: 0.4; cursor: default; }
+.cal-day.today { border-color: var(--primary); font-weight: 800; background: var(--primary-soft); }
+.cal-day.has-absence { background: #fef2f2; border-color: #fecaca; }
+.cal-day-num { font-size: 0.85rem; font-weight: 700; color: var(--text); }
+.cal-badge {
+  font-size: 0.62rem;
+  font-weight: 800;
+  background: var(--red);
+  color: #fff;
+  padding: 0.1rem 0.3rem;
+  border-radius: 999px;
+  margin-top: 2px;
+}

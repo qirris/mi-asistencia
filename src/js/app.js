@@ -82,7 +82,7 @@ function render() {
   renderHorario();
   renderDashboardTasks();
   renderMisTareas();
-  renderHistorial();
+  renderHistorialView();
   renderConfig();
 }
 
@@ -432,53 +432,6 @@ function renderFaltas() {
     : '';
 }
 
-
-function renderHistorial() {
-  const filtroAsig = $('#filtro-asig');
-  const prev = filtroAsig.value;
-  filtroAsig.innerHTML = `<option value="">Todas</option>` +
-    state.asignaturas.map(a => `<option value="${a.id}">${esc(a.nombre)}</option>`).join('');
-  if (prev && state.asignaturas.some(a => a.id === prev)) filtroAsig.value = prev;
-
-  const fa = filtroAsig.value;
-  const ft = $('#filtro-tipo').value;
-  const desde = $('#filtro-desde').value;
-  const hasta = $('#filtro-hasta').value;
-  let items = [...state.faltas].sort((a, b) => b.fecha.localeCompare(a.fecha) || b.id.localeCompare(a.id));
-  if (fa) items = items.filter(f => f.asignaturaId === fa);
-  if (ft) items = items.filter(f => f.tipo === ft);
-  if (desde) items = items.filter(f => f.fecha >= desde);
-  if (hasta) items = items.filter(f => f.fecha <= hasta);
-
-  const cont = $('#historial-list');
-  if (items.length === 0) {
-    cont.innerHTML = `
-      <div class="empty-state-card">
-        <div class="esc-icon">📋</div>
-        <h3>Sin registros en el historial</h3>
-        <p>No hay faltas que coincidan con los filtros seleccionados o todavía no has registrado ninguna ausencia.</p>
-      </div>
-    `;
-    return;
-  }
-  cont.innerHTML = items.map(f => {
-    const a = state.asignaturas.find(x => x.id === f.asignaturaId);
-    return `
-      <div class="history-item">
-        <div class="h-main">
-          <div>${esc(a ? a.nombre : 'Asignatura eliminada')}</div>
-          <div class="h-sub">${esc(f.fecha)} · ${f.tipo === 'justificada' ? 'Justificada' : 'No justificada'}${f.motivo ? ' · ' + esc(f.motivo) : ''}</div>
-        </div>
-        <div style="display:flex;align-items:center;gap:.4rem">
-          <span class="h-hours">${fmt(f.horas)} h</span>
-          <button class="btn btn-ghost btn-sm" type="button" data-editfalta="${f.id}" aria-label="Editar falta">Editar</button>
-          <button class="btn btn-danger btn-sm" type="button" data-delfalta="${f.id}" aria-label="Eliminar falta">×</button>
-        </div>
-      </div>
-    `;
-  }).join('');
-}
-
 function renderConfig() {
   $('#cfg-etapa').value = state.etapa;
   const tipo = (ETAPAS[state.etapa] || {}).tipo;
@@ -767,40 +720,7 @@ function bindFaltas() {
   });
 }
 
-/* ---------- Eventos: historial ---------- */
-function bindHistorial() {
-  $('#filtro-asig').addEventListener('change', renderHistorial);
-  $('#filtro-tipo').addEventListener('change', renderHistorial);
-  $('#filtro-desde').addEventListener('change', renderHistorial);
-  $('#filtro-hasta').addEventListener('change', renderHistorial);
 
-  $('#btn-limpiar-filtros').addEventListener('click', () => {
-    $('#filtro-asig').value = '';
-    $('#filtro-tipo').value = '';
-    $('#filtro-desde').value = '';
-    $('#filtro-hasta').value = '';
-    renderHistorial();
-  });
-
-  $('#historial-list').addEventListener('click', (e) => {
-    const editBtn = e.target.closest('[data-editfalta]');
-    if (editBtn) {
-      openFaltaEdit(editBtn.dataset.editfalta);
-      return;
-    }
-
-    const btn = e.target.closest('[data-delfalta]');
-    if (!btn) return;
-    const id = btn.dataset.delfalta;
-    const f = state.faltas.find(x => x.id === id);
-    if (!f) return;
-    if (!confirm('¿Eliminar esta falta? Los cálculos se actualizarán.')) return;
-    state.faltas = state.faltas.filter(x => x.id !== id);
-    saveState();
-    toast('Falta eliminada');
-    render();
-  });
-}
 
 function openFaltaEdit(id) {
   const f = state.faltas.find(x => x.id === id);
@@ -976,7 +896,7 @@ function init() {
   bindFaltas();
   bindSchedule();
   bindTasks();
-  bindHistorial();
+  bindHistory();
   bindConfig();
   setupInstall();
   render();
