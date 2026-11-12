@@ -37,15 +37,64 @@
     <main class="app-main">
       <!-- ===================== DASHBOARD ===================== -->
       <section class="view active" id="view-dashboard">
-        <div class="view-header">
-          <h2>Inicio</h2>
-          <p>Resumen de tu asistencia</p>
+        <!-- Encabezado de bienvenida -->
+        <div class="dash-welcome">
+          <div class="dw-info">
+            <h2>¡Hola! Bienvenido a Mi Asistencia</h2>
+            <p class="muted" id="dash-fecha-actual">Cargando fecha...</p>
+          </div>
+          <div class="dw-badge">
+            <span class="badge blue" id="dash-etapa-badge">FP Grado Superior</span>
+          </div>
         </div>
+
+        <!-- Alertas y avisos -->
+        <div id="dash-alerts"></div>
+
+        <!-- Tarjetas estadísticas principales -->
         <div class="stats-grid" id="dash-stats"></div>
-        <div id="dash-now"></div>
-        <div id="dash-tasks-preview"></div>
-        <p class="legal" id="dash-formula" style="margin-bottom:1rem"></p>
-        <div id="dash-subjects"></div>
+
+        <div class="dash-grid-main">
+          <!-- Columna principal -->
+          <div class="dash-col-left">
+            <!-- Próximas clases: Mi día -->
+            <div class="dash-card">
+              <div class="schedule-config-head" style="margin-bottom:.75rem">
+                <h3 class="section-title" style="margin-top:0">📅 Clases de hoy</h3>
+                <button class="btn btn-ghost btn-sm" type="button" onclick="document.querySelector('.nav-btn[data-view=\"horario\"]').click()">Ver horario</button>
+              </div>
+              <div id="dash-classes-today"></div>
+            </div>
+
+            <!-- Próximas tareas y exámenes -->
+            <div id="dash-tasks-preview"></div>
+          </div>
+
+          <!-- Columna derecha -->
+          <div class="dash-col-right">
+            <!-- Resumen de asistencia y normativa -->
+            <div class="dash-card">
+              <h3 class="section-title" style="margin-top:0">📊 Estado de asistencia</h3>
+              <div id="dash-attendance-summary"></div>
+              <p class="legal" id="dash-formula" style="margin-top:.85rem"></p>
+            </div>
+
+            <!-- Mis asignaturas compacto -->
+            <div class="dash-card">
+              <div class="schedule-config-head" style="margin-bottom:.75rem">
+                <h3 class="section-title" style="margin-top:0">📚 Mis asignaturas</h3>
+                <button class="btn btn-ghost btn-sm" type="button" onclick="document.querySelector('.nav-btn[data-view=\"asignaturas\"]').click()">Gestionar</button>
+              </div>
+              <div id="dash-subjects"></div>
+            </div>
+
+            <!-- Actividad reciente -->
+            <div class="dash-card">
+              <h3 class="section-title" style="margin-top:0">⚡ Actividad reciente</h3>
+              <div id="dash-recent-activity"></div>
+            </div>
+          </div>
+        </div>
       </section>
 
       <!-- ===================== ASIGNATURAS ===================== -->

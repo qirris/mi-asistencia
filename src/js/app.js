@@ -80,7 +80,6 @@ function render() {
   renderAsignaturas();
   renderFaltas();
   renderHorario();
-  renderDashboardNow();
   renderDashboardTasks();
   renderMisTareas();
   renderHistorial();
@@ -119,52 +118,237 @@ function subjectCard(a) {
   `;
 }
 
-function renderDashboard() {
+function renderDashboardWelcome() {
+  const fechaEl = $('#dash-fecha-actual');
+  const etapaEl = $('#dash-etapa-badge');
+  if (fechaEl) {
+    const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+    const fechaStr = new Date().toLocaleDateString('es-ES', options);
+    fechaEl.textContent = fechaStr.charAt(0).toUpperCase() + fechaStr.slice(1);
+  }
+  if (etapaEl) {
+    etapaEl.textContent = (ETAPAS[state.etapa] || {}).label || 'Mi Asistencia';
+  }
+}
+
+function renderDashboardStats() {
   const g = calcGlobal();
-  const atencion = g.activas.filter(a => {
-    const e = estadoAsignatura(a, calcAsignatura(a));
-    return e.tone === 'red' || e.tone === 'yellow';
-  }).length;
+  const totalAusencias = state.faltas.reduce((s, f) => s + (Number(f.horas) || 0), 0);
+  const tareasPendientes = (state.tareas || []).filter(t => t.estado === 'pendiente').length;
 
   $('#dash-stats').innerHTML = `
-    <div class="stat">
-      <span class="stat-label">Asignaturas</span>
-      <span class="stat-value">${g.activas.length}</span>
-      <span class="stat-sub">registradas</span>
-    </div>
-    <div class="stat">
-      <span class="stat-label">Horas planificadas</span>
-      <span class="stat-value">${fmt(g.totalPlan)}</span>
-      <span class="stat-sub">horas</span>
-    </div>
     <div class="stat">
       <span class="stat-label">Asistencia global</span>
       <span class="stat-value">${g.pct == null ? '—' : fmt(g.pct) + '%'}</span>
       <span class="stat-sub">ponderada por horas</span>
     </div>
     <div class="stat">
-      <span class="stat-label">Requieren atención</span>
-      <span class="stat-value">${atencion}</span>
-      <span class="stat-sub">asignaturas</span>
+      <span class="stat-label">Asignaturas</span>
+      <span class="stat-value">${g.activas.length}</span>
+      <span class="stat-sub">registradas</span>
+    </div>
+    <div class="stat">
+      <span class="stat-label">Ausencia total</span>
+      <span class="stat-value">${fmt(totalAusencias)} h</span>
+      <span class="stat-sub">acumuladas</span>
+    </div>
+    <div class="stat">
+      <span class="stat-label">Tareas pendientes</span>
+      <span class="stat-value">${tareasPendientes}</span>
+      <span class="stat-sub">por completar</span>
     </div>
   `;
+}
 
-  const cont = $('#dash-subjects');
+function renderDashboardAlerts() {
+  const cont = $('#dash-alerts');
+  if (!cont) return;
+  const avisos = [];
 
-  const tipo = (ETAPAS[state.etapa] || {}).tipo;
+  state.asignaturas.filter(a => !a.archivada).forEach(a => {
+    const c = calcAsignatura(a);
+    const e = estadoAsignatura(a, c);
+    if (e.tone === 'red') {
+      avisos.push({ type: 'danger', text: `⚠️ <strong>${esc(a.nombre)}</strong>: Límite de asistencia superado (${e.label}).` });
+    } else if (e.tone === 'yellow') {
+      avisos.push({ type: 'warn', text: `⚡ <strong>${esc(a.nombre)}</strong>: Cerca del límite de asistencia (${e.label}).` });
+    }
+  });
+
+  const tareas = (state.tareas || []).filter(t => t.estado === 'pendiente' && t.fechaEntrega);
+  tareas.forEach(t => {
+    const d = diasHasta(t.fechaEntrega);
+    if (d != null && d < 0) {
+      avisos.push({ type: 'danger', text: `⏰ Tarea vencida: <strong>${esc(t.titulo)}</strong> (${esc(t.asignaturaNombre)}).` });
+    } else if (d != null && d === 0) {
+      avisos.push({ type: 'warn', text: `⏰ Tarea para hoy: <strong>${esc(t.titulo)}</strong> (${esc(t.asignaturaNombre)}).` });
+    }
+  });
+
+  if (avisos.length === 0) {
+    cont.innerHTML = '';
+    return;
+  }
+
+  cont.innerHTML = avisos.slice(0, 3).map(av => `
+    <div class="alert-banner ${av.type}" role="status">${av.text}</div>
+  `).join('');
+}
+
+function renderDashboardClassesToday() {
+  const cont = $('#dash-classes-today');
+  if (!cont || !state || !state.horario) return;
+  const h = state.horario;
+  const now = new Date();
+  const jsDay = now.getDay();
+  const dayKey = jsDay >= 1 && jsDay <= 6 ? DIAS[jsDay - 1].key : 'domingo';
+  const min = now.getHours() * 60 + now.getMinutes();
+
+  if (!h.dias.includes(dayKey)) {
+    cont.innerHTML = `<div class="empty" style="padding:1.25rem"><strong>Hoy no es día lectivo</strong>Disfruta de tu jornada de descanso.</div>`;
+    return;
+  }
+
+  const franjas = h.franjas.filter(f => franjaActivaEnDia(h, f, dayKey) && f.tipo === 'clase');
+  if (!franjas.length) {
+    cont.innerHTML = `<div class="empty" style="padding:1.25rem"><strong>Sin clases configuradas</strong>No hay franjas lectivas para hoy.</div>`;
+    return;
+  }
+
+  cont.innerHTML = franjas.map(f => {
+    const c = getCasilla(h, dayKey, f.id);
+    const a = c && c.asignaturaId ? asignaturaPorId(c.asignaturaId) : null;
+    const iniMin = toMin(f.inicio);
+    const finMin = toMin(f.fin);
+    const isNow = min >= iniMin && min < finMin;
+
+    const nombre = a ? a.nombre : 'Casilla sin asignar';
+    const colorClass = a ? 'sc-' + a.color : 'sg-empty';
+    const count = countTareasPendientesSlot(dayKey + '|' + f.id);
+
+    return `
+      <div class="dash-class-item ${isNow ? 'active-class' : ''} ${colorClass}">
+        <span class="dc-time">${f.inicio}–${f.fin}</span>
+        <span class="dc-name">${esc(nombre)}</span>
+        ${isNow ? '<span class="badge blue">En curso</span>' : ''}
+        ${count > 0 ? `<span class="badge red">${count} pendiente${count === 1 ? '' : 's'}</span>` : ''}
+      </div>
+    `;
+  }).join('');
+}
+
+function renderDashboardAttendanceSummary() {
+  const cont = $('#dash-attendance-summary');
   const formulaEl = $('#dash-formula');
+  if (!cont) return;
+
+  const g = calcGlobal();
+  const tipo = (ETAPAS[state.etapa] || {}).tipo;
+
   if (formulaEl) {
     formulaEl.textContent = tipo === 'fp'
-      ? 'Fórmula: (horas asistidas ÷ horas planificadas) × 100. Límite autonómico FP: 80 % de asistencia (20 % de ausencia). Los datos de horas y faltas los introduces tú; el límite lo fija la norma.'
-      : 'Fórmula: (horas asistidas ÷ horas planificadas) × 100. El límite lo fija el criterio del centro (Plan de Convivencia). Los datos de horas y faltas los introduces tú.';
+      ? 'Fórmula: (horas asistidas ÷ horas planificadas) × 100. Límite FP: 80% asistencia (20% ausencia).'
+      : 'Fórmula: (horas asistidas ÷ horas planificadas) × 100. Límite según criterio del centro.';
   }
 
   if (g.activas.length === 0) {
-    cont.innerHTML = `<div class="empty"><strong>Aún no hay asignaturas</strong>Ve a «Asignaturas» para añadir tus materias o módulos y empezar a controlar tu asistencia.</div>`;
+    cont.innerHTML = `<p class="muted" style="font-size:0.85rem">Añade asignaturas para ver el resumen de asistencia.</p>`;
     return;
   }
-  cont.innerHTML = `<h3 class="section-title">Resumen por asignatura</h3>
-    <div class="subject-list">${g.activas.map(subjectCard).join('')}</div>`;
+
+  const totalPlan = g.totalPlan;
+  const totalAsist = g.totalAsist;
+  const totalAusent = totalPlan - totalAsist;
+  const pct = g.pct != null ? g.pct : 0;
+
+  cont.innerHTML = `
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:.5rem;font-weight:700;">
+      <span>Asistencia global</span>
+      <span>${g.pct == null ? '—' : fmt(g.pct) + '%'}</span>
+    </div>
+    <div class="progress" style="height:12px;margin-bottom:.85rem;">
+      <span style="width:${Math.max(0, Math.min(100, pct))}%"></span>
+    </div>
+    <div style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:.5rem;text-align:center;font-size:.8rem;color:var(--muted);">
+      <div style="background:var(--gray-soft);padding:.5rem;border-radius:8px;">Planificadas<br><strong style="color:var(--text);">${fmt(totalPlan)} h</strong></div>
+      <div style="background:var(--gray-soft);padding:.5rem;border-radius:8px;">Asistidas<br><strong style="color:var(--green);">${fmt(totalAsist)} h</strong></div>
+      <div style="background:var(--gray-soft);padding:.5rem;border-radius:8px;">Ausencias<br><strong style="color:var(--red);">${fmt(totalAusent)} h</strong></div>
+    </div>
+  `;
+}
+
+function renderDashboardSubjects() {
+  const cont = $('#dash-subjects');
+  if (!cont) return;
+  const activas = state.asignaturas.filter(a => !a.archivada);
+
+  if (activas.length === 0) {
+    cont.innerHTML = `<p class="muted" style="font-size:0.85rem">No hay asignaturas registradas.</p>`;
+    return;
+  }
+
+  cont.innerHTML = `<div class="subject-list" style="gap:.5rem;">` + activas.slice(0, 4).map(a => {
+    const c = calcAsignatura(a);
+    const e = estadoAsignatura(a, c);
+    return `
+      <div class="summary-row sc-${a.color}" style="padding:.5rem .75rem;">
+        <span class="color-dot"></span>
+        <span class="sr-name" style="font-size:.84rem;">${esc(a.nombre)}</span>
+        <span class="sr-data">${c.pct == null ? '—' : fmt(c.pct) + '%'}</span>
+        <span class="badge ${e.tone}" style="font-size:.65rem;padding:.15rem .4rem;">${e.label}</span>
+      </div>
+    `;
+  }).join('') + `</div>`;
+}
+
+function renderDashboardRecentActivity() {
+  const cont = $('#dash-recent-activity');
+  if (!cont) return;
+  const faltasRecientes = [...state.faltas].sort((a, b) => b.fecha.localeCompare(a.fecha)).slice(0, 3);
+  const tareasRecientes = [...(state.tareas || [])].sort((a, b) => b.fechaCreacion.localeCompare(a.fechaCreacion)).slice(0, 3);
+
+  const items = [];
+  faltasRecientes.forEach(f => {
+    const a = asignaturaPorId(f.asignaturaId);
+    items.push({
+      fecha: f.fecha,
+      texto: `Falta registrada en <strong>${esc(a ? a.nombre : 'Asignatura')}</strong> (${fmt(f.horas)} h)`
+    });
+  });
+  tareasRecientes.forEach(t => {
+    items.push({
+      fecha: t.fechaCreacion,
+      texto: `Actividad creada: <strong>${esc(t.titulo)}</strong>`
+    });
+  });
+
+  items.sort((a, b) => b.fecha.localeCompare(a.fecha));
+  const recientes = items.slice(0, 4);
+
+  if (recientes.length === 0) {
+    cont.innerHTML = `<p class="muted" style="font-size:0.85rem">Sin actividad reciente registrada.</p>`;
+    return;
+  }
+
+  cont.innerHTML = `<div class="history-list">` + recientes.map(r => `
+    <div class="history-item" style="padding:.5rem .75rem;font-size:.82rem;">
+      <div class="h-main">
+        <div>${r.texto}</div>
+        <div class="h-sub">${esc(r.fecha)}</div>
+      </div>
+    </div>
+  `).join('') + `</div>`;
+}
+
+function renderDashboard() {
+  renderDashboardWelcome();
+  renderDashboardStats();
+  renderDashboardAlerts();
+  renderDashboardClassesToday();
+  renderDashboardAttendanceSummary();
+  renderDashboardSubjects();
+  renderDashboardRecentActivity();
+  renderDashboardTasks();
 }
 
 function asigCardAdmin(a) {
