@@ -1,7 +1,7 @@
 /* Service Worker — Mi Asistencia
    Cachea los recursos esenciales para funcionar sin conexión. */
 
-const CACHE_VERSION = 'mi-asistencia-v14';
+const CACHE_VERSION = 'mi-asistencia-v15';
 const APP_SHELL = [
   './',
   './index.html',
@@ -11,7 +11,7 @@ const APP_SHELL = [
   './src/js/schedule.js',
   './src/js/tasks.js',
   './src/js/history.js',
-  './src/js/app.js?v=14',
+  './src/js/app.js?v=15',
   './manifest.webmanifest',
   './assets/icons/icon-192.png',
   './assets/icons/icon-512.png'
