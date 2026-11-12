@@ -239,17 +239,10 @@ function renderDashboardClassesToday() {
 
 function renderDashboardAttendanceSummary() {
   const cont = $('#dash-attendance-summary');
-  const formulaEl = $('#dash-formula');
+
   if (!cont) return;
 
   const g = calcGlobal();
-  const tipo = (ETAPAS[state.etapa] || {}).tipo;
-
-  if (formulaEl) {
-    formulaEl.textContent = tipo === 'fp'
-      ? 'Fórmula: (horas asistidas ÷ horas planificadas) × 100. Límite FP: 80% asistencia (20% ausencia).'
-      : 'Fórmula: (horas asistidas ÷ horas planificadas) × 100. Límite según criterio del centro.';
-  }
 
   if (g.activas.length === 0) {
     cont.innerHTML = `<p class="muted" style="font-size:0.85rem">Añade asignaturas para ver el resumen de asistencia.</p>`;
@@ -418,10 +411,6 @@ function renderFaltas() {
   const fechaEl = $('#falta-fecha');
   if (fechaEl && !fechaEl.value) fechaEl.value = todayISO();
 
-  const tipo = (ETAPAS[state.etapa] || {}).tipo;
-  $('#falta-legal').textContent = tipo === 'fp'
-    ? 'En FP presencial se computan las ausencias justificadas e injustificadas para la evaluación continua (Orden de 18/09/2025, art. 2.4).'
-    : 'En ESO/Bachillerato el criterio depende del Plan de Convivencia de tu centro (Decreto 327/2010, art. 34.3).';
 
   const recientes = [...state.faltas]
     .sort((a, b) => b.fecha.localeCompare(a.fecha) || b.id.localeCompare(a.id))
@@ -788,12 +777,6 @@ function bindConfig() {
     renderAsignaturas();
   });
 
-  $('#btn-export').addEventListener('click', exportJSON);
-  $('#import-file').addEventListener('change', (e) => {
-    const file = e.target.files[0];
-    if (file) importJSON(file);
-    e.target.value = '';
-  });
   $('#btn-delete-all').addEventListener('click', deleteAll);
   $('#btn-install').addEventListener('click', promptInstall);
   $('#btn-install-cfg').addEventListener('click', promptInstall);
