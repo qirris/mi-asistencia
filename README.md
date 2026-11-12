@@ -1,4 +1,4 @@
-# SalvaCurso
+# SalvaTuCurso
 
 Web app responsive e instalable (PWA) para que estudiantes de Andalucía controlen sus faltas y su situación respecto a la evaluación continua en ESO, Bachillerato y Formación Profesional.
 
@@ -8,16 +8,20 @@ Web app responsive e instalable (PWA) para que estudiantes de Andalucía control
 
 ## Funcionalidades y Secciones
 
-SalvaCurso se organiza en seis secciones principales con una interfaz moderna, elegante y coherente:
+SalvaTuCurso se organiza en seis secciones principales con una interfaz moderna, elegante y coherente:
 
-1. **Dashboard (Inicio)**: Resumen general de la actividad académica con saludo dinámico, fecha actual, tarjetas estadísticas con cifras tabulares, alertas de asistencia y de tareas urgentes, listado de clases del día en curso y resumen global de asistencia.
+1. **Dashboard (Inicio)**: Resumen general de la actividad académica con saludo dinámico, fecha actual, resumen compacto, próxima clase y entrega más cercana, alertas de asistencia y de tareas urgentes, listado de clases del día en curso y resumen global de asistencia.
 2. **Asignaturas**: Gestión de materias con formulario desplegable, previsualización en tiempo real, selector de color pastel y cálculo automático de horas planificadas.
-3. **Mi horario**: Cuadrícula escolar semanal tradicional (lunes a viernes) interactiva. Panel de configuración general y franjas oculto por defecto para priorizar la visualización de la semana. Edición rápida de casillas, recreos discretos y resumen de horas semanales.
-4. **Mis tareas**: Agenda académica completa para deberes, exámenes, trabajos y notas personales. Incluye pestañas de estado (*Pendientes, Completadas, Todas*), filtros avanzados, prioridad, fechas relativas e integración exacta con las clases de origen del horario.
+3. **Mi horario**: Cuadrícula escolar semanal tradicional (lunes a viernes) interactiva. Resumen compacto y vista por días en móvil. Panel de configuración general y franjas oculto por defecto para priorizar la visualización de la semana. Edición rápida de casillas, recreos discretos y resumen de horas semanales.
+4. **Mis tareas**: Agenda académica completa para deberes, exámenes, trabajos y notas personales. Los filtros se despliegan bajo demanda y las estadísticas ocupan una sola franja. Incluye pestañas de estado (*Pendientes, Completadas, Todas*), filtros avanzados, prioridad, fechas relativas e integración exacta con las clases de origen del horario.
 5. **Historial**: Calendario mensual visual e interactivo con indicadores diarios de ausencia, estadísticas superiores y lista cronológica filtrable de ausencias.
 6. **Ajustes**: Configuración de la etapa educativa, criterios del centro (ESO/Bachillerato), copias de seguridad JSON, información de privacidad (almacenamiento 100% local), instalación PWA, referencias normativas oficiales y acciones avanzadas.
 
 ---
+
+## Primeros pasos
+
+La guía opcional de Inicio permite elegir la etapa, añadir asignaturas y colocar la primera clase. Conserva el progreso al recargar, permite continuar después y se puede reabrir desde Ajustes. Los cursos existentes mantienen sus datos y no repiten los pasos ya completados.
 
 ## Tecnologías y Arquitectura
 

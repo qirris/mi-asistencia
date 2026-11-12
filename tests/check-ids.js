@@ -1,4 +1,4 @@
-/* Comprueba que todos los IDs usados en el JavaScript existen en index.html.
+/* Comprueba que todos los IDs usados en el JavaScript existen en el HTML o en las vistas generadas.
    Ejecutar desde la raíz del proyecto: node tests/check-ids.js */
 
 const fs = require('fs');
@@ -12,11 +12,11 @@ const js = [
   'src/js/app.js'
 ].map(f => fs.readFileSync(f, 'utf8')).join('\n');
 
-const ids = new Set([...html.matchAll(/id="([^"]+)"/g)].map(m => m[1]));
+const ids = new Set([...(html + '\n' + js).matchAll(/id="([^"]+)"/g)].map(m => m[1]));
 const used = [...js.matchAll(/\$\('#([^']+)'\)/g)].map(m => m[1]);
 const missing = [...new Set(used)].filter(id => !ids.has(id));
 
-console.log('IDs en HTML:', ids.size);
+console.log('IDs declarados:', ids.size);
 console.log('IDs usados en JS:', new Set(used).size);
 console.log(missing.length ? 'FALTAN: ' + missing.join(', ') : 'OK: todos los IDs existen');
 

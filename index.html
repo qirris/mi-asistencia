@@ -4,12 +4,12 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
   <meta name="theme-color" content="#f5f6f4">
-  <meta name="description" content="SalvaCurso: tus faltas, horario y tareas en un solo lugar.">
-  <title>SalvaCurso</title>
+  <meta name="description" content="SalvaTuCurso: tus faltas, horario y tareas en un solo lugar.">
+  <title>SalvaTuCurso</title>
   <link rel="manifest" href="manifest.webmanifest">
   <link rel="apple-touch-icon" href="assets/icons/icon-192.png">
   <link rel="icon" type="image/png" href="assets/icons/icon-192.png">
-  <link rel="stylesheet" href="src/css/styles.css?v=17">
+  <link rel="stylesheet" href="src/css/styles.css?v=23">
 </head>
 <body>
   <div class="app-shell">
@@ -17,7 +17,7 @@
       <div class="brand">
         <div class="logo" aria-hidden="true"><img src="assets/icons/icon-192.png" alt="" width="42" height="42"></div>
         <div>
-          <h1>SalvaCurso</h1>
+          <h1 aria-label="SalvaTuCurso"><span>SalvaTu</span>Curso</h1>
           <p class="brand-tagline">Tus faltas, horario y tareas</p>
         </div>
       </div>
@@ -67,8 +67,9 @@
             <h2>Tu día en clase</h2>
             <p class="muted" id="dash-fecha-actual">Cargando fecha...</p>
           </div>
-          <div class="dw-badge">
+          <div class="welcome-actions">
             <span class="badge blue" id="dash-etapa-badge">FP Grado Superior</span>
+            <button class="btn btn-secondary btn-sm" id="dash-register-absence" type="button" data-dashboard-action="faltas">Registrar falta</button>
           </div>
         </div>
 
@@ -78,9 +79,10 @@
         <div id="dash-alerts"></div>
 
         <!-- Tarjetas estadísticas principales -->
-        <div class="stats-grid" id="dash-stats"></div>
+        <div class="today-priorities hidden" id="dash-priorities"></div>
+        <div class="compact-summary hidden" id="dash-stats" aria-label="Resumen del curso"></div>
 
-        <div class="dash-grid-main">
+        <div class="dash-grid-main" id="dash-grid-main">
           <!-- Columna principal -->
           <div class="dash-col-left">
             <!-- Próximas clases: Mi día -->
@@ -223,11 +225,11 @@
             <h2>Mi horario</h2>
             <p>Consulta tu semana escolar y clases de un vistazo.</p>
           </div>
-          <button class="btn" id="btn-toggle-schedule-edit" type="button">Editar mi horario</button>
+          <button class="btn" id="btn-toggle-schedule-edit" type="button">Editar horario</button>
         </div>
 
         <!-- Resumen superior compacto -->
-        <div class="stats-grid" id="schedule-header-summary" style="margin-bottom:1.25rem"></div>
+        <div class="compact-summary" id="schedule-header-summary" aria-label="Resumen del horario"></div>
 
         <!-- Panel de edición (Oculto por defecto) -->
         <div class="card schedule-config hidden" id="schedule-edit-panel" style="margin-bottom:1.25rem">
@@ -286,7 +288,7 @@
 
           <div style="display:flex;gap:.5rem;margin-top:1.25rem;">
             <button class="btn btn-secondary" id="btn-cancel-schedule" type="button" style="flex:1">Cancelar</button>
-            <button class="btn" id="btn-save-schedule" type="button" style="flex:2">💾 Guardar cambios</button>
+            <button class="btn" id="btn-save-schedule" type="button" style="flex:2">Guardar cambios</button>
           </div>
         </div>
 
@@ -316,10 +318,10 @@
             <h2>Mis tareas</h2>
             <p>Organiza tus deberes, estudios, trabajos y exámenes.</p>
           </div>
-          <button class="btn" id="btn-global-add-task" type="button">➕ Nueva actividad</button>
+          <button class="btn" id="btn-global-add-task" type="button"><svg class="ui-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg> Nueva tarea</button>
         </div>
 
-        <div class="stats-grid" id="tasks-stats" style="margin-bottom:1.25rem"></div>
+        <div class="compact-summary" id="tasks-stats" aria-label="Resumen de tareas"></div>
 
         <!-- Pestañas de estado -->
         <div class="day-tabs" role="tablist" aria-label="Filtrar por estado" style="margin-bottom:1rem;" id="task-state-tabs">
@@ -328,11 +330,10 @@
           <button class="day-tab" type="button" role="tab" aria-selected="false" data-statustab="todos">Todas</button>
         </div>
 
-        <div class="card" style="margin-bottom:1.25rem">
-          <div class="schedule-config-head" style="margin-bottom:.75rem">
-            <h3 class="section-title" style="margin-top:0">Filtros avanzados</h3>
-            <button class="btn btn-ghost btn-sm" id="btn-reset-task-filters" type="button">Limpiar filtros</button>
-          </div>
+        <details class="task-filters" id="task-filter-panel">
+          <summary><svg class="ui-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M4 7h16M7 12h10M10 17h4"/></svg> Filtros <span id="task-filter-count"></span></summary>
+          <div class="filter-content">
+            <button class="text-action" id="btn-reset-task-filters" type="button">Limpiar filtros</button>
           <div class="form-row three" style="grid-template-columns:repeat(auto-fit, minmax(180px, 1fr))">
             <div class="field">
               <label for="task-filtro-asig">Asignatura</label>
@@ -361,7 +362,9 @@
               </select>
             </div>
           </div>
-        </div>
+
+          </div>
+        </details>
 
         <div id="tasks-list" class="tasks-list"></div>
       </section>
@@ -434,12 +437,13 @@
       <section class="view" id="view-config">
         <div class="view-header">
           <h2>Ajustes</h2>
-          <p>Personaliza SalvaCurso y configura tus preferencias.</p>
+          <p>Personaliza SalvaTuCurso y configura tus preferencias.</p>
         </div>
 
         <!-- 1. Mi información académica -->
         <div class="card" style="margin-bottom:1.25rem">
-          <h3 class="section-title" style="margin-top:0">🎓 Mi información académica</h3>
+          <h3 class="section-title" style="margin-top:0">Mi información académica</h3>
+          <button class="text-action" type="button" data-dashboard-action="preparar">Revisar los primeros pasos</button>
           <div class="field" style="margin-bottom:1rem">
             <label for="cfg-etapa">Etapa educativa</label>
             <select id="cfg-etapa">
@@ -492,15 +496,15 @@
 
         <!-- 4. Instalar la aplicación (PWA) -->
         <div class="card" style="margin-bottom:1.25rem">
-          <h3 class="section-title" style="margin-top:0">📱 Instalar la aplicación</h3>
-          <p class="note">Puedes instalar «SalvaCurso» en tu móvil o tablet como app web (PWA) para usarla sin conexión.</p>
+          <h3 class="section-title" style="margin-top:0">Instalar la aplicación</h3>
+          <p class="note">Puedes instalar «SalvaTuCurso» en tu móvil o tablet como app web (PWA) para usarla sin conexión.</p>
           <button class="btn btn-block" id="btn-install-cfg" type="button" style="margin-top:.75rem">Instalar aplicación</button>
           <p class="legal" id="install-help"></p>
         </div>
 
         <!-- 5. Fuentes oficiales -->
         <div class="card" style="margin-bottom:1.25rem">
-          <h3 class="section-title" style="margin-top:0">📜 Referencias normativas</h3>
+          <h3 class="section-title" style="margin-top:0">Referencias normativas</h3>
           <ul class="legal" style="padding-left:1.1rem;margin:0;line-height:1.8">
             <li><a href="https://www.juntadeandalucia.es/boja/2025/180/c01/1" target="_blank" rel="noopener">Orden de 18/09/2025 (FP)</a></li>
             <li><a href="https://www.juntadeandalucia.es/boja/2025/217901/1" target="_blank" rel="noopener">Decreto 147/2025 (FP)</a></li>
@@ -511,7 +515,7 @@
 
         <!-- 6. Acciones avanzadas (Borrar datos) -->
         <div class="card" style="border-color:#fecaca;background:#fffdfd;margin-bottom:1.25rem">
-          <h3 class="section-title" style="margin-top:0;color:var(--red);">⚠️ Acciones avanzadas</h3>
+          <h3 class="section-title" style="margin-top:0;color:var(--red);">Acciones avanzadas</h3>
           <p class="muted" style="font-size:0.85rem;margin-bottom:.85rem;">Eliminar todos tus datos de forma definitiva en este navegador.</p>
           <button class="btn btn-danger" id="btn-delete-all" type="button">Borrar todos los datos</button>
         </div>
@@ -765,12 +769,12 @@
       });
     }
   </script>
-  <script src="src/js/attendance.js"></script>
-  <script src="src/js/storage.js"></script>
-  <script src="src/js/schedule.js"></script>
-  <script src="src/js/tasks.js"></script>
-  <script src="src/js/history.js"></script>
-  <script src="src/js/app.js?v=19"></script>
+  <script src="src/js/attendance.js?v=22"></script>
+  <script src="src/js/storage.js?v=22"></script>
+  <script src="src/js/schedule.js?v=22"></script>
+  <script src="src/js/tasks.js?v=22"></script>
+  <script src="src/js/history.js?v=22"></script>
+  <script src="src/js/app.js?v=22"></script>
 
   <!-- Nodos ocultos de compatibilidad mientras se renueva la caché de la PWA -->
   <p id="falta-legal" class="hidden" aria-hidden="true"></p>

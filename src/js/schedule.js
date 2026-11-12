@@ -1,5 +1,5 @@
 /* ============================================================
-   Mi Asistencia — schedule.js
+   SalvaTuCurso — schedule.js
    Horario escolar semanal: configuración de franjas, cuadrícula
    interactiva, vista móvil por días y resumen real de horas.
    ============================================================ */
@@ -54,7 +54,7 @@ function toggleScheduleEdit(forceState) {
   const btn = $('#btn-toggle-schedule-edit');
   if (panel) panel.classList.toggle('hidden', !scheduleEditing);
   if (btn) {
-    btn.textContent = scheduleEditing ? '✖ Cerrar edición' : '✏️ Editar mi horario';
+    btn.textContent = scheduleEditing ? 'Cerrar edición' : 'Editar horario';
     btn.className = scheduleEditing ? 'btn btn-secondary' : 'btn';
   }
   if (scheduleEditing) {
@@ -365,24 +365,11 @@ function renderHorario() {
   const activas = state.asignaturas.filter(a => !a.archivada).length;
   const summaryEl = $('#schedule-header-summary');
   if (summaryEl) {
-    summaryEl.innerHTML = `
-      <div class="stat">
-        <span class="stat-label">Hora de entrada</span>
-        <span class="stat-value" style="font-size:1.1rem;">${h.entrada}</span>
-      </div>
-      <div class="stat">
-        <span class="stat-label">Hora de salida</span>
-        <span class="stat-value" style="font-size:1.1rem;">${h.salida}</span>
-      </div>
-      <div class="stat">
-        <span class="stat-label">Asignaturas</span>
-        <span class="stat-value" style="font-size:1.1rem;">${activas}</span>
-      </div>
-      <div class="stat">
-        <span class="stat-label">Total semanal</span>
-        <span class="stat-value" style="font-size:1.1rem;">${fmtHoras(r.totalMin)}</span>
-      </div>
-    `;
+    summaryEl.classList.toggle('hidden', activas === 0);
+    summaryEl.innerHTML = activas ? `
+      <span>${uiIcon('clock')} <strong>${h.entrada}–${h.salida}</strong></span>
+      <span><strong>${activas}</strong> asignatura${activas === 1 ? '' : 's'}</span>
+      <span><strong>${fmtHoras(r.totalMin)}</strong> semanales</span>` : '';
   }
 }
 
@@ -507,7 +494,7 @@ function renderMobileHorario() {
       const a = c && c.asignaturaId ? asignaturaPorId(c.asignaturaId) : null;
       const key = day + '|' + f.id;
       let cls = 'sg-empty';
-      let nombre = 'Vacía · toca para añadir';
+      let nombre = 'Añadir asignatura';
       if (c && c.recreo) {
         cls = 'sg-recreo';
         nombre = 'Recreo';

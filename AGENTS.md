@@ -1,4 +1,4 @@
-# AGENTS.md — Mi Asistencia
+# AGENTS.md — SalvaTuCurso
 
 Punto de entrada del proyecto. Proyecto: web app responsive e instalable (PWA) para controlar faltas y evaluación continua en Andalucía.
 
@@ -8,11 +8,13 @@ Punto de entrada del proyecto. Proyecto: web app responsive e instalable (PWA) p
 3. `README.md` (estructura, pruebas y publicación)
 
 ### Estado actual
-- Dashboard PWA completo con vistas: Inicio, Asignaturas, Faltas, Horario, Historial y Ajustes.
+- PWA con Inicio, Asignaturas, Faltas, Horario, Mis tareas, Historial y Ajustes.
+- Inicio prioriza la próxima clase y la entrega más cercana; tareas y horario tienen resúmenes compactos y existe una guía opcional de tres pasos.
 - Datos en `localStorage` con migración segura y copias JSON.
 - Código organizado en `src/css/` y `src/js/`; pruebas en `tests/`.
-- Repositorio privado: <https://github.com/qirris/mi-asistencia>.
-- Pendiente: prueba real de instalación PWA en dispositivo y revisión visual móvil.
+- Repositorio: <https://github.com/qirris/mi-asistencia>.
+- Publicación estática en GitHub Pages autorizada por el usuario; los datos académicos permanecen en el navegador.
+- Pendiente: prueba real de instalación PWA en dispositivo. La interfaz se revisó en móvil estrecho y escritorio.
 
 ### Reglas duras
 - El código real manda: si la memoria difiere del código, se corrige la memoria.

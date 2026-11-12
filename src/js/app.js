@@ -1,5 +1,5 @@
 /* ============================================================
-   SalvaCurso — app.js
+   SalvaTuCurso — app.js
    Inicialización, render de vistas e interacción general.
    ============================================================ */
 
@@ -92,9 +92,74 @@ function toast(msg) {
   toastTimer = setTimeout(() => t.classList.remove('show'), 2600);
 }
 
+function uiIcon(name) {
+  const paths = {
+    plus: '<path d="M12 5v14M5 12h14"/>',
+    arrow: '<path d="m9 5 7 7-7 7"/>',
+    check: '<path d="m5 12 4 4L19 6"/>',
+    clock: '<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>',
+    calendar: '<rect x="3" y="5" width="18" height="16" rx="2"/><path d="M16 3v4M8 3v4M3 11h18"/>',
+    book: '<path d="M4 19V5a2 2 0 0 1 2-2h14v18H6a2 2 0 0 1-2-2Zm0 0a2 2 0 0 1 2-2h14"/>'
+  };
+  return '<svg class="ui-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' + (paths[name] || paths.arrow) + '</svg>';
+}
+
+function getSetupProgress() {
+  const subjects = state.asignaturas.filter(a => !a.archivada);
+  const assigned = Object.values(state.horario.casillas || {}).some(c => c && subjects.some(a => a.id === c.asignaturaId));
+  const setup = state.config.onboarding || {};
+  const stage = !!setup.etapaConfirmada;
+  return { subjects, assigned, stage, step: !stage ? 1 : !subjects.length ? 2 : !assigned ? 3 : 4, hidden: !!setup.oculto };
+}
+
+function findNextClass(now = new Date()) {
+  const h = state.horario;
+  if (!h) return null;
+  const activeIds = new Set(state.asignaturas.filter(a => !a.archivada).map(a => a.id));
+  const minute = now.getHours() * 60 + now.getMinutes();
+  for (let offset = 0; offset <= 7; offset++) {
+    const date = new Date(now.getFullYear(), now.getMonth(), now.getDate() + offset);
+    const day = DIAS[(date.getDay() + 6) % 7];
+    if (!h.dias.includes(day.key)) continue;
+    const slots = h.franjas.filter(f => f.tipo === 'clase' && franjaActivaEnDia(h, f, day.key)).sort((a, b) => toMin(a.inicio) - toMin(b.inicio));
+    for (const slot of slots) {
+      const cell = getCasilla(h, day.key, slot.id);
+      if (!cell || !activeIds.has(cell.asignaturaId) || (offset === 0 && toMin(slot.fin) <= minute)) continue;
+      return { subject: asignaturaPorId(cell.asignaturaId), slot, day, date, offset, current: offset === 0 && minute >= toMin(slot.inicio) };
+    }
+  }
+  return null;
+}
+
+function renderDashboardPriorities() {
+  const cont = $('#dash-priorities');
+  if (!cont) return;
+  const progress = getSetupProgress();
+  const pending = (state.tareas || []).filter(t => t.estado === 'pendiente').sort((a, b) => (a.fechaEntrega || '9999').localeCompare(b.fechaEntrega || '9999'));
+  const hasContent = (progress.hidden || progress.step === 4) && (progress.subjects.length > 0 || pending.length > 0);
+  cont.classList.toggle('hidden', !hasContent);
+  if (!hasContent) { cont.innerHTML = ''; return; }
+  const next = findNextClass();
+  const task = pending[0];
+  const classWhen = next ? (next.current ? 'En curso' : next.offset === 0 ? 'Hoy' : next.offset === 1 ? 'Mañana' : next.day.label + ' ' + next.date.toLocaleDateString('es-ES', { day: 'numeric', month: 'short' })) + ' · ' + next.slot.inicio + '–' + next.slot.fin : 'Coloca tus asignaturas para ver tu próxima clase.';
+  const taskSubject = task ? asignaturaPorId(task.asignaturaId) : null;
+  cont.innerHTML = `
+    <section class="priority-item priority-class">
+      <h3>${uiIcon('calendar')} ${next && next.current ? 'Tu clase ahora' : 'Próxima clase'}</h3>
+      <p class="priority-title">${next ? esc(next.subject.nombre) : 'Prepara tu semana'}</p>
+      <p class="priority-meta">${esc(classWhen)}</p>
+      <button class="text-action" type="button" data-dashboard-action="horario">${next ? 'Ver horario' : 'Completar horario'} ${uiIcon('arrow')}</button>
+    </section>
+    <section class="priority-item priority-task">
+      <h3>${uiIcon('clock')} Entrega más cercana</h3>
+      <p class="priority-title">${task ? esc(task.titulo) : 'Todo al día'}</p>
+      <p class="priority-meta">${task ? esc(formatoEntrega(task.fechaEntrega)) + (taskSubject ? ' · ' + esc(taskSubject.nombre) : '') : 'Cuando añadas una tarea, la verás aquí.'}</p>
+      <button class="text-action" type="button" data-dashboard-action="${task ? 'tareas' : 'nueva-tarea'}">${task ? 'Ver mis tareas' : 'Añadir tarea'} ${uiIcon(task ? 'arrow' : 'plus')}</button>
+    </section>`;
+}
+
 /* ---------- Render ---------- */
 function render() {
-  renderHeader();
   renderDashboard();
   renderAsignaturas();
   renderFaltas();
@@ -103,11 +168,6 @@ function render() {
   renderMisTareas();
   renderHistorialView();
   renderConfig();
-}
-
-function renderHeader() {
-  const el = $('#header-etapa');
-  if (el) el.textContent = (ETAPAS[state.etapa] || {}).label || 'SalvaCurso';
 }
 
 function subjectCard(a) {
@@ -146,37 +206,22 @@ function renderDashboardWelcome() {
     fechaEl.textContent = fechaStr.charAt(0).toUpperCase() + fechaStr.slice(1);
   }
   if (etapaEl) {
-    etapaEl.textContent = (ETAPAS[state.etapa] || {}).label || 'SalvaCurso';
+    etapaEl.textContent = (ETAPAS[state.etapa] || {}).label || 'SalvaTuCurso';
   }
 }
 
 function renderDashboardStats() {
+  const cont = $('#dash-stats');
   const g = calcGlobal();
-  const totalAusencias = state.faltas.reduce((s, f) => s + (Number(f.horas) || 0), 0);
-  const tareasPendientes = (state.tareas || []).filter(t => t.estado === 'pendiente').length;
-
-  $('#dash-stats').innerHTML = `
-    <div class="stat">
-      <span class="stat-label">Asistencia global</span>
-      <span class="stat-value">${g.pct == null ? '—' : fmt(g.pct) + '%'}</span>
-      <span class="stat-sub">ponderada por horas</span>
-    </div>
-    <div class="stat">
-      <span class="stat-label">Asignaturas</span>
-      <span class="stat-value">${g.activas.length}</span>
-      <span class="stat-sub">registradas</span>
-    </div>
-    <div class="stat">
-      <span class="stat-label">Ausencia total</span>
-      <span class="stat-value">${fmt(totalAusencias)} h</span>
-      <span class="stat-sub">acumuladas</span>
-    </div>
-    <div class="stat">
-      <span class="stat-label">Tareas pendientes</span>
-      <span class="stat-value">${tareasPendientes}</span>
-      <span class="stat-sub">por completar</span>
-    </div>
-  `;
+  const setup = getSetupProgress();
+  const hasSubjects = g.activas.length > 0 && (setup.hidden || setup.step === 4);
+  cont.classList.toggle('hidden', !hasSubjects);
+  if (!hasSubjects) { cont.innerHTML = ''; return; }
+  const absences = state.faltas.reduce((s, f) => s + (Number(f.horas) || 0), 0);
+  cont.innerHTML = `
+    <span><strong>${g.pct == null ? '—' : fmt(g.pct) + '%'}</strong> de asistencia</span>
+    <span><strong>${g.activas.length}</strong> asignatura${g.activas.length === 1 ? '' : 's'}</span>
+    <span><strong>${fmt(absences)} h</strong> de ausencia</span>`;
 }
 
 function renderDashboardAlerts() {
@@ -219,40 +264,23 @@ function renderDashboardClassesToday() {
   if (!cont || !state || !state.horario) return;
   const h = state.horario;
   const now = new Date();
-  const jsDay = now.getDay();
-  const dayKey = jsDay >= 1 && jsDay <= 6 ? DIAS[jsDay - 1].key : 'domingo';
-  const min = now.getHours() * 60 + now.getMinutes();
-
-  if (!h.dias.includes(dayKey)) {
-    cont.innerHTML = `<div class="empty" style="padding:1.25rem"><strong>Hoy no es día lectivo</strong>Disfruta de tu jornada de descanso.</div>`;
-    return;
-  }
-
-  const franjas = h.franjas.filter(f => franjaActivaEnDia(h, f, dayKey) && f.tipo === 'clase');
-  if (!franjas.length) {
-    cont.innerHTML = `<div class="empty" style="padding:1.25rem"><strong>Sin clases configuradas</strong>No hay franjas lectivas para hoy.</div>`;
-    return;
-  }
-
-  cont.innerHTML = franjas.map(f => {
+  const dayKey = DIAS[(now.getDay() + 6) % 7].key;
+  const minute = now.getHours() * 60 + now.getMinutes();
+  const rows = h.dias.includes(dayKey) ? h.franjas.filter(f => franjaActivaEnDia(h, f, dayKey) && f.tipo === 'clase').map(f => {
     const c = getCasilla(h, dayKey, f.id);
     const a = c && c.asignaturaId ? asignaturaPorId(c.asignaturaId) : null;
-    const iniMin = toMin(f.inicio);
-    const finMin = toMin(f.fin);
-    const isNow = min >= iniMin && min < finMin;
-
-    const nombre = a ? a.nombre : 'Sin asignatura';
-    const colorClass = a ? 'sc-' + a.color : 'sg-empty';
-    const count = countTareasPendientesSlot(dayKey + '|' + f.id);
-
-    return `
-      <div class="dash-class-item ${isNow ? 'active-class' : ''} ${!a ? 'unassigned' : ''} ${colorClass}">
-        <span class="dc-time">${f.inicio}–${f.fin}</span>
-        <span class="dc-name">${esc(nombre)}</span>
-        ${isNow ? '<span class="badge blue">En curso</span>' : ''}
-        ${count > 0 ? `<span class="badge red">${count} pendiente${count === 1 ? '' : 's'}</span>` : ''}
-      </div>
-    `;
+    return { f, a };
+  }).filter(row => row.a && !row.a.archivada).sort((x, y) => toMin(x.f.inicio) - toMin(y.f.inicio)) : [];
+  if (!rows.length) {
+    cont.innerHTML = `<div class="quiet-empty"><p>${getSetupProgress().assigned ? 'Hoy no tienes clases en el horario.' : 'Añade tu primera clase para empezar a organizar tu semana.'}</p><button class="text-action" type="button" data-dashboard-action="horario">Abrir horario ${uiIcon('arrow')}</button></div>`;
+    return;
+  }
+  cont.innerHTML = rows.map(({f, a}) => {
+    const isNow = minute >= toMin(f.inicio) && minute < toMin(f.fin);
+    return `<div class="dash-class-item ${isNow ? 'active-class' : ''} sc-${a.color}">
+      <span class="dc-time">${f.inicio}–${f.fin}</span>
+      <span class="dc-name">${esc(a.nombre)}</span>${isNow ? '<span class="badge teal">En curso</span>' : ''}
+    </div>`;
   }).join('');
 }
 
@@ -342,10 +370,14 @@ function renderDashboardRecentActivity() {
   const recientes = items.slice(0, 4);
 
   if (recientes.length === 0) {
-    cont.innerHTML = `<p class="muted" style="font-size:0.85rem">Cuando registres una falta o añadas una tarea, aparecerá aquí.</p>`;
+    const card = cont.closest('.dash-card');
+    if (card) card.classList.add('hidden');
+    cont.innerHTML = '';
     return;
   }
 
+  const card = cont.closest('.dash-card');
+  if (card) card.classList.remove('hidden');
   cont.innerHTML = `<div class="history-list">` + recientes.map(r => `
     <div class="history-item" style="padding:.5rem .75rem;font-size:.82rem;">
       <div class="h-main">
@@ -359,34 +391,41 @@ function renderDashboardRecentActivity() {
 function renderDashboardOnboarding() {
   const cont = $('#dash-onboarding');
   if (!cont) return;
-  const activas = state.asignaturas.filter(a => !a.archivada);
-  const tieneHorario = Object.values(state.horario.casillas || {}).some(c => c && c.asignaturaId);
-  if (activas.length === 0) {
-    cont.innerHTML = `
-      <div>
-        <h3>Empieza por tus asignaturas</h3>
-        <p>Añade tus módulos para completar el horario y consultar tu asistencia.</p>
-      </div>
-      <button class="btn" type="button" data-dashboard-action="nueva-asignatura">Añadir asignatura</button>`;
-    cont.classList.remove('hidden');
-  } else if (!tieneHorario) {
-    cont.innerHTML = `
-      <div>
-        <h3>Completa tu horario</h3>
-        <p>Coloca tus asignaturas en las clases para empezar a ver el resumen de asistencia.</p>
-      </div>
-      <button class="btn" type="button" data-dashboard-action="horario">Abrir horario</button>`;
-    cont.classList.remove('hidden');
-  } else {
-    cont.classList.add('hidden');
-    cont.innerHTML = '';
+  const progress = getSetupProgress();
+  const show = !progress.hidden && progress.step < 4;
+  cont.classList.toggle('hidden', !show);
+  const grid = $('#dash-grid-main');
+  if (grid) grid.classList.toggle('hidden', !progress.subjects.length || show);
+  const absenceButton = $('#dash-register-absence');
+  if (absenceButton) absenceButton.classList.toggle('hidden', !progress.subjects.length);
+  if (!show) {
+    cont.innerHTML = !progress.subjects.length ? `<div class="setup-rest"><h3>Tu curso, a tu ritmo</h3><p>Añade tus asignaturas y prepara el horario cuando quieras.</p><button class="btn" type="button" data-dashboard-action="preparar">Preparar mi curso ${uiIcon('arrow')}</button></div>` : '';
+    if (!progress.subjects.length) cont.classList.remove('hidden');
+    return;
   }
+  const titles = ['Elige tu etapa', 'Añade tus asignaturas', 'Coloca tus clases'];
+  const descriptions = [
+    'Así podrás consultar la asistencia con las opciones de tu enseñanza.',
+    'Empieza por una asignatura. Después podrás añadir el resto.',
+    'Toca una clase del horario y elige su asignatura. Puedes completar el resto después.'
+  ];
+  const options = Object.entries(ETAPAS).map(([key, item]) => `<option value="${key}" ${state.etapa === key ? 'selected' : ''}>${esc(item.label)}</option>`).join('');
+  const stageForm = progress.step === 1 ? `<div class="setup-stage"><label for="setup-etapa">Tu etapa educativa</label><select id="setup-etapa">${options}</select></div>` : '';
+  const action = progress.step === 1
+    ? `<button class="btn" type="button" data-onboarding-action="confirm-stage">Continuar ${uiIcon('arrow')}</button>`
+    : `<button class="btn" type="button" data-dashboard-action="${progress.step === 2 ? 'nueva-asignatura' : 'horario'}">${progress.step === 2 ? 'Añadir asignatura' : 'Abrir mi horario'} ${uiIcon('arrow')}</button>`;
+  cont.innerHTML = `
+    <div class="setup-heading"><h3>Prepara tu curso</h3><span>Paso ${progress.step} de 3</span></div>
+    <ol class="setup-steps" aria-label="Preparación del curso">${['Etapa', 'Asignaturas', 'Horario'].map((label, i) => `<li class="${progress.step > i + 1 ? 'done' : progress.step === i + 1 ? 'current' : ''}" ${progress.step === i + 1 ? 'aria-current="step"' : ''}><span>${progress.step > i + 1 ? uiIcon('check') : i + 1}</span>${label}</li>`).join('')}</ol>
+    <div class="setup-content"><h4>${titles[progress.step - 1]}</h4><p>${descriptions[progress.step - 1]}</p>${stageForm}</div>
+    <div class="setup-actions">${action}<button class="text-action" type="button" data-onboarding-action="skip">Continuar después</button></div>`;
 }
 
 function renderDashboard() {
   renderDashboardWelcome();
   renderDashboardOnboarding();
   renderDashboardStats();
+  renderDashboardPriorities();
   renderDashboardAlerts();
   renderDashboardClassesToday();
   renderDashboardAttendanceSummary();
@@ -500,6 +539,7 @@ function closeMobileMore(restoreFocus) {
 }
 
 function showView(view) {
+  if (view === 'dashboard') renderDashboard();
   if (!$('#view-' + view)) return;
   const moreViews = ['asignaturas', 'historial', 'config'];
   document.querySelectorAll('.nav-btn, .mobile-tab-button').forEach((button) => {
@@ -546,6 +586,19 @@ function bindNav() {
     const action = event.target.closest('[data-dashboard-action]');
     if (!action) return;
     const actionName = action.dataset.dashboardAction;
+    if (actionName === 'preparar') {
+      state.config.onboarding.oculto = false;
+      state.config.onboarding.etapaConfirmada = false;
+      saveState();
+      showView('dashboard');
+      return;
+    }
+    if (actionName === 'nueva-tarea') {
+      if (!state.asignaturas.some(a => !a.archivada)) { showView('asignaturas'); return; }
+      showView('tareas');
+      openTaskDialog();
+      return;
+    }
     const view = actionName === 'nueva-asignatura' ? 'asignaturas' : actionName;
     showView(view);
     if (actionName === 'nueva-asignatura') {
@@ -553,6 +606,24 @@ function bindNav() {
       const form = $('#asig-form-card');
       if (toggle && form && form.classList.contains('hidden')) toggle.click();
     }
+  });
+}
+
+function bindOnboarding() {
+  const guide = $('#dash-onboarding');
+  guide.addEventListener('click', (event) => {
+    const button = event.target.closest('[data-onboarding-action]');
+    if (!button) return;
+    if (button.dataset.onboardingAction === 'confirm-stage') {
+      const choice = $('#setup-etapa').value;
+      if (!ETAPAS[choice]) return;
+      state.etapa = choice;
+      state.config.onboarding.etapaConfirmada = true;
+    } else {
+      state.config.onboarding.oculto = true;
+    }
+    saveState();
+    render();
   });
 }
 
@@ -865,6 +936,7 @@ function bindDialogFalta() {
 function bindConfig() {
   $('#cfg-etapa').addEventListener('change', (e) => {
     state.etapa = e.target.value;
+    state.config.onboarding.etapaConfirmada = true;
     saveState();
     toast('Etapa actualizada');
     render();
@@ -908,7 +980,7 @@ function exportJSON() {
   const url = URL.createObjectURL(blob);
   const a = document.createElement('a');
   a.href = url;
-  a.download = 'salvacurso-copia-' + todayISO() + '.json';
+  a.download = 'salvatucurso-copia-' + todayISO() + '.json';
   document.body.appendChild(a);
   a.click();
   document.body.removeChild(a);
@@ -994,6 +1066,7 @@ function init() {
   initColorPicker('#dlg-color-picker', '#dlg-color');
   setColorPicker('#asig-color-picker', '#asig-color', PALETA[state.asignaturas.length % PALETA.length]);
   bindNav();
+  bindOnboarding();
   bindAsignaturas();
   bindDialog();
   bindDialogFalta();

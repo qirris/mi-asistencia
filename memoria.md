@@ -1,4 +1,4 @@
-# Memoria del proyecto: SalvaCurso
+# Memoria del proyecto: SalvaTuCurso
 
 Archivo de memoria persistente. Actualízalo tras cada avance importante.
 Regla: NO guardar aquí contraseñas, tokens ni ningún secreto.
@@ -14,7 +14,11 @@ Web app responsive e instalable (PWA) para estudiantes de Andalucía que permite
 - PWA: manifest, service worker con caché del app shell, iconos 192/512 e instalación.
 - Datos 100% locales en `localStorage` (clave `miAsistenciaState`) con migración segura y copias JSON.
 - La aplicación se publica como sitio estático en GitHub Pages; los datos académicos permanecen en el navegador.
-- Identidad visual SalvaCurso: calendario de asistencia, birrete y lema «Tus faltas, horario y tareas».
+- Identidad SalvaTuCurso: símbolo de asistencia, birrete, lema «Tus faltas, horario y tareas» y paleta azul marino, coral y turquesa.
+- Tareas y horario muestran resúmenes compactos; los filtros de tareas se despliegan cuando se necesitan.
+- Inicio prioriza la clase actual o siguiente y la entrega más cercana, con acceso a registrar faltas. Las clases de la semana siguiente incluyen fecha.
+- Guía opcional de tres pasos (etapa, asignaturas y horario), con progreso persistente y reconocimiento de datos existentes. Sin datos se evitan estadísticas vacías y clases sin asignatura.
+- Se mantienen las cuentas y la sincronización fuera de esta entrega.
 
 ## 3. Tecnologías y arquitectura
 - HTML5 + CSS3 + JavaScript Vanilla (sin frameworks ni dependencias npm).
@@ -42,7 +46,9 @@ Web app responsive e instalable (PWA) para estudiantes de Andalucía que permite
 - Historial con calendario mensual visual, indicadores diarios y modales de detalle.
 - Dashboard completo con saludo en español, estadísticas con cifras tabulares y alertas en tiempo real.
 - Copias de seguridad locales (Exportar/Importar JSON) y borrado seguro con confirmación.
-- Instalación PWA y soporte offline.\n- En móvil, navegación inferior con Inicio, Mis tareas, Horario, Faltas y Más (Asignaturas, Historial y Ajustes).\n- Zoom bloqueado por defecto en móvil, con opción para permitirlo en Ajustes; la preferencia se conserva en el navegador.
+- Instalación PWA y soporte offline.
+- En móvil, navegación inferior con Inicio, Mis tareas, Horario, Faltas y Más (Asignaturas, Historial y Ajustes).
+- Zoom bloqueado por defecto en móvil, con opción para permitirlo en Ajustes; la preferencia se conserva en el navegador.
 
 ## 6. Pruebas verificadas
 - Validación sintáctica mediante `node --check` en todos los módulos JS y service worker.
@@ -62,6 +68,6 @@ Para mantener una identidad profesional y seria, los mensajes de commit futuros 
 *(Ejemplo: `funcionalidad: incorporar la gestión de asignaturas y el registro de asistencia`)*
 
 ## 8. Restricciones permanentes del proyecto
-- Aplicación local y privada, sin publicación ni despliegue público (sin GitHub Pages, Vercel o Netlify).
+- Publicación estática en GitHub Pages autorizada por el usuario; los datos académicos siguen siendo locales.
 - Almacenamiento exclusivo en el navegador mediante `localStorage` (`miAsistenciaState`).
 - Sin servidores, bases de datos remotas ni cuentas de usuario.

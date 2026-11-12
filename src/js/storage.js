@@ -1,5 +1,5 @@
 /* ============================================================
-   Mi Asistencia — storage.js
+   SalvaTuCurso — storage.js
    Persistencia en localStorage, migración y normalización de datos.
    ============================================================ */
 
@@ -130,6 +130,11 @@ function normalizeState(input) {
     : [];
 
   out.config = Object.assign({ criterio: { tipo: '', valor: null } }, out.config || {});
+  const savedOnboarding = out.config.onboarding || {};
+  out.config.onboarding = {
+    etapaConfirmada: typeof savedOnboarding.etapaConfirmada === 'boolean' ? savedOnboarding.etapaConfirmada : out.asignaturas.some(a => !a.archivada),
+    oculto: savedOnboarding.oculto === true
+  };
   out.config.criterio = Object.assign({ tipo: '', valor: null }, (out.config || {}).criterio || {});
   out.horario = normalizeHorario(out.horario);
   return out;

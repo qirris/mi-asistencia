@@ -1,4 +1,4 @@
-/* Pruebas de cálculo y render de Mi Asistencia.
+/* Pruebas de cálculo y render de SalvaTuCurso.
    Ejecutar desde la raíz del proyecto: node tests/attendance.test.js */
 
 const fs = require('fs');
@@ -140,3 +140,34 @@ const norm = sandbox.normalizeState({ etapa: 'inventada', asignaturas: [], falta
 assert(norm.etapa === 'fp_superior', 'normalizeState corrige etapa inválida');
 
 console.log('\nPrueba funcional completada.');
+
+// Próxima clase: límites horarios, cambio de día y asignaturas archivadas.
+st.etapa = 'fp_superior';
+assert(sandbox.findNextClass(new Date(2026, 10, 9, 8, 30)).subject.id === 'a1', 'la clase en curso tiene prioridad');
+assert(sandbox.findNextClass(new Date(2026, 10, 9, 9, 0)).subject.id === 'a2', 'al terminar una clase se muestra la siguiente');
+const nextDay = sandbox.findNextClass(new Date(2026, 10, 9, 10, 0));
+assert(nextDay.offset === 1 && nextDay.subject.id === 'a1', 'al terminar el día se busca la siguiente jornada');
+const nextWeek = sandbox.findNextClass(new Date(2026, 10, 10, 9, 0));
+assert(nextWeek.offset === 6 && nextWeek.day.key === 'lunes', 'se respeta la salida anticipada de cada día');
+assert(sandbox.findNextClass(new Date(2026, 10, 15, 12, 0)).offset === 1, 'el domingo encuentra la clase del lunes');
+a1.archivada = true;
+assert(sandbox.findNextClass(new Date(2026, 10, 9, 8, 30)).subject.id === 'a2', 'no se muestran asignaturas archivadas');
+a2.archivada = true;
+assert(sandbox.findNextClass(new Date(2026, 10, 9, 8, 30)) === null, 'sin asignaturas activas no se inventa una clase');
+a1.archivada = a2.archivada = false;
+
+// La guía conserva el progreso y reconoce a quien ya tiene el curso preparado.
+assert(st.config.onboarding.etapaConfirmada === true, 'los datos existentes no obligan a repetir la elección de etapa');
+const fresh = sandbox.normalizeState({});
+sandbox.__setState(fresh);
+assert(sandbox.getSetupProgress().step === 1, 'un curso nuevo empieza por elegir etapa');
+fresh.config.onboarding.etapaConfirmada = true;
+assert(sandbox.getSetupProgress().step === 2, 'después de la etapa se añaden asignaturas');
+fresh.asignaturas.push({id:'n1',nombre:'Matemáticas',archivada:false});
+assert(sandbox.getSetupProgress().step === 3, 'con una asignatura se propone preparar el horario');
+fresh.horario.casillas['lunes|' + fresh.horario.franjas.find(f => f.tipo === 'clase').id] = {asignaturaId:'n1'};
+assert(sandbox.getSetupProgress().step === 4, 'la primera clase asignada completa los primeros pasos');
+fresh.config.onboarding.oculto = true;
+const restored = sandbox.normalizeState(JSON.parse(JSON.stringify(fresh)));
+assert(restored.config.onboarding.oculto && restored.config.onboarding.etapaConfirmada, 'continuar después se conserva al guardar y recargar');
+sandbox.__setState(st);

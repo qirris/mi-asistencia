@@ -1,5 +1,5 @@
 /* ============================================================
-   Mi Asistencia — tasks.js
+   SalvaTuCurso — tasks.js
    Gestión completa de agenda académica: deberes, exámenes, trabajos, notas.
    ============================================================ */
 
@@ -8,13 +8,13 @@ let activeSlotContext = null;
 let taskActiveTab = 'pendiente';
 
 const TIPOS_TAREA = {
-  deberes: { label: 'Deberes', badge: 'blue', icon: '📝' },
-  estudiar: { label: 'Estudiar', badge: 'purple', icon: '📖' },
-  examen: { label: 'Examen', badge: 'red', icon: '📝' },
-  trabajo: { label: 'Trabajo', badge: 'orange', icon: '📊' },
-  proyecto: { label: 'Proyecto', badge: 'orange', icon: '🚀' },
-  otros: { label: 'Otros', badge: 'gray', icon: '📌' },
-  nota: { label: 'Nota personal', badge: 'teal', icon: '💡' }
+  deberes: { label: 'Deberes', badge: 'blue', icon: '' },
+  estudiar: { label: 'Estudiar', badge: 'purple', icon: '' },
+  examen: { label: 'Examen', badge: 'red', icon: '' },
+  trabajo: { label: 'Trabajo', badge: 'orange', icon: '' },
+  proyecto: { label: 'Proyecto', badge: 'orange', icon: '' },
+  otros: { label: 'Otros', badge: 'gray', icon: '' },
+  nota: { label: 'Nota personal', badge: 'teal', icon: '' }
 };
 
 const PRIORIDADES = {
@@ -48,7 +48,7 @@ function calcularEstadoVisualTask(t) {
   const d = diasHasta(t.fechaEntrega);
   if (d != null && d < 0) return { tone: 'red', label: 'Vencida', cls: 'over' };
   if (t.prioridad === 'alta') return { tone: 'red', label: 'Urgente', cls: 'over' };
-  if (d != null && d <= 2) return { tone: 'yellow', label: d === 0 ? 'Hoy' : `En ${d}d`, cls: 'miss' };
+  if (d != null && d <= 2) return { tone: 'yellow', label: d === 0 ? 'Hoy' : d === 1 ? 'Mañana' : `En ${d} días`, cls: 'miss' };
   return { tone: 'blue', label: 'Pendiente', cls: 'none' };
 }
 
@@ -303,7 +303,7 @@ function renderTaskMiniCard(t) {
   const tipoInfo = TIPOS_TAREA[t.tipo] || TIPOS_TAREA.deberes;
   return `
     <div class="task-mini-item ${t.estado === 'completada' ? 'completed' : ''}">
-      <input type="checkbox" data-toggletask="${t.id}" ${t.estado === 'completada' ? 'checked' : ''} aria-label="Marcar completada">
+      <input type="checkbox" data-toggletask="${t.id}" ${t.estado === 'completada' ? 'checked' : ''} aria-label="Marcar como ${t.estado === 'completada' ? 'pendiente' : 'completada'}: ${esc(t.titulo)}">
       <div class="tmi-main">
         <div class="tmi-title">${tipoInfo.icon} ${esc(t.titulo)}</div>
         <div class="tmi-sub">${tipoInfo.label}${t.fechaEntrega ? ' · ' + formatoEntrega(t.fechaEntrega) : ''}</div>
@@ -320,7 +320,6 @@ function renderMisTareas() {
   const tareas = state.tareas || [];
   const pendientes = tareas.filter(t => t.estado === 'pendiente');
   const completadas = tareas.filter(t => t.estado === 'completada');
-  const prioridadAlta = pendientes.filter(t => t.prioridad === 'alta');
   const examenesPendientes = pendientes.filter(t => t.tipo === 'examen');
   const proximas = pendientes.filter(t => {
     const d = diasHasta(t.fechaEntrega);
@@ -329,28 +328,12 @@ function renderMisTareas() {
 
   const statsEl = $('#tasks-stats');
   if (statsEl) {
-    statsEl.innerHTML = `
-      <div class="stat">
-        <span class="stat-label">Pendientes</span>
-        <span class="stat-value">${pendientes.length}</span>
-        <span class="stat-sub">por completar</span>
-      </div>
-      <div class="stat">
-        <span class="stat-label">Próximas (3 días)</span>
-        <span class="stat-value">${proximas.length}</span>
-        <span class="stat-sub">vencimiento cercano</span>
-      </div>
-      <div class="stat">
-        <span class="stat-label">Exámenes</span>
-        <span class="stat-value">${examenesPendientes.length}</span>
-        <span class="stat-sub">pendientes</span>
-      </div>
-      <div class="stat">
-        <span class="stat-label">Completadas</span>
-        <span class="stat-value">${completadas.length}</span>
-        <span class="stat-sub">historial</span>
-      </div>
-    `;
+    statsEl.classList.toggle('hidden', tareas.length === 0);
+    statsEl.innerHTML = tareas.length ? `
+      <span><strong>${pendientes.length}</strong> pendiente${pendientes.length === 1 ? '' : 's'}</span>
+      <span><strong>${proximas.length}</strong> para los próximos 3 días</span>
+      ${examenesPendientes.length ? '<span><strong>' + examenesPendientes.length + '</strong> exámenes</span>' : ''}
+      ${completadas.length ? '<span><strong>' + completadas.length + '</strong> completadas</span>' : ''}` : '';
   }
 
   const filtroAsig = $('#task-filtro-asig');
@@ -365,6 +348,9 @@ function renderMisTareas() {
   const ft = $('#task-filtro-tipo') ? $('#task-filtro-tipo').value : '';
   const fp = $('#task-filtro-prioridad') ? $('#task-filtro-prioridad').value : '';
 
+  const activeFilters = [fa, ft, fp].filter(Boolean).length;
+  const filterCount = $('#task-filter-count');
+  if (filterCount) filterCount.textContent = activeFilters ? activeFilters + ' activo' + (activeFilters === 1 ? '' : 's') : '';
   let lista = [...tareas];
   // Filtrar por pestaña activa (pendiente, completada, todos)
   if (taskActiveTab === 'pendiente') {
@@ -389,24 +375,20 @@ function renderMisTareas() {
   if (!cont) return;
 
   if (lista.length === 0) {
-    let emptyTitle = '¡Todo organizado!';
-    let emptyDesc = 'No hay actividades ni notas que coincidan con los filtros seleccionados.';
-    if (taskActiveTab === 'pendiente' && tareas.length === 0) {
-      emptyTitle = 'Sin tareas pendientes';
-      emptyDesc = '¡Felicidades! Estás al día con todas tus actividades académicas.';
-    } else if (taskActiveTab === 'completada') {
-      emptyTitle = 'Sin historial completado';
-      emptyDesc = 'Las actividades que marques como completadas aparecerán aquí.';
+    const hasSubjects = state.asignaturas.some(a => !a.archivada);
+    let title = taskActiveTab === 'completada' ? 'Aún no hay tareas completadas' : 'Todo al día';
+    let description = taskActiveTab === 'completada' ? 'Aquí aparecerán las actividades que marques como terminadas.' : 'No tienes tareas pendientes. Puedes añadir la siguiente cuando quieras.';
+    let action = '<button class="btn" type="button" onclick="openTaskDialog()">' + uiIcon('plus') + ' Nueva tarea</button>';
+    if (activeFilters) {
+      title = 'No hay coincidencias';
+      description = 'Prueba con otra asignatura, tipo o prioridad.';
+      action = '<button class="btn btn-secondary" type="button" onclick="document.querySelector(\'#btn-reset-task-filters\').click()">Limpiar filtros</button>';
+    } else if (!tareas.length) {
+      title = hasSubjects ? 'Tu agenda empieza aquí' : 'Primero, tus asignaturas';
+      description = hasSubjects ? 'Añade una tarea o un examen y tendrás sus fechas a mano.' : 'Añade una asignatura para vincular tus tareas y organizar las entregas.';
+      if (!hasSubjects) action = '<button class="btn" type="button" data-dashboard-action="nueva-asignatura">' + uiIcon('plus') + ' Añadir asignatura</button>';
     }
-
-    cont.innerHTML = `
-      <div class="empty-state-card">
-        <div class="esc-icon">🎯</div>
-        <h3>${emptyTitle}</h3>
-        <p>${emptyDesc}</p>
-        <button class="btn btn-sm" type="button" onclick="openTaskDialog()">➕ Añadir primera tarea</button>
-      </div>
-    `;
+    cont.innerHTML = '<div class="empty-state-card"><span class="empty-symbol">' + uiIcon('check') + '</span><h3>' + title + '</h3><p>' + description + '</p>' + action + '</div>';
     return;
   }
 
@@ -419,7 +401,7 @@ function renderMisTareas() {
     return `
       <div class="task-card sc-${color} ${t.estado === 'completada' ? 'completed' : ''}">
         <div class="tc-top">
-          <input type="checkbox" data-toggletask="${t.id}" ${t.estado === 'completada' ? 'checked' : ''} aria-label="Marcar completada">
+          <input type="checkbox" data-toggletask="${t.id}" ${t.estado === 'completada' ? 'checked' : ''} aria-label="Marcar como ${t.estado === 'completada' ? 'pendiente' : 'completada'}: ${esc(t.titulo)}">
           <div class="tc-info">
             <span class="badge ${tipoInfo.badge}">${tipoInfo.icon} ${tipoInfo.label}</span>
             <span class="badge ${st.tone}">${st.label}</span>
@@ -433,9 +415,9 @@ function renderMisTareas() {
         <div class="tc-title">${esc(t.titulo)}</div>
         ${t.descripcion ? `<div class="tc-desc">${esc(t.descripcion)}</div>` : ''}
         <div class="tc-footer">
-          <span>📚 <strong>${esc(a ? a.nombre : t.asignaturaNombre || 'Asignatura')}</strong></span>
-          ${t.dia ? `<span>📅 ${diaLabel(t.dia)} (${t.horaInicio}–${t.horaFin})</span>` : ''}
-          ${t.fechaEntrega ? `<span>⏰ ${formatoEntrega(t.fechaEntrega)}</span>` : ''}
+          <span>${uiIcon('book')} <strong>${esc(a ? a.nombre : t.asignaturaNombre || 'Asignatura')}</strong></span>
+          ${t.dia ? `<span>${uiIcon('calendar')} ${diaLabel(t.dia)} (${t.horaInicio}–${t.horaFin})</span>` : ''}
+          ${t.fechaEntrega ? `<span>${uiIcon('clock')} ${formatoEntrega(t.fechaEntrega)}</span>` : ''}
         </div>
       </div>
     `;
@@ -446,37 +428,16 @@ function renderMisTareas() {
 function renderDashboardTasks() {
   const cont = $('#dash-tasks-preview');
   if (!cont) return;
-  const tareas = (state.tareas || []).filter(t => t.estado === 'pendiente');
-  tareas.sort((a, b) => {
-    if (!a.fechaEntrega && !b.fechaEntrega) return 0;
-    if (!a.fechaEntrega) return 1;
-    if (!b.fechaEntrega) return -1;
-    return a.fechaEntrega.localeCompare(b.fechaEntrega);
-  });
-
-  const proximas = tareas.slice(0, 4);
-
-  if (proximas.length === 0) {
-    cont.innerHTML = `
-      <div class="dash-card">
-        <h3 class="section-title" style="margin-top:0">Próximas tareas</h3>
-        <p class="muted" style="font-size:0.85rem">¡Todo al día! No tienes tareas pendientes en este momento.</p>
-      </div>
-    `;
-    return;
-  }
-
+  const tasks = (state.tareas || []).filter(t => t.estado === 'pendiente').sort((a, b) => (a.fechaEntrega || '9999').localeCompare(b.fechaEntrega || '9999'));
+  if (tasks.length <= 1) { cont.innerHTML = ''; return; }
   cont.innerHTML = `
     <div class="dash-card">
-      <div class="schedule-config-head" style="margin-bottom:.5rem">
-        <h3 class="section-title" style="margin-top:0">Próximas tareas (${tareas.length} pendientes)</h3>
-        <button class="btn btn-ghost btn-sm" type="button" onclick="document.querySelector('.nav-btn[data-view=\"tareas\"]').click()">Ver todas</button>
+      <div class="schedule-config-head">
+        <h3 class="section-title">Otras tareas</h3>
+        <button class="text-action" type="button" data-dashboard-action="tareas">Ver todas ${uiIcon('arrow')}</button>
       </div>
-      <div class="tasks-mini-list">
-        ${proximas.map(t => renderTaskMiniCard(t)).join('')}
-      </div>
-    </div>
-  `;
+      <div class="tasks-mini-list">${tasks.slice(1, 4).map(t => renderTaskMiniCard(t)).join('')}</div>
+    </div>`;
 }
 
 /* ---------- Eventos de tareas ---------- */

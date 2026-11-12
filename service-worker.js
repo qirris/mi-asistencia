@@ -1,17 +1,17 @@
-/* Service Worker — SalvaCurso
+/* Service Worker — SalvaTuCurso
    Cachea los recursos esenciales para funcionar sin conexión. */
 
-const CACHE_VERSION = 'salvacurso-v20';
+const CACHE_VERSION = 'salvatucurso-v23';
 const APP_SHELL = [
   './',
   './index.html',
-  './src/css/styles.css?v=17',
-  './src/js/attendance.js',
-  './src/js/storage.js',
-  './src/js/schedule.js',
-  './src/js/tasks.js',
-  './src/js/history.js',
-  './src/js/app.js?v=19',
+  './src/css/styles.css?v=23',
+  './src/js/attendance.js?v=22',
+  './src/js/storage.js?v=22',
+  './src/js/schedule.js?v=22',
+  './src/js/tasks.js?v=22',
+  './src/js/history.js?v=22',
+  './src/js/app.js?v=22',
   './manifest.webmanifest',
   './assets/icons/icon-192.png',
   './assets/icons/icon-512.png'
@@ -38,6 +38,19 @@ self.addEventListener('fetch', (event) => {
 
   // Solo gestionamos GET del mismo origen
   if (req.method !== 'GET' || new URL(req.url).origin !== self.location.origin) {
+    return;
+  }
+
+  if (req.mode === 'navigate') {
+    event.respondWith(
+      fetch(req).then((res) => {
+        if (res.ok) {
+          const copy = res.clone();
+          caches.open(CACHE_VERSION).then(cache => cache.put(req, copy)).catch(() => {});
+        }
+        return res;
+      }).catch(() => caches.match(req).then(cached => cached || caches.match('./index.html')))
+    );
     return;
   }
 
