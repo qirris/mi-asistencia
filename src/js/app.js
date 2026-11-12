@@ -1,5 +1,5 @@
 /* ============================================================
-   Mi Asistencia — app.js
+   SalvaCurso — app.js
    Inicialización, render de vistas e interacción general.
    ============================================================ */
 
@@ -107,7 +107,7 @@ function render() {
 
 function renderHeader() {
   const el = $('#header-etapa');
-  if (el) el.textContent = (ETAPAS[state.etapa] || {}).label || 'Mi Asistencia';
+  if (el) el.textContent = (ETAPAS[state.etapa] || {}).label || 'SalvaCurso';
 }
 
 function subjectCard(a) {
@@ -146,7 +146,7 @@ function renderDashboardWelcome() {
     fechaEl.textContent = fechaStr.charAt(0).toUpperCase() + fechaStr.slice(1);
   }
   if (etapaEl) {
-    etapaEl.textContent = (ETAPAS[state.etapa] || {}).label || 'Mi Asistencia';
+    etapaEl.textContent = (ETAPAS[state.etapa] || {}).label || 'SalvaCurso';
   }
 }
 
@@ -908,7 +908,7 @@ function exportJSON() {
   const url = URL.createObjectURL(blob);
   const a = document.createElement('a');
   a.href = url;
-  a.download = 'mi-asistencia-backup-' + todayISO() + '.json';
+  a.download = 'salvacurso-copia-' + todayISO() + '.json';
   document.body.appendChild(a);
   a.click();
   document.body.removeChild(a);

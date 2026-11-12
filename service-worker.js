@@ -1,19 +1,18 @@
-/* Service Worker — Mi Asistencia
+/* Service Worker — SalvaCurso
    Cachea los recursos esenciales para funcionar sin conexión. */
 
-const CACHE_VERSION = 'mi-asistencia-v19';
+const CACHE_VERSION = 'salvacurso-v20';
 const APP_SHELL = [
   './',
   './index.html',
-  './src/css/styles.css?v=16',
+  './src/css/styles.css?v=17',
   './src/js/attendance.js',
   './src/js/storage.js',
   './src/js/schedule.js',
   './src/js/tasks.js',
   './src/js/history.js',
-  './src/js/app.js?v=18',
+  './src/js/app.js?v=19',
   './manifest.webmanifest',
-  './assets/icons/logo.svg',
   './assets/icons/icon-192.png',
   './assets/icons/icon-512.png'
 ];

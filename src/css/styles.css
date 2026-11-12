@@ -1,5 +1,5 @@
 /* ============================================================
-   Mi Asistencia — styles.css
+   SalvaCurso — styles.css
    Rediseño visual premium tipo Notion, Linear, Todoist y Apple.
    ============================================================ */
 
@@ -1340,6 +1340,14 @@ input:focus, select:focus, textarea:focus { box-shadow: 0 0 0 3px var(--primary-
 }
 
 
-/* Marca vectorial de la aplicación */
-.brand .logo { overflow: hidden; }
-.brand .logo img { display: block; width: 100%; height: 100%; object-fit: cover; }
+
+
+/* Marca de SalvaCurso */
+.brand .logo {
+  overflow: hidden;
+  background: #fff;
+  border: 1px solid var(--border);
+  box-shadow: none;
+}
+.brand .logo img { display: block; width: 100%; height: 100%; padding: 1px; object-fit: contain; }
+.brand .brand-tagline { display: block; margin-top: .12rem; color: var(--muted); font-size: .72rem; font-weight: 500; }
