@@ -132,6 +132,7 @@ function alternarEstadoTarea(id) {
 /* ---------- Diálogos e Interfaz de Tareas ---------- */
 function openTaskDialog(prefill = {}) {
   editingTaskId = null;
+  clearFormErrors($('#dialog-task'));
   const asigs = state.asignaturas.filter(a => !a.archivada);
   const selAsig = $('#dlg-task-asig');
   if (selAsig) {
@@ -141,7 +142,7 @@ function openTaskDialog(prefill = {}) {
     if (prefill.asignaturaId) selAsig.value = prefill.asignaturaId;
   }
 
-  $('#dlg-task-title').textContent = 'Nueva actividad o nota';
+  $('#dlg-task-title').textContent = prefill.tipo === 'nota' ? 'Nueva nota' : 'Nueva tarea';
   $('#dlg-task-titulo').value = '';
   $('#dlg-task-desc').value = '';
   $('#dlg-task-tipo').value = prefill.tipo || 'deberes';
@@ -156,21 +157,25 @@ function openTaskDialog(prefill = {}) {
     horaFin: prefill.horaFin
   } : null;
 
+  $('#task-more-options').open = prefill.tipo === 'nota' || !!(prefill.tipo && prefill.tipo !== 'deberes') || !!(prefill.prioridad && prefill.prioridad !== 'normal');
   $('#dialog-task').showModal();
+  $('#dialog-task').querySelector('.dialog-content').scrollTop = 0;
+  $('#dlg-task-titulo').focus();
 }
 
 function openTaskEditDialog(id) {
   const t = state.tareas.find(x => x.id === id);
   if (!t) return;
   editingTaskId = id;
-  const asigs = state.asignaturas.filter(a => !a.archivada);
+  clearFormErrors($('#dialog-task'));
+  const asigs = state.asignaturas.filter(a => !a.archivada || a.id === t.asignaturaId);
   const selAsig = $('#dlg-task-asig');
   if (selAsig) {
-    selAsig.innerHTML = asigs.map(a => `<option value="${a.id}">${esc(a.nombre)}</option>`).join('');
+    selAsig.innerHTML = asigs.map(a => `<option value="${a.id}">${esc(a.nombre)}${a.archivada ? ' (archivada)' : ''}</option>`).join('');
     selAsig.value = t.asignaturaId;
   }
 
-  $('#dlg-task-title').textContent = 'Editar actividad o nota';
+  $('#dlg-task-title').textContent = t.tipo === 'nota' ? 'Editar nota' : 'Editar tarea';
   $('#dlg-task-titulo').value = t.titulo;
   $('#dlg-task-desc').value = t.descripcion;
   $('#dlg-task-tipo').value = t.tipo;
@@ -185,7 +190,10 @@ function openTaskEditDialog(id) {
     horaFin: t.horaFin
   } : null;
 
+  $('#task-more-options').open = t.tipo !== 'deberes' || t.prioridad !== 'normal' || t.estado !== 'pendiente' || !!t.descripcion;
   $('#dialog-task').showModal();
+  $('#dialog-task').querySelector('.dialog-content').scrollTop = 0;
+  $('#dlg-task-titulo').focus();
 }
 
 function guardarTareaModal() {
@@ -332,8 +340,8 @@ function renderMisTareas() {
     statsEl.innerHTML = tareas.length ? `
       <span><strong>${pendientes.length}</strong> pendiente${pendientes.length === 1 ? '' : 's'}</span>
       <span><strong>${proximas.length}</strong> para los próximos 3 días</span>
-      ${examenesPendientes.length ? '<span><strong>' + examenesPendientes.length + '</strong> exámenes</span>' : ''}
-      ${completadas.length ? '<span><strong>' + completadas.length + '</strong> completadas</span>' : ''}` : '';
+      ${examenesPendientes.length ? '<span><strong>' + examenesPendientes.length + '</strong> examen' + (examenesPendientes.length === 1 ? '' : 'es') + '</span>' : ''}
+      ${completadas.length ? '<span><strong>' + completadas.length + '</strong> completada' + (completadas.length === 1 ? '' : 's') + '</span>' : ''}` : '';
   }
 
   const filtroAsig = $('#task-filtro-asig');

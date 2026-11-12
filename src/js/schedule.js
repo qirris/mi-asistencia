@@ -928,8 +928,4 @@ function bindSchedule() {
       if (editingFranjaId) eliminarFranja(editingFranjaId);
     });
   }
-
-  if (typeof setInterval === 'function') {
-    setInterval(renderDashboardClassesToday, 60000);
-  }
 }

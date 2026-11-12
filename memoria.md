@@ -25,6 +25,11 @@ Web app responsive e instalable (PWA) para estudiantes de Andalucía que permite
 - Formularios con entradas de 16 px en móvil, controles táctiles ampliados y diálogos con contenido desplazable y un único pie de acciones.
 - Iconos SVG consistentes en avisos, estados vacíos y acciones; se retiraron los emojis decorativos restantes.
 
+- Inicio se actualiza al cruzar límites horarios o cambiar de fecha, y al recuperar visibilidad, foco o una página desde la caché de navegación. Un único temporizador se alinea con el minuto y se pausa en segundo plano.
+- El refresco actúa sobre los bloques temporales, evita reconstruirlos si no cambiaron y conserva los borradores de tareas y de la guía inicial.
+- Creación rápida de tareas con título, asignatura y fecha; tipo, prioridad, estado y notas en «Más opciones». La edición y el acceso a notas abren las opciones cuando corresponde, sin perder los campos plegados ni la vinculación con una clase.
+- La edición mantiene la asignatura archivada de una tarea existente. Se limpian los errores al abrir un formulario nuevo y el foco empieza en el título.
+
 ## 3. Tecnologías y arquitectura
 - HTML5 + CSS3 + JavaScript Vanilla (sin frameworks ni dependencias npm).
 - Estructura modular en `src/css/` y `src/js/`:
@@ -65,6 +70,9 @@ Web app responsive e instalable (PWA) para estudiantes de Andalucía que permite
 - `node tests/theme.test.js`: tema automático/manual, recarga, preferencias inválidas, almacenamiento bloqueado, contraste en ambos temas y las 16 variantes de asignatura, estructura de diálogos y recursos precacheados.
 - Revisión de las siete vistas en ambos temas a 320, 390, 768 y 1280 px: sin desbordamientos de página. Revisión de diálogos con altura reducida, validación y cierre con Escape con retorno del foco.
 - Recarga local con el servidor apagado: se conservaron el tema oscuro y los datos existentes, sin depender de la red.
+
+- `node tests/daily-use.test.js`: cambio de clase, medianoche, foco, visibilidad, recuperación de página, temporizador único, conservación de borradores, valores avanzados plegados, edición y asignatura archivada.
+- Prueba de creación y edición en la vista local: formulario de tres campos, validación del título, recuperación de detalles al editar y comprobación en claro/oscuro, móvil estrecho con altura reducida y escritorio.
 
 ## 7. Convención de commits acordada
 Para mantener una identidad profesional y seria, los mensajes de commit futuros seguirán rigurosamente esta estructura en español con prefijos normalizados:

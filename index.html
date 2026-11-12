@@ -6,11 +6,11 @@
   <meta name="theme-color" content="#f5f6f4">
   <meta name="description" content="SalvaTuCurso: tus faltas, horario y tareas en un solo lugar.">
   <title>SalvaTuCurso</title>
-  <script src="src/js/theme.js?v=24"></script>
+  <script src="src/js/theme.js?v=28"></script>
   <link rel="manifest" href="manifest.webmanifest">
   <link rel="apple-touch-icon" href="assets/icons/icon-192.png">
   <link rel="icon" type="image/png" href="assets/icons/icon-192.png">
-  <link rel="stylesheet" href="src/css/styles.css?v=27">
+  <link rel="stylesheet" href="src/css/styles.css?v=28">
 </head>
 <body>
   <div class="app-shell">
@@ -713,7 +713,7 @@
   <dialog id="dialog-task" aria-labelledby="dlg-task-title">
     <div class="dialog-body">
 <div class="dialog-head">
-        <h3 id="dlg-task-title">Nueva actividad o nota</h3>
+        <h3 id="dlg-task-title">Nueva tarea</h3>
         <button class="btn btn-ghost btn-sm" id="dlg-task-close" type="button">Cerrar</button>
       </div>
 <div class="dialog-content">
@@ -726,6 +726,13 @@
           <label for="dlg-task-asig">Asignatura *</label>
           <select id="dlg-task-asig"></select>
         </div>
+        <div class="field">
+          <label for="dlg-task-fecha">Fecha de entrega (opcional)</label>
+          <input type="date" id="dlg-task-fecha">
+        </div>
+        <details class="task-options" id="task-more-options">
+          <summary>Más opciones <svg class="ui-icon filter-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></summary>
+          <div class="form-grid">
         <div class="form-row">
           <div class="field">
             <label for="dlg-task-tipo">Tipo de actividad</label>
@@ -750,10 +757,6 @@
         </div>
         <div class="form-row">
           <div class="field">
-            <label for="dlg-task-fecha">Fecha de entrega (opcional)</label>
-            <input type="date" id="dlg-task-fecha">
-          </div>
-          <div class="field">
             <label for="dlg-task-estado">Estado</label>
             <select id="dlg-task-estado">
               <option value="pendiente">Pendiente</option>
@@ -765,7 +768,8 @@
           <label for="dlg-task-desc">Descripción / Notas (opcional)</label>
           <textarea id="dlg-task-desc" placeholder="Detalles, páginas, instrucciones..."></textarea>
         </div>
-        
+          </div>
+        </details>
       </div>
 </div>
 <div class="dialog-actions">
@@ -799,12 +803,12 @@
       });
     }
   </script>
-  <script src="src/js/attendance.js?v=24"></script>
-  <script src="src/js/storage.js?v=24"></script>
-  <script src="src/js/schedule.js?v=24"></script>
-  <script src="src/js/tasks.js?v=24"></script>
-  <script src="src/js/history.js?v=24"></script>
-  <script src="src/js/app.js?v=24"></script>
+  <script src="src/js/attendance.js?v=28"></script>
+  <script src="src/js/storage.js?v=28"></script>
+  <script src="src/js/schedule.js?v=28"></script>
+  <script src="src/js/tasks.js?v=28"></script>
+  <script src="src/js/history.js?v=28"></script>
+  <script src="src/js/app.js?v=28"></script>
 
   <!-- Nodos ocultos de compatibilidad mientras se renueva la caché de la PWA -->
   <p id="falta-legal" class="hidden" aria-hidden="true"></p>

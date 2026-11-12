@@ -1612,3 +1612,10 @@ dialog::backdrop { background: var(--backdrop); backdrop-filter: none; }
 }
 .class-detail-header > div { min-width: 0; }
 .tmi-title, .cell-subject, .subject-name { overflow-wrap: anywhere; }
+
+/* Creación rápida: los datos cotidianos primero */
+.task-options { border-top: 1px solid var(--border); padding-top: .25rem; }
+.task-options > summary { display: flex; align-items: center; gap: .5rem; min-height: 44px; padding: .45rem 0; color: var(--primary); font-size: .88rem; font-weight: 600; cursor: pointer; list-style: none; }
+.task-options > summary::-webkit-details-marker { display: none; }
+.task-options[open] .filter-chevron { transform: rotate(180deg); }
+.task-options > .form-grid { padding-top: .85rem; }

@@ -10,6 +10,9 @@ let deferredInstallPrompt = null;
 let manualTotalAdd = false;
 let manualTotalDlg = false;
 let toastTimer = null;
+let dashboardRefreshTimer = null;
+let dashboardRefreshBound = false;
+let dashboardClockSignature = '';
 const ZOOM_PREFERENCE_KEY = 'miAsistenciaZoomPermitido';
 
 /* ---------- Utilidades y Validación ---------- */
@@ -1069,6 +1072,48 @@ function promptInstall() {
   toast('Sigue las instrucciones para instalar');
 }
 
+function refreshDashboardTime() {
+  if (!state || !state.horario || document.hidden) return false;
+  const next = findNextClass();
+  const signature = JSON.stringify([todayISO(), next ? [next.day.key, next.slot.id, next.slot.inicio, next.slot.fin, next.subject.id, next.current, next.offset] : null]);
+  if (signature === dashboardClockSignature) return false;
+  dashboardClockSignature = signature;
+
+  // Conservar el foco si cambia el bloque en el que se estaba navegando.
+  const focused = document.activeElement;
+  const container = focused && focused.closest ? focused.closest('#dash-priorities, #dash-tasks-preview') : null;
+  const attribute = container ? ['data-dashboard-action', 'data-toggletask', 'data-edittask', 'data-deltask'].find(name => focused.hasAttribute(name)) : null;
+  const value = attribute ? focused.getAttribute(attribute) : null;
+  renderDashboardWelcome();
+  renderDashboardPriorities();
+  renderDashboardAlerts();
+  renderDashboardClassesToday();
+  renderDashboardTasks();
+  if (container && attribute) {
+    const replacement = Array.from(container.querySelectorAll('button, input')).find(el => el.getAttribute(attribute) === value);
+    if (replacement) replacement.focus({ preventScroll: true });
+  }
+  return true;
+}
+
+function scheduleDashboardRefresh() {
+  if (dashboardRefreshTimer !== null) clearTimeout(dashboardRefreshTimer);
+  dashboardRefreshTimer = null;
+  if (document.hidden) return;
+  refreshDashboardTime();
+  // Alinear con el minuto siguiente y recuperar los cambios tras una suspensión.
+  dashboardRefreshTimer = setTimeout(scheduleDashboardRefresh, 60000 - (Date.now() % 60000) + 25);
+}
+
+function bindDashboardRefresh() {
+  if (dashboardRefreshBound) return;
+  dashboardRefreshBound = true;
+  document.addEventListener('visibilitychange', scheduleDashboardRefresh);
+  window.addEventListener('focus', scheduleDashboardRefresh);
+  window.addEventListener('pageshow', scheduleDashboardRefresh);
+  scheduleDashboardRefresh();
+}
+
 /* ---------- Inicio ---------- */
 function init() {
   applyZoomPreference();
@@ -1088,6 +1133,7 @@ function init() {
   bindConfig();
   setupInstall();
   render();
+  bindDashboardRefresh();
 }
 
 document.addEventListener('DOMContentLoaded', init);

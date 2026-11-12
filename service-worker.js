@@ -1,18 +1,18 @@
 /* Service Worker — SalvaTuCurso
    Cachea los recursos esenciales para funcionar sin conexión. */
 
-const CACHE_VERSION = 'salvatucurso-v27';
+const CACHE_VERSION = 'salvatucurso-v28';
 const APP_SHELL = [
   './',
   './index.html',
-  './src/css/styles.css?v=27',
-  './src/js/theme.js?v=24',
-  './src/js/attendance.js?v=24',
-  './src/js/storage.js?v=24',
-  './src/js/schedule.js?v=24',
-  './src/js/tasks.js?v=24',
-  './src/js/history.js?v=24',
-  './src/js/app.js?v=24',
+  './src/css/styles.css?v=28',
+  './src/js/theme.js?v=28',
+  './src/js/attendance.js?v=28',
+  './src/js/storage.js?v=28',
+  './src/js/schedule.js?v=28',
+  './src/js/tasks.js?v=28',
+  './src/js/history.js?v=28',
+  './src/js/app.js?v=28',
   './manifest.webmanifest',
   './assets/icons/icon-192.png',
   './assets/icons/icon-512.png'

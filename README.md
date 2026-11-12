@@ -23,6 +23,12 @@ SalvaTuCurso se organiza en seis secciones principales con una interfaz moderna,
 
 La guía opcional de Inicio permite elegir la etapa, añadir asignaturas y colocar la primera clase. Conserva el progreso al recargar, permite continuar después y se puede reabrir desde Ajustes. Los cursos existentes mantienen sus datos y no repiten los pasos ya completados.
 
+## Uso diario
+
+Inicio actualiza la fecha, la clase actual o siguiente y los avisos al cambiar de minuto cuando es necesario y al volver a la aplicación. El temporizador se detiene mientras la página está oculta y las actualizaciones no reinician los formularios.
+
+Al crear una tarea se muestran título, asignatura y fecha de entrega. **Más opciones** reúne tipo, prioridad, estado y notas. Al editar una actividad con detalles adicionales, este apartado se abre automáticamente y conserva sus valores aunque se guarde plegado.
+
 ## Apariencia y formularios
 
 En **Ajustes → Apariencia** puedes elegir **Automático, Claro u Oscuro**. La opción automática sigue el dispositivo y la elección manual se conserva en este navegador mediante `salvatucursoTema`, separada de los datos académicos. El tema se aplica antes del CSS y también funciona sin conexión.
@@ -103,6 +109,7 @@ Desde la raíz del proyecto:
 node tests/attendance.test.js   # cálculos FP/ESO, asistencia global y render
 node tests/check-ids.js         # consistencia de IDs entre HTML y JS
 node tests/theme.test.js        # tema, contraste, diálogos y recursos offline
+node tests/daily-use.test.js    # reloj, reanudación, borradores y tareas rápidas
 ```
 
 Verificación de sintaxis de los módulos:
