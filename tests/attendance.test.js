@@ -7,7 +7,7 @@ const vm = require('vm');
 const code = [
   'src/js/attendance.js',
   'src/js/storage.js',
-  'src/js/ocr.js',
+  'src/js/schedule.js',
   'src/js/app.js'
 ].map(f => fs.readFileSync(f, 'utf8')).join('\n') +
   '\nglobalThis.__getState = () => state; globalThis.__setState = (s) => { state = s; };';
@@ -22,7 +22,26 @@ const sample = {
   faltas: [
     { id: 'f1', asignaturaId: 'a1', fecha: '2026-11-01', horas: 30, tipo: 'no_justificada', motivo: '' }
   ],
-  config: { criterio: { tipo: '', valor: null } }
+  config: { criterio: { tipo: '', valor: null } },
+  horario: {
+    entrada: '08:00',
+    salida: '10:00',
+    duracionClase: 60,
+    duracionRecreo: 0,
+    recreoTras: 3,
+    numRecreos: 0,
+    dias: ['lunes', 'martes'],
+    diasSalida: { lunes: '10:00', martes: '09:00' },
+    franjas: [
+      { id: 'h1', inicio: '08:00', fin: '09:00', tipo: 'clase' },
+      { id: 'h2', inicio: '09:00', fin: '10:00', tipo: 'clase' }
+    ],
+    casillas: {
+      'lunes|h1': { asignaturaId: 'a1' },
+      'lunes|h2': { asignaturaId: 'a2' },
+      'martes|h1': { asignaturaId: 'a1' }
+    }
+  }
 };
 
 const store = {};

@@ -6,7 +6,7 @@ const html = fs.readFileSync('index.html', 'utf8');
 const js = [
   'src/js/attendance.js',
   'src/js/storage.js',
-  'src/js/ocr.js',
+  'src/js/schedule.js',
   'src/js/app.js'
 ].map(f => fs.readFileSync(f, 'utf8')).join('\n');
 

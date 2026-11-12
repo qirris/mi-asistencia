@@ -11,7 +11,8 @@ const DEFAULT_STATE = {
   etapa: 'fp_superior',
   asignaturas: [],
   faltas: [],
-  config: { criterio: { tipo: '', valor: null } }
+  config: { criterio: { tipo: '', valor: null } },
+  horario: null
 };
 
 /* ---------- Persistencia ---------- */
@@ -26,7 +27,7 @@ function loadState() {
       console.warn('Estado corrupto, se reinicia.', e);
     }
   }
-  state = JSON.parse(JSON.stringify(DEFAULT_STATE));
+  state = normalizeState(JSON.parse(JSON.stringify(DEFAULT_STATE)));
   migrateLegacy();
 }
 
@@ -76,9 +77,10 @@ function normalizeState(input) {
   if (!ETAPAS[out.etapa]) out.etapa = 'fp_superior';
 
   out.asignaturas = Array.isArray(out.asignaturas)
-    ? out.asignaturas.filter(a => a && a.id).map(a => ({
+    ? out.asignaturas.filter(a => a && a.id).map((a, i) => ({
         id: String(a.id),
         nombre: String(a.nombre || 'Sin nombre'),
+        color: colorValido(a.color, i),
         horasSemanales: a.horasSemanales == null || a.horasSemanales === '' ? null : Number(a.horasSemanales),
         semanas: a.semanas == null || a.semanas === '' ? null : Number(a.semanas),
         horasTotales: Number(a.horasTotales) || 0,
@@ -99,5 +101,6 @@ function normalizeState(input) {
 
   out.config = Object.assign({ criterio: { tipo: '', valor: null } }, out.config || {});
   out.config.criterio = Object.assign({ tipo: '', valor: null }, (out.config || {}).criterio || {});
+  out.horario = normalizeHorario(out.horario);
   return out;
 }

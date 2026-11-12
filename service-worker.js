@@ -1,15 +1,14 @@
 /* Service Worker — Mi Asistencia
-   Cachea los recursos esenciales para funcionar sin conexión.
-   El OCR (Tesseract.js desde CDN) NO funciona offline en esta versión. */
+   Cachea los recursos esenciales para funcionar sin conexión. */
 
-const CACHE_VERSION = 'mi-asistencia-v3';
+const CACHE_VERSION = 'mi-asistencia-v4';
 const APP_SHELL = [
   './',
   './index.html',
   './src/css/styles.css',
   './src/js/attendance.js',
   './src/js/storage.js',
-  './src/js/ocr.js',
+  './src/js/schedule.js',
   './src/js/app.js',
   './manifest.webmanifest',
   './assets/icons/icon-192.png',
