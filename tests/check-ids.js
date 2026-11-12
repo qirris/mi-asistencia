@@ -4,6 +4,7 @@
 const fs = require('fs');
 const html = fs.readFileSync('index.html', 'utf8');
 const js = [
+  'src/js/theme.js',
   'src/js/attendance.js',
   'src/js/storage.js',
   'src/js/schedule.js',
@@ -13,7 +14,7 @@ const js = [
 ].map(f => fs.readFileSync(f, 'utf8')).join('\n');
 
 const ids = new Set([...(html + '\n' + js).matchAll(/id="([^"]+)"/g)].map(m => m[1]));
-const used = [...js.matchAll(/\$\('#([^']+)'\)/g)].map(m => m[1]);
+const used = [...js.matchAll(/\$\('#([^']+)'\)/g), ...js.matchAll(/getElementById\(['"]([^'"]+)['"]\)/g)].map(m => m[1]);
 const missing = [...new Set(used)].filter(id => !ids.has(id));
 
 console.log('IDs declarados:', ids.size);

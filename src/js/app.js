@@ -99,6 +99,12 @@ function uiIcon(name) {
     check: '<path d="m5 12 4 4L19 6"/>',
     clock: '<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>',
     calendar: '<rect x="3" y="5" width="18" height="16" rx="2"/><path d="M16 3v4M8 3v4M3 11h18"/>',
+    edit: '<path d="m16 3 5 5-12 12-6 1 1-6Z"/><path d="m14 5 5 5"/>',
+    trash: '<path d="M3 6h18M9 6V3h6v3M6 6l1 15h10l1-15M10 10v7M14 10v7"/>',
+    warning: '<path d="m12 3 10 18H2Z"/><path d="M12 9v4M12 17h.01"/>',
+    note: '<path d="M14 3H5v18h14V8Z"/><path d="M14 3v5h5M8 12h8M8 16h5"/>',
+    clipboard: '<path d="M9 5H5v16h14V5h-4"/><rect x="9" y="3" width="6" height="4" rx="1"/><path d="M8 12h8M8 16h5"/>',
+    close: '<path d="m6 6 12 12M18 6 6 18"/>',
     book: '<path d="M4 19V5a2 2 0 0 1 2-2h14v18H6a2 2 0 0 1-2-2Zm0 0a2 2 0 0 1 2-2h14"/>'
   };
   return '<svg class="ui-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' + (paths[name] || paths.arrow) + '</svg>';
@@ -233,9 +239,9 @@ function renderDashboardAlerts() {
     const c = calcAsignatura(a);
     const e = estadoAsignatura(a, c);
     if (e.tone === 'red') {
-      avisos.push({ type: 'danger', text: `⚠️ <strong>${esc(a.nombre)}</strong>: Límite de asistencia superado (${e.label}).` });
+      avisos.push({ type: 'danger', text: `${uiIcon('warning')} <strong>${esc(a.nombre)}</strong>: Límite de asistencia superado (${e.label}).` });
     } else if (e.tone === 'yellow') {
-      avisos.push({ type: 'warn', text: `⚡ <strong>${esc(a.nombre)}</strong>: Cerca del límite de asistencia (${e.label}).` });
+      avisos.push({ type: 'warn', text: `${uiIcon('warning')} <strong>${esc(a.nombre)}</strong>: Cerca del límite de asistencia (${e.label}).` });
     }
   });
 
@@ -243,9 +249,9 @@ function renderDashboardAlerts() {
   tareas.forEach(t => {
     const d = diasHasta(t.fechaEntrega);
     if (d != null && d < 0) {
-      avisos.push({ type: 'danger', text: `⏰ Tarea vencida: <strong>${esc(t.titulo)}</strong> (${esc(t.asignaturaNombre)}).` });
+      avisos.push({ type: 'danger', text: `${uiIcon('clock')} Tarea vencida: <strong>${esc(t.titulo)}</strong> (${esc(t.asignaturaNombre)}).` });
     } else if (d != null && d === 0) {
-      avisos.push({ type: 'warn', text: `⏰ Tarea para hoy: <strong>${esc(t.titulo)}</strong> (${esc(t.asignaturaNombre)}).` });
+      avisos.push({ type: 'warn', text: `${uiIcon('clock')} Tarea para hoy: <strong>${esc(t.titulo)}</strong> (${esc(t.asignaturaNombre)}).` });
     }
   });
 
@@ -462,7 +468,7 @@ function renderAsignaturas() {
   let html = '';
   if (activas.length === 0) {
     html += `<div class="empty-state-card">
-      <div class="esc-icon">📚</div>
+      <div class="esc-icon">${uiIcon('book')}</div>
       <h3>¡Vamos a organizar tus clases!</h3>
       <p>Primero añade las asignaturas que tienes y después podrás colocarlas en tu horario y registrar tus faltas.</p>
     </div>`;
@@ -512,6 +518,7 @@ function renderFaltas() {
 }
 
 function renderConfig() {
+  if (typeof SalvaTuCursoTheme !== 'undefined') SalvaTuCursoTheme.syncSettings();
   $('#cfg-etapa').value = state.etapa;
   $('#cfg-zoom').checked = isZoomAllowed();
   const tipo = (ETAPAS[state.etapa] || {}).tipo;
@@ -934,6 +941,10 @@ function bindDialogFalta() {
 
 /* ---------- Eventos: configuración ---------- */
 function bindConfig() {
+  $('#cfg-theme').addEventListener('change', (event) => {
+    const saved = SalvaTuCursoTheme.setPreference(event.target.value);
+    toast(saved ? 'Apariencia actualizada' : 'Tema aplicado. Esta preferencia no se ha podido guardar.');
+  });
   $('#cfg-etapa').addEventListener('change', (e) => {
     state.etapa = e.target.value;
     state.config.onboarding.etapaConfirmada = true;

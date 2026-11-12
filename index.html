@@ -6,10 +6,11 @@
   <meta name="theme-color" content="#f5f6f4">
   <meta name="description" content="SalvaTuCurso: tus faltas, horario y tareas en un solo lugar.">
   <title>SalvaTuCurso</title>
+  <script src="src/js/theme.js?v=24"></script>
   <link rel="manifest" href="manifest.webmanifest">
   <link rel="apple-touch-icon" href="assets/icons/icon-192.png">
   <link rel="icon" type="image/png" href="assets/icons/icon-192.png">
-  <link rel="stylesheet" href="src/css/styles.css?v=23">
+  <link rel="stylesheet" href="src/css/styles.css?v=27">
 </head>
 <body>
   <div class="app-shell">
@@ -331,7 +332,7 @@
         </div>
 
         <details class="task-filters" id="task-filter-panel">
-          <summary><svg class="ui-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M4 7h16M7 12h10M10 17h4"/></svg> Filtros <span id="task-filter-count"></span></summary>
+          <summary><svg class="ui-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M4 7h16M7 12h10M10 17h4"/></svg> Filtros <span id="task-filter-count"></span><svg class="ui-icon filter-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></summary>
           <div class="filter-content">
             <button class="text-action" id="btn-reset-task-filters" type="button">Limpiar filtros</button>
           <div class="form-row three" style="grid-template-columns:repeat(auto-fit, minmax(180px, 1fr))">
@@ -383,12 +384,12 @@
           <div class="schedule-config-head" style="margin-bottom:.75rem">
             <h3 class="section-title" style="margin-top:0" id="cal-month-title">Mes Año</h3>
             <div style="display:flex;gap:.35rem;">
-              <button class="btn btn-ghost btn-sm" id="cal-prev" type="button">◀</button>
+              <button class="btn btn-ghost btn-sm" id="cal-prev" type="button" aria-label="Mes anterior"><svg class="ui-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 5-7 7 7 7"/></svg></button>
               <button class="btn btn-ghost btn-sm" id="cal-today" type="button">Hoy</button>
-              <button class="btn btn-ghost btn-sm" id="cal-next" type="button">▶</button>
+              <button class="btn btn-ghost btn-sm" id="cal-next" type="button" aria-label="Mes siguiente"><svg class="ui-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 5 7 7-7 7"/></svg></button>
             </div>
           </div>
-          <div class="calendar-grid" id="cal-grid"></div>
+          <div class="calendar-scroll"><div class="calendar-grid" id="cal-grid"></div></div>
         </div>
 
         <div class="card" style="margin-bottom:1.25rem">
@@ -477,6 +478,19 @@
           <p class="legal" id="cfg-legal" style="margin-top:.75rem"></p>
         </div>
 
+        <div class="card appearance-card" style="margin-bottom:1.25rem">
+          <h3 class="section-title" style="margin-top:0">Apariencia</h3>
+          <div class="field appearance-control">
+            <label for="cfg-theme">Tema de la aplicación</label>
+            <select id="cfg-theme" aria-describedby="cfg-theme-status">
+              <option value="system">Automático</option>
+              <option value="light">Claro</option>
+              <option value="dark">Oscuro</option>
+            </select>
+            <p class="theme-status" id="cfg-theme-status" role="status">Se adapta al tema de tu dispositivo.</p>
+          </div>
+        </div>
+
         <div class="card preference-card" style="margin-bottom:1.25rem">
           <h3 class="section-title" style="margin-top:0">Accesibilidad y pantalla</h3>
           <div class="preference-row">
@@ -514,7 +528,7 @@
         </div>
 
         <!-- 6. Acciones avanzadas (Borrar datos) -->
-        <div class="card" style="border-color:#fecaca;background:#fffdfd;margin-bottom:1.25rem">
+        <div class="card" style="border-color:var(--red-border);background:var(--card);margin-bottom:1.25rem">
           <h3 class="section-title" style="margin-top:0;color:var(--red);">Acciones avanzadas</h3>
           <p class="muted" style="font-size:0.85rem;margin-bottom:.85rem;">Eliminar todos tus datos de forma definitiva en este navegador.</p>
           <button class="btn btn-danger" id="btn-delete-all" type="button">Borrar todos los datos</button>
@@ -547,11 +561,12 @@
   <!-- Dialog edición de asignatura -->
   <dialog id="dialog-asig" aria-labelledby="dlg-title">
     <div class="dialog-body">
-      <div class="dialog-head">
+<div class="dialog-head">
         <h3 id="dlg-title">Editar asignatura</h3>
         <button class="btn btn-ghost btn-sm" id="dlg-close" type="button">Cerrar</button>
       </div>
-      <div class="form-grid">
+<div class="dialog-content">
+<div class="form-grid">
         <div class="field">
           <label for="dlg-nombre">Nombre de la asignatura</label>
           <input type="text" id="dlg-nombre">
@@ -565,22 +580,25 @@
           <input type="hidden" id="dlg-color" value="azul">
           <div class="color-picker" id="dlg-color-picker" role="radiogroup" aria-label="Color de la asignatura"></div>
         </div>
-        <div class="dialog-actions" style="margin-top:1.25rem">
-          <button class="btn btn-ghost" id="dlg-cancel" type="button">Cancelar</button>
-          <button class="btn" id="dlg-save" type="button">Guardar</button>
-        </div>
+        
       </div>
-    </div>
+</div>
+<div class="dialog-actions">
+<button class="btn btn-ghost" id="dlg-cancel" type="button">Cancelar</button>
+          <button class="btn" id="dlg-save" type="button">Guardar</button>
+</div>
+</div>
   </dialog>
 
   <!-- Dialog edición de falta -->
   <dialog id="dialog-falta" aria-labelledby="dlg-falta-title">
     <div class="dialog-body">
-      <div class="dialog-head">
+<div class="dialog-head">
         <h3 id="dlg-falta-title">Editar falta</h3>
         <button class="btn btn-ghost btn-sm" id="dlg-falta-close" type="button">Cerrar</button>
       </div>
-      <div class="form-grid">
+<div class="dialog-content">
+<div class="form-grid">
         <div class="field">
           <label for="dlg-falta-asig">Asignatura</label>
           <select id="dlg-falta-asig"></select>
@@ -608,45 +626,48 @@
             <input type="text" id="dlg-falta-motivo">
           </div>
         </div>
-        <div class="dialog-actions">
-          <button class="btn btn-ghost" id="dlg-falta-cancel" type="button">Cancelar</button>
-          <button class="btn" id="dlg-falta-save" type="button">Guardar</button>
-        </div>
+        
       </div>
-    </div>
+</div>
+<div class="dialog-actions">
+<button class="btn btn-ghost" id="dlg-falta-cancel" type="button">Cancelar</button>
+          <button class="btn" id="dlg-falta-save" type="button">Guardar</button>
+</div>
+</div>
   </dialog>
 
   <!-- Dialog de casilla del horario -->
   <dialog id="dialog-cell" aria-labelledby="dlg-cell-title">
     <div class="dialog-body">
-      <div class="dialog-head">
+<div class="dialog-head">
         <div>
           <h3 id="dlg-cell-title">Casilla</h3>
           <p class="muted" id="dlg-cell-subtitle" style="font-size:.82rem"></p>
         </div>
         <button class="btn btn-ghost btn-sm" id="dlg-cell-close" type="button">Cerrar</button>
       </div>
-      <p class="field-label">Elige una asignatura</p>
+<div class="dialog-content">
+<p class="field-label">Elige una asignatura</p>
       <div class="cell-subjects" id="dlg-cell-subjects"></div>
-      <div class="dialog-actions" style="margin-top:1rem">
-        <button class="btn btn-ghost" id="dlg-cell-break" type="button">Marcar recreo</button>
+</div>
+<div class="dialog-actions">
+<button class="btn btn-ghost" id="dlg-cell-break" type="button">Marcar recreo</button>
         <button class="btn btn-ghost" id="dlg-cell-clear" type="button">Vaciar</button>
-      </div>
-      <div class="dialog-actions" style="margin-top:.5rem">
-        <button class="btn btn-ghost" id="dlg-cell-editfranja" type="button">Editar franja</button>
+<button class="btn btn-ghost" id="dlg-cell-editfranja" type="button">Editar franja</button>
         <button class="btn btn-ghost" id="dlg-cell-addasig" type="button">Ir a asignaturas</button>
-      </div>
-    </div>
+</div>
+</div>
   </dialog>
 
   <!-- Dialog de franja horaria -->
   <dialog id="dialog-franja" aria-labelledby="dlg-franja-title">
     <div class="dialog-body">
-      <div class="dialog-head">
+<div class="dialog-head">
         <h3 id="dlg-franja-title">Editar franja</h3>
         <button class="btn btn-ghost btn-sm" id="dlg-franja-close" type="button">Cerrar</button>
       </div>
-      <div class="form-grid">
+<div class="dialog-content">
+<div class="form-grid">
         <div class="form-row">
           <div class="field">
             <label for="dlg-franja-inicio">Inicio</label>
@@ -664,34 +685,39 @@
             <option value="recreo">Recreo</option>
           </select>
         </div>
-        <div class="dialog-actions">
-          <button class="btn btn-danger" id="dlg-franja-delete" type="button">Eliminar</button>
+        
+      </div>
+</div>
+<div class="dialog-actions">
+<button class="btn btn-danger" id="dlg-franja-delete" type="button">Eliminar</button>
           <button class="btn btn-ghost" id="dlg-franja-cancel" type="button">Cancelar</button>
           <button class="btn" id="dlg-franja-save" type="button">Guardar</button>
-        </div>
-      </div>
-    </div>
+</div>
+</div>
   </dialog>
 
   <!-- Dialog detalle de clase -->
   <dialog id="dialog-class-detail" aria-labelledby="dlg-class-title">
-    <div class="dialog-body" style="max-height:85vh; overflow-y:auto;">
-      <div class="dialog-head">
+    <div class="dialog-body">
+<div class="dialog-head">
         <h3 id="dlg-class-title">Detalle de clase</h3>
         <button class="btn btn-ghost btn-sm" id="dlg-class-close" type="button">Cerrar</button>
       </div>
-      <div id="dialog-class-body"></div>
-    </div>
+<div class="dialog-content">
+<div id="dialog-class-body"></div>
+</div>
+</div>
   </dialog>
 
   <!-- Dialog de tarea / nota -->
   <dialog id="dialog-task" aria-labelledby="dlg-task-title">
-    <div class="dialog-body" style="max-height:85vh; overflow-y:auto;">
-      <div class="dialog-head">
+    <div class="dialog-body">
+<div class="dialog-head">
         <h3 id="dlg-task-title">Nueva actividad o nota</h3>
         <button class="btn btn-ghost btn-sm" id="dlg-task-close" type="button">Cerrar</button>
       </div>
-      <div class="form-grid">
+<div class="dialog-content">
+<div class="form-grid">
         <div class="field">
           <label for="dlg-task-titulo">Título *</label>
           <input type="text" id="dlg-task-titulo" placeholder="Ej: Ejercicios página 45">
@@ -739,23 +765,27 @@
           <label for="dlg-task-desc">Descripción / Notas (opcional)</label>
           <textarea id="dlg-task-desc" placeholder="Detalles, páginas, instrucciones..."></textarea>
         </div>
-        <div class="dialog-actions" style="margin-top:1rem">
-          <button class="btn btn-ghost" id="dlg-task-cancel" type="button">Cancelar</button>
-          <button class="btn" id="dlg-task-save" type="button">Guardar actividad</button>
-        </div>
+        
       </div>
-    </div>
+</div>
+<div class="dialog-actions">
+<button class="btn btn-ghost" id="dlg-task-cancel" type="button">Cancelar</button>
+          <button class="btn" id="dlg-task-save" type="button">Guardar</button>
+</div>
+</div>
   </dialog>
 
   <!-- Dialog detalle de día del historial -->
   <dialog id="dialog-history-day" aria-labelledby="dlg-day-title">
     <div class="dialog-body">
-      <div class="dialog-head">
+<div class="dialog-head">
         <h3 id="dlg-day-title">Ausencias</h3>
         <button class="btn btn-ghost btn-sm" id="dlg-day-close" type="button">Cerrar</button>
       </div>
-      <div id="dlg-day-body"></div>
-    </div>
+<div class="dialog-content">
+<div id="dlg-day-body"></div>
+</div>
+</div>
   </dialog>
 
   <div id="toast" class="toast" role="status" aria-live="polite"></div>
@@ -769,12 +799,12 @@
       });
     }
   </script>
-  <script src="src/js/attendance.js?v=22"></script>
-  <script src="src/js/storage.js?v=22"></script>
-  <script src="src/js/schedule.js?v=22"></script>
-  <script src="src/js/tasks.js?v=22"></script>
-  <script src="src/js/history.js?v=22"></script>
-  <script src="src/js/app.js?v=22"></script>
+  <script src="src/js/attendance.js?v=24"></script>
+  <script src="src/js/storage.js?v=24"></script>
+  <script src="src/js/schedule.js?v=24"></script>
+  <script src="src/js/tasks.js?v=24"></script>
+  <script src="src/js/history.js?v=24"></script>
+  <script src="src/js/app.js?v=24"></script>
 
   <!-- Nodos ocultos de compatibilidad mientras se renueva la caché de la PWA -->
   <p id="falta-legal" class="hidden" aria-hidden="true"></p>

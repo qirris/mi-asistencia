@@ -386,7 +386,7 @@ function renderFranjas() {
       <span class="fi-time">${f.inicio}–${f.fin}</span>
       <span class="fi-type">${f.tipo === 'recreo' ? 'Recreo' : 'Clase'} · ${minutosFranja(f)} min</span>
       <button class="btn btn-ghost btn-sm" type="button" data-editfranja="${f.id}">Editar</button>
-      <button class="btn btn-danger btn-sm" type="button" data-delfranja="${f.id}" aria-label="Eliminar franja">×</button>
+      <button class="btn btn-danger btn-sm" type="button" data-delfranja="${f.id}" aria-label="Eliminar franja">${uiIcon('trash')}</button>
     </div>
   `).join('');
 }
@@ -418,7 +418,7 @@ function renderGrid() {
   visibles.forEach(f => {
     html += `<div class="sg-time">
       <span>${f.inicio}–${f.fin}</span>
-      <button class="sg-edit" type="button" data-editfranja="${f.id}" aria-label="Editar franja ${f.inicio}–${f.fin}">✎</button>
+      <button class="sg-edit" type="button" data-editfranja="${f.id}" aria-label="Editar franja ${f.inicio}–${f.fin}">${uiIcon('edit')}</button>
     </div>`;
 
     if (f.tipo === 'recreo') {
@@ -508,7 +508,7 @@ function renderMobileHorario() {
       html += `<div class="mobile-class ${cls}" role="button" tabindex="0" data-cell="${key}" aria-label="${diaLabel(day)} ${f.inicio}–${f.fin}: ${esc(nombre)}">
         <span class="mc-time">${f.inicio}–${f.fin}</span>
         <span class="mc-name">${esc(nombre)}</span>
-        <button class="mc-edit" type="button" data-editfranja="${f.id}" aria-label="Editar franja">✎</button>
+        <button class="mc-edit" type="button" data-editfranja="${f.id}" aria-label="Editar franja">${uiIcon('edit')}</button>
       </div>`;
     });
     html += `</div>`;
@@ -563,7 +563,7 @@ function renderResumenHorario() {
   if (!filas.length) {
     cont.innerHTML = totalHtml + `
       <div class="empty-state-card" style="margin-top:1rem">
-        <div class="esc-icon">📅</div>
+        <div class="esc-icon">${uiIcon('calendar')}</div>
         <h3>Sin asignaturas en el horario</h3>
         <p>Toca una casilla de la semana para colocar tu primera asignatura y calcular automáticamente tus horas semanales.</p>
       </div>

@@ -10,6 +10,8 @@ Punto de entrada del proyecto. Proyecto: web app responsive e instalable (PWA) p
 ### Estado actual
 - PWA con Inicio, Asignaturas, Faltas, Horario, Mis tareas, Historial y Ajustes.
 - Inicio prioriza la próxima clase y la entrega más cercana; tareas y horario tienen resúmenes compactos y existe una guía opcional de tres pasos.
+- Temas automático/claro/oscuro, variables de color semánticas e iconos SVG. La apariencia se guarda por separado con `salvatucursoTema`.
+- Formularios y diálogos adaptados a pantallas estrechas y con poca altura.
 - Datos en `localStorage` con migración segura y copias JSON.
 - Código organizado en `src/css/` y `src/js/`; pruebas en `tests/`.
 - Repositorio: <https://github.com/qirris/mi-asistencia>.

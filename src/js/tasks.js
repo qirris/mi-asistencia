@@ -277,8 +277,8 @@ function openClassDetail(day, fid) {
     </div>
 
     <div class="class-actions-bar" style="margin-top:1rem">
-      <button class="btn btn-sm" type="button" id="btn-class-add-task" data-slot="${slotKey}" data-asig="${a.id}" data-dia="${day}" data-inicio="${f.inicio}" data-fin="${f.fin}">➕ Añadir tarea / examen</button>
-      <button class="btn btn-ghost btn-sm" type="button" id="btn-class-add-note" data-slot="${slotKey}" data-asig="${a.id}" data-dia="${day}" data-inicio="${f.inicio}" data-fin="${f.fin}">📝 Añadir nota</button>
+      <button class="btn btn-sm" type="button" id="btn-class-add-task" data-slot="${slotKey}" data-asig="${a.id}" data-dia="${day}" data-inicio="${f.inicio}" data-fin="${f.fin}">${uiIcon('plus')} Añadir tarea / examen</button>
+      <button class="btn btn-ghost btn-sm" type="button" id="btn-class-add-note" data-slot="${slotKey}" data-asig="${a.id}" data-dia="${day}" data-inicio="${f.inicio}" data-fin="${f.fin}">${uiIcon('note')} Añadir nota</button>
     </div>
 
     <div class="class-tasks-section" style="margin-top:1.25rem">
@@ -303,14 +303,14 @@ function renderTaskMiniCard(t) {
   const tipoInfo = TIPOS_TAREA[t.tipo] || TIPOS_TAREA.deberes;
   return `
     <div class="task-mini-item ${t.estado === 'completada' ? 'completed' : ''}">
-      <input type="checkbox" data-toggletask="${t.id}" ${t.estado === 'completada' ? 'checked' : ''} aria-label="Marcar como ${t.estado === 'completada' ? 'pendiente' : 'completada'}: ${esc(t.titulo)}">
+      <label class="checkbox-target"><input type="checkbox" data-toggletask="${t.id}" ${t.estado === 'completada' ? 'checked' : ''} aria-label="Marcar como ${t.estado === 'completada' ? 'pendiente' : 'completada'}: ${esc(t.titulo)}"></label>
       <div class="tmi-main">
         <div class="tmi-title">${tipoInfo.icon} ${esc(t.titulo)}</div>
         <div class="tmi-sub">${tipoInfo.label}${t.fechaEntrega ? ' · ' + formatoEntrega(t.fechaEntrega) : ''}</div>
       </div>
       <span class="badge ${st.tone}">${st.label}</span>
-      <button class="btn btn-ghost btn-sm" type="button" data-edittask="${t.id}" aria-label="Editar">✎</button>
-      <button class="btn btn-danger btn-sm" type="button" data-deltask="${t.id}" aria-label="Eliminar">×</button>
+      <button class="btn btn-ghost btn-sm" type="button" data-edittask="${t.id}" aria-label="Editar">${uiIcon('edit')}</button>
+      <button class="btn btn-danger btn-sm" type="button" data-deltask="${t.id}" aria-label="Eliminar">${uiIcon('trash')}</button>
     </div>
   `;
 }
@@ -401,7 +401,7 @@ function renderMisTareas() {
     return `
       <div class="task-card sc-${color} ${t.estado === 'completada' ? 'completed' : ''}">
         <div class="tc-top">
-          <input type="checkbox" data-toggletask="${t.id}" ${t.estado === 'completada' ? 'checked' : ''} aria-label="Marcar como ${t.estado === 'completada' ? 'pendiente' : 'completada'}: ${esc(t.titulo)}">
+          <label class="checkbox-target"><input type="checkbox" data-toggletask="${t.id}" ${t.estado === 'completada' ? 'checked' : ''} aria-label="Marcar como ${t.estado === 'completada' ? 'pendiente' : 'completada'}: ${esc(t.titulo)}"></label>
           <div class="tc-info">
             <span class="badge ${tipoInfo.badge}">${tipoInfo.icon} ${tipoInfo.label}</span>
             <span class="badge ${st.tone}">${st.label}</span>
@@ -409,7 +409,7 @@ function renderMisTareas() {
           </div>
           <div class="tc-actions">
             <button class="btn btn-ghost btn-sm" type="button" data-edittask="${t.id}" aria-label="Editar">Editar</button>
-            <button class="btn btn-danger btn-sm" type="button" data-deltask="${t.id}" aria-label="Eliminar">×</button>
+            <button class="btn btn-danger btn-sm" type="button" data-deltask="${t.id}" aria-label="Eliminar">${uiIcon('trash')}</button>
           </div>
         </div>
         <div class="tc-title">${esc(t.titulo)}</div>

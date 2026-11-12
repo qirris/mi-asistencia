@@ -20,9 +20,15 @@ Web app responsive e instalable (PWA) para estudiantes de Andalucía que permite
 - Guía opcional de tres pasos (etapa, asignaturas y horario), con progreso persistente y reconocimiento de datos existentes. Sin datos se evitan estadísticas vacías y clases sin asignatura.
 - Se mantienen las cuentas y la sincronización fuera de esta entrega.
 
+- Apariencia automática/clara/oscura en Ajustes, con preferencia local `salvatucursoTema`, aplicada antes del CSS y sin alterar los datos académicos.
+- Colores semánticos compartidos y variantes oscuras para los ocho colores de asignatura y los avisos.
+- Formularios con entradas de 16 px en móvil, controles táctiles ampliados y diálogos con contenido desplazable y un único pie de acciones.
+- Iconos SVG consistentes en avisos, estados vacíos y acciones; se retiraron los emojis decorativos restantes.
+
 ## 3. Tecnologías y arquitectura
 - HTML5 + CSS3 + JavaScript Vanilla (sin frameworks ni dependencias npm).
 - Estructura modular en `src/css/` y `src/js/`:
+  - `theme.js`: Resuelve el tema antes de pintar y conserva la preferencia de apariencia por navegador.
   - `storage.js`: Persistencia, migración de datos y normalización de estado.
   - `attendance.js`: Etapas educativas, umbrales normativos y cálculos de asistencia.
   - `schedule.js`: Horario escolar semanal, configuración de franjas y resumen de horas.
@@ -55,6 +61,10 @@ Web app responsive e instalable (PWA) para estudiantes de Andalucía que permite
 - `node tests/check-ids.js`: Todos los IDs utilizados en JavaScript existen en el DOM de `index.html` (100% de consistencia).
 - `node tests/attendance.test.js`: Pruebas de cálculo de asistencia FP/ESO, asistencia global ponderada, manejo de umbrales y normalización.
 - Pruebas de persistencia en `localStorage`.
+
+- `node tests/theme.test.js`: tema automático/manual, recarga, preferencias inválidas, almacenamiento bloqueado, contraste en ambos temas y las 16 variantes de asignatura, estructura de diálogos y recursos precacheados.
+- Revisión de las siete vistas en ambos temas a 320, 390, 768 y 1280 px: sin desbordamientos de página. Revisión de diálogos con altura reducida, validación y cierre con Escape con retorno del foco.
+- Recarga local con el servidor apagado: se conservaron el tema oscuro y los datos existentes, sin depender de la red.
 
 ## 7. Convención de commits acordada
 Para mantener una identidad profesional y seria, los mensajes de commit futuros seguirán rigurosamente esta estructura en español con prefijos normalizados:

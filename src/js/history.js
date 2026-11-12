@@ -147,7 +147,7 @@ function openHistoryDayModal(dateStr) {
               <div style="display:flex;align-items:center;gap:.4rem">
                 <span class="h-hours">${fmt(f.horas)} h</span>
                 <button class="btn btn-ghost btn-sm" type="button" data-editfalta="${f.id}">Editar</button>
-                <button class="btn btn-danger btn-sm" type="button" data-delfalta="${f.id}">×</button>
+                <button class="btn btn-danger btn-sm" type="button" data-delfalta="${f.id}">${uiIcon('trash')}</button>
               </div>
             </div>
           `;
@@ -166,7 +166,7 @@ function renderHistoryList() {
   if (items.length === 0) {
     cont.innerHTML = `
       <div class="empty-state-card">
-        <div class="esc-icon">📋</div>
+        <div class="esc-icon">${uiIcon('clipboard')}</div>
         <h3>Todavía no tienes ausencias registradas</h3>
         <p>Cuando registres una falta, aparecerá aquí organizada cronológicamente para que puedas consultar tu historial.</p>
       </div>
@@ -186,7 +186,7 @@ function renderHistoryList() {
         <div style="display:flex;align-items:center;gap:.5rem">
           <span class="h-hours">${fmt(f.horas)} h</span>
           <button class="btn btn-ghost btn-sm" type="button" data-editfalta="${f.id}" aria-label="Editar falta">Editar</button>
-          <button class="btn btn-danger btn-sm" type="button" data-delfalta="${f.id}" aria-label="Eliminar falta">×</button>
+          <button class="btn btn-danger btn-sm" type="button" data-delfalta="${f.id}" aria-label="Eliminar falta">${uiIcon('trash')}</button>
         </div>
       </div>
     `;

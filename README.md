@@ -23,6 +23,12 @@ SalvaTuCurso se organiza en seis secciones principales con una interfaz moderna,
 
 La guía opcional de Inicio permite elegir la etapa, añadir asignaturas y colocar la primera clase. Conserva el progreso al recargar, permite continuar después y se puede reabrir desde Ajustes. Los cursos existentes mantienen sus datos y no repiten los pasos ya completados.
 
+## Apariencia y formularios
+
+En **Ajustes → Apariencia** puedes elegir **Automático, Claro u Oscuro**. La opción automática sigue el dispositivo y la elección manual se conserva en este navegador mediante `salvatucursoTema`, separada de los datos académicos. El tema se aplica antes del CSS y también funciona sin conexión.
+
+La paleta de asignaturas y los avisos tienen variantes para cada tema. Los diálogos mantienen la cabecera y las acciones visibles mientras se desplazan los campos. Los iconos son SVG locales, sin fuentes ni dependencias externas.
+
 ## Tecnologías y Arquitectura
 
 - HTML5, CSS3 y JavaScript Vanilla (sin frameworks ni dependencias externas).
@@ -58,7 +64,8 @@ mi-asistencia/
 │   ├── css/
 │   │   └── styles.css          # Sistema de diseño unificado y moderno
 │   └── js/
-│       ├── attendance.js       # Etapas y cálculos de asistencia
+│       ├── theme.js            # Apariencia automática y preferencia local
+       ├── attendance.js       # Etapas y cálculos de asistencia
 │       ├── storage.js          # Persistencia, migración y normalización
 │       ├── schedule.js         # Horario escolar, franjas y resumen de horas
 │       ├── tasks.js            # Agenda académica y tareas
@@ -95,6 +102,7 @@ Desde la raíz del proyecto:
 ```bash
 node tests/attendance.test.js   # cálculos FP/ESO, asistencia global y render
 node tests/check-ids.js         # consistencia de IDs entre HTML y JS
+node tests/theme.test.js        # tema, contraste, diálogos y recursos offline
 ```
 
 Verificación de sintaxis de los módulos:
