@@ -78,9 +78,9 @@ function applyZoomPreference(allowZoom) {
   if (!viewport) return;
   const enabled = typeof allowZoom === 'boolean' ? allowZoom : isZoomAllowed();
   const base = 'width=device-width, initial-scale=1';
-  viewport.setAttribute('content', enabled
+  viewport.content = enabled
     ? base + ', viewport-fit=cover'
-    : base + ', maximum-scale=1, user-scalable=no, viewport-fit=cover');
+    : base + ', maximum-scale=1, user-scalable=no, viewport-fit=cover';
 }
 
 function toast(msg) {
@@ -495,7 +495,7 @@ function closeMobileMore(restoreFocus) {
   const button = $('#mobile-more-button');
   if (!menu || !button || menu.hidden) return;
   menu.hidden = true;
-  button.setAttribute('aria-expanded', 'false');
+  button.ariaExpanded = 'false';
   if (restoreFocus) button.focus();
 }
 
@@ -505,15 +505,13 @@ function showView(view) {
   document.querySelectorAll('.nav-btn, .mobile-tab-button').forEach((button) => {
     const active = button.dataset.view === view;
     button.classList.toggle('active', active);
-    if (active) button.setAttribute('aria-current', 'page');
-    else button.removeAttribute('aria-current');
+    button.ariaCurrent = active ? 'page' : null;
   });
   const moreButton = $('#mobile-more-button');
   if (moreButton) {
     const moreActive = moreViews.includes(view);
     moreButton.classList.toggle('active', moreActive);
-    if (moreActive) moreButton.setAttribute('aria-current', 'page');
-    else moreButton.removeAttribute('aria-current');
+    moreButton.ariaCurrent = moreActive ? 'page' : null;
   }
   document.querySelectorAll('.view').forEach((section) => {
     section.classList.toggle('active', section.id === 'view-' + view);
@@ -532,7 +530,7 @@ function bindNav() {
   if (moreButton && moreMenu) {
     moreButton.addEventListener('click', () => {
       moreMenu.hidden = !moreMenu.hidden;
-      moreButton.setAttribute('aria-expanded', String(!moreMenu.hidden));
+      moreButton.ariaExpanded = String(!moreMenu.hidden);
     });
     document.addEventListener('keydown', (event) => {
       if (event.key === 'Escape') closeMobileMore(true);
