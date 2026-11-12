@@ -15,6 +15,10 @@
 
 ## Mejoras opcionales
 - [ ] Empaquetar Tesseract.js y modelos de idioma localmente para OCR offline.
-- [ ] Añadir filtro por rango de fechas en el historial.
+- [x] Añadir filtro por rango de fechas en el historial.
 - [ ] Añadir resumen de absentismo (25 h injustificadas/mes) como indicador separado, claramente diferenciado de la evaluación continua.
 - [ ] Añadir icono maskable específico con mayor zona de seguridad.
+
+## Repositorio
+- [x] Repositorio privado `qirris/mi-asistencia` creado y sincronizado en `main`.
+- [ ] Publicar en HTTPS para probar la instalación PWA (opcional).

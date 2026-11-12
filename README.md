@@ -1,45 +1,77 @@
 # Mi Asistencia
 
-Web app responsive e instalable (PWA) para que estudiantes de Andalucía controlen sus faltas y su situación respecto a la evaluación continua.
+Web app responsive e instalable (PWA) para que estudiantes de Andalucía controlen sus faltas y su situación respecto a la evaluación continua en ESO, Bachillerato y Formación Profesional.
 
 > Herramienta informativa. No sustituye al centro educativo ni a la normativa oficial.
 
 ---
 
-## 1. Estructura de carpetas
+## Funcionalidades
+
+- **Dashboard** con asignaturas registradas, horas planificadas, asistencia global ponderada por horas y asignaturas que requieren atención.
+- **Gestión de asignaturas**: alta, edición, archivado y eliminación con confirmación. Cálculo automático de horas planificadas (horas/semana × semanas), corregible manualmente. Sin duplicados.
+- **Registro de faltas**: asignatura, fecha, horas, tipo (justificada / no justificada) y motivo opcional. Edición y eliminación con recálculo inmediato.
+- **Historial** con filtros por asignatura, tipo y rango de fechas.
+- **Horario**: resumen semanal y extracción de texto desde una foto mediante OCR (Tesseract.js), siempre con texto editable y revisión manual.
+- **Cálculos informativos** con fórmula visible, datos utilizados y límite aplicado.
+- **PWA**: manifest, service worker con caché del *app shell*, iconos 192/512 e instalación en móvil.
+- **Datos locales**: `localStorage`, exportación/importación JSON con validación y borrado total con doble confirmación.
+
+---
+
+## Tecnologías
+
+- HTML5, CSS3 y JavaScript Vanilla (sin frameworks ni backend).
+- `localStorage` para la persistencia.
+- Service Worker + Web App Manifest para la PWA.
+- Tesseract.js cargado bajo demanda desde CDN para el OCR.
+- Sin dependencias npm ni proceso de compilación.
+
+---
+
+## Estructura del proyecto
 
 ```
-evaluacion/
-├── index.html              # Estructura de la interfaz (todas las vistas)
-├── styles.css              # Diseño mobile-first, responsive y accesible
-├── app.js                  # Lógica: datos, cálculos, render, OCR, backups
-├── manifest.webmanifest    # Manifiesto PWA (instalación)
-├── service-worker.js       # Caché offline y ciclo de actualización
+mi-asistencia/
+├── index.html                  # Estructura de la interfaz y vistas
+├── manifest.webmanifest        # Manifiesto de la PWA
+├── service-worker.js           # Caché del app shell y funcionamiento offline
+├── README.md
+├── .gitignore
+├── .gitattributes
 ├── assets/
 │   └── icons/
-│       ├── icon-192.png    # Icono PWA 192×192
-│       └── icon-512.png    # Icono PWA 512×512
-├── Referencia_normativa_evaluacion_continua_Andalucia.txt
-├── memoria.md              # Memoria del proyecto
-├── AGENTS.md               # Punto de entrada del proyecto
-├── instrucciones/          # Reglas permanentes del proyecto
-└── README.md               # Este archivo
+│       ├── icon-192.png
+│       └── icon-512.png
+├── docs/
+│   └── referencia-normativa-evaluacion-continua-andalucia.txt
+├── src/
+│   ├── css/
+│   │   └── styles.css          # Diseño mobile-first y responsive
+│   └── js/
+│       ├── attendance.js       # Etapas y cálculos de asistencia
+│       ├── storage.js          # Persistencia, migración y normalización
+│       ├── ocr.js              # Carga de Tesseract.js y extracción de texto
+│       └── app.js              # Render, eventos e inicialización
+└── tests/
+    ├── attendance.test.js      # Pruebas de cálculos y render
+    └── check-ids.js            # Consistencia entre HTML y JavaScript
 ```
 
 ---
 
-## 2. Cómo abrir y probar la web en el ordenador
+## Puesta en marcha local
 
 ### Opción A — Abrir el archivo directamente
+
 Haz doble clic en `index.html`.
 
-> ⚠️ Esto sirve para probar la interfaz y los cálculos, pero **no** para probar la PWA: el service worker y la instalación **no funcionan desde `file://`**.
+> Sirve para revisar la interfaz y los cálculos, pero **no** para probar la PWA: el service worker y la instalación no funcionan desde `file://`.
 
 ### Opción B — Servidor local (recomendado)
-Necesario para probar la PWA. Cualquiera de estas opciones sirve:
 
 ```bash
-# Con Python (incluido en macOS/Linux y disponible en Windows)
+# Con Python
 python -m http.server 8080
 
 # Con Node.js
@@ -50,105 +82,107 @@ Abre `http://localhost:8080` en el navegador.
 
 ---
 
-## 3. Cómo probar la PWA desde localhost
+## Pruebas
 
-1. Arranca el servidor local (ver arriba).
-2. Abre `http://localhost:8080` en Chrome o Edge.
-3. Abre las **Herramientas de desarrollo** (F12) → pestaña **Application** (Aplicación):
-   - **Manifest**: debe mostrarse «Mi Asistencia» sin errores.
-   - **Service Workers**: debe aparecer `service-worker.js` como *activated and running*.
-4. En la barra de direcciones aparecerá un icono de **instalación** (o en el menú del navegador, «Instalar aplicación»).
-5. Para probar offline: en **Application → Service Workers**, marca *Offline* y recarga. La interfaz, los cálculos y el historial deben seguir funcionando.
+Desde la raíz del proyecto:
 
----
+```bash
+node tests/attendance.test.js   # cálculos FP/ESO, asistencia global y render
+node tests/check-ids.js         # todos los IDs del JS existen en el HTML
+```
 
-## 4. Cómo publicarla en HTTPS
+Comprobaciones adicionales de sintaxis:
 
-Una PWA requiere HTTPS (o localhost). Opciones sencillas y gratuitas:
+```bash
+node --check src/js/app.js
+node --check src/js/attendance.js
+node --check src/js/storage.js
+node --check src/js/ocr.js
+node --check service-worker.js
+```
 
-- **GitHub Pages**: sube la carpeta a un repositorio y activa Pages en *Settings → Pages*.
-- **Netlify**: arrastra la carpeta a [app.netlify.com/drop](https://app.netlify.com/drop).
-- **Vercel**: importa el proyecto y despliega.
-- **Cloudflare Pages**: conecta el repositorio o sube los archivos.
-
-Tras publicar, comprueba que `manifest.webmanifest`, `service-worker.js` y `assets/icons/` cargan correctamente (rutas relativas `./`).
-
-> La instalación como PWA **no** crea un APK/IPA nativo ni publica en Google Play o App Store. En esta fase no se desarrollan apps nativas.
+Las pruebas usan un DOM simulado y no requieren navegador ni dependencias externas.
 
 ---
 
-## 5. Cómo instalarla en el móvil
+## Instalación como PWA
 
 ### Android (Chrome / Edge / Samsung Internet)
-1. Abre la web publicada en HTTPS.
-2. Aparecerá un aviso o un botón **«Instalar app»**.
-3. Si no aparece, abre el menú del navegador y elige **«Instalar aplicación»** o **«Añadir a pantalla de inicio»**.
+
+1. Abre la web publicada en HTTPS (o en `localhost`).
+2. Pulsa **«Instalar app»** o usa el menú del navegador → **«Instalar aplicación»**.
+3. Confirma la instalación.
 
 ### iPhone / iPad (Safari)
+
 1. Abre la web en **Safari**.
-2. Pulsa el botón **Compartir**.
-3. Elige **«Añadir a pantalla de inicio»**.
-4. Confirma con **«Añadir»**.
+2. Pulsa **Compartir**.
+3. Elige **«Añadir a pantalla de inicio»** y confirma.
 
-> En iOS no existe el evento `beforeinstallprompt`; por eso la app muestra instrucciones específicas.
+> En iOS no existe `beforeinstallprompt`; por eso la app muestra instrucciones específicas.
+
+### Publicación en HTTPS
+
+Cualquier alojamiento estático gratuito sirve: GitHub Pages, Netlify, Vercel o Cloudflare Pages. Mantén las rutas relativas (`./`) y comprueba que `manifest.webmanifest`, `service-worker.js` y `assets/icons/` cargan correctamente.
+
+> La instalación como PWA **no** genera un APK/IPA ni publica en Google Play o App Store.
 
 ---
 
-## 6. Limitaciones importantes
+## Datos, privacidad y copias de seguridad
 
-### localStorage
-- Los datos se guardan **solo en el navegador y dispositivo** donde usas la app.
-- **No hay sincronización automática** entre dispositivos.
+- Todos los datos se guardan **solo en el navegador y dispositivo** donde usas la app.
+- Clave de almacenamiento: `miAsistenciaState`.
+- **No hay servidores, cuentas, analítica ni sincronización** entre dispositivos.
 - Si borras los datos del navegador, se pierden las asignaturas y faltas.
-- Usa **Exportar JSON** periódicamente como copia de seguridad.
+- Usa **Ajustes → Exportar JSON** periódicamente como copia de seguridad.
+- La importación valida la estructura, pide confirmación y guarda una copia del estado anterior.
+- **Ajustes → Borrar todos los datos** elimina todo con doble confirmación.
 
-### OCR
-- El OCR usa **Tesseract.js desde una CDN**: el primer uso (o cada uso sin caché) **requiere conexión a Internet**.
-- **No se anuncia como offline**: el resto de la app sí funciona sin conexión, pero el OCR no.
-- El OCR **puede confundir** letras, números, días y horas. Revisa siempre el texto extraído antes de usarlo.
-- Si el OCR falla, puedes escribir el horario manualmente.
-
-### Cálculos y normativa
-- La app es **informativa**. No emite una resolución oficial ni determina si apruebas o suspendes.
-- **FP presencial**: se aplica el mínimo de asistencia del 80 % (Orden de 18/09/2025, art. 2.4). El centro puede concretar en su Proyecto educativo el incumplimiento que determina la pérdida.
-- **ESO / Bachillerato**: no existe un porcentaje autonómico único. Debes introducir el criterio de tu **Plan de Convivencia** (Decreto 327/2010, art. 34.3).
-- Los estados son: «Sin riesgo», «Cerca del límite», «Límite superado» y «Falta criterio del centro». **No** se usan «Aprobado» ni «Suspendido».
+No se incluyen datos reales de estudiantes en el repositorio, las pruebas ni la documentación.
 
 ---
 
-## 7. Copias de seguridad y restauración
+## Cálculos y normativa
 
-### Exportar
-1. Ve a **Ajustes → Copia de seguridad**.
-2. Pulsa **Exportar JSON**.
-3. Se descargará un archivo `mi-asistencia-backup-AAAA-MM-DD.json`.
+Fórmula aplicada:
 
-### Importar
-1. Ve a **Ajustes → Copia de seguridad**.
-2. Pulsa **Importar JSON** y selecciona el archivo.
-3. La app valida la estructura y pide confirmación antes de reemplazar los datos.
-4. Se guarda automáticamente una copia del estado anterior en `localStorage` (clave `miAsistenciaState_backup_<timestamp>`).
+```
+Asistencia (%) = (horas asistidas ÷ horas planificadas) × 100
+```
 
-### Borrar todo
-**Ajustes → Borrar todos los datos** (pide doble confirmación y guarda una copia previa).
+- **FP presencial**: mínimo del **80 % de asistencia** (20 % de ausencia). Fuente: Orden de 18/09/2025, art. 2.4.
+- **ESO / Bachillerato**: no existe un porcentaje autonómico único. El límite lo fija el **Plan de Convivencia** del centro (Decreto 327/2010, art. 34.3). La app permite configurarlo en porcentaje o en horas.
+- Los estados son informativos: **«Sin riesgo»**, **«Cerca del límite»**, **«Límite superado»** y **«Falta criterio del centro»**. Nunca se muestra «Aprobado» ni «Suspendido».
+- El absentismo escolar se mantiene separado de la evaluación continua.
 
----
-
-## 8. Comprobaciones realizadas antes de entregar
-
-- [x] Sintaxis de `app.js` y `service-worker.js` validada con `node --check`.
-- [x] `manifest.webmanifest` es JSON válido.
-- [x] Todos los IDs usados en `app.js` existen en `index.html`.
-- [x] Migración segura desde la versión anterior (`asistenciaData`) con copia de respaldo.
-- [x] Normalización de datos al cargar e importar (evita estados corruptos).
-- [ ] Prueba visual en móvil/tablet/escritorio (recomendada tras publicar).
-- [ ] Prueba de instalación PWA desde HTTPS/localhost (requiere servidor).
+La referencia normativa utilizada está en [`docs/referencia-normativa-evaluacion-continua-andalucia.txt`](docs/referencia-normativa-evaluacion-continua-andalucia.txt).
 
 ---
 
-## 9. Créditos y fuentes normativas
+## Limitaciones conocidas
 
-- Orden de 18 de septiembre de 2025 (FP): <https://www.juntadeandalucia.es/boja/2025/180/c01/1>
-- Decreto 147/2025 (FP): <https://www.juntadeandalucia.es/boja/2025/217901/1>
-- Decreto 327/2010 (IES), texto consolidado: <https://ws040.juntadeandalucia.es/sedeboja/lconsolidada/eli/es-an/d/2010/07/13/327/con/20260831/spa/html/LE0000422784_20260831.html>
-- Orden de 19 de septiembre de 2005 (absentismo): <https://ws040.juntadeandalucia.es/sedeboja/lconsolidada/eli/es-an/o/2005/09/19/%281401437649%29/con/20060113/spa/html/LE0000219382_20060113.html>
+- **OCR**: requiere conexión a Internet la primera vez (Tesseract.js y sus modelos se descargan de una CDN) y puede confundir letras, números, días y horas. El texto extraído siempre debe revisarse.
+- **Almacenamiento local**: los datos no se sincronizan entre dispositivos ni se conservan si se limpia el navegador.
+- **Cálculos**: son orientativos y dependen de los datos introducidos por el usuario. No emiten una resolución oficial.
+- **Instalación**: la prueba real de instalación y el funcionamiento offline deben verificarse en cada navegador/dispositivo tras publicar.
+- No se ha desarrollado una app nativa ni se ha publicado en tiendas.
+
+---
+
+## Estado del proyecto
+
+- Aplicación completa y funcional en local.
+- Repositorio privado: <https://github.com/qirris/mi-asistencia>
+- Últimas comprobaciones: sintaxis de todos los módulos, consistencia de IDs y pruebas de cálculo/render.
+- Pendiente: revisión visual en dispositivos reales y verificación de instalación PWA tras publicar.
+
+---
+
+## Historial de hitos
+
+- Versión inicial del dashboard, faltas y PWA.
+- Reorganización de estilos y scripts por responsabilidades.
+- Corrección de la carga de Tesseract.js bajo demanda.
+- Añadidas pruebas de cálculo y consistencia.
+- Documentación del proyecto y de la estructura.
