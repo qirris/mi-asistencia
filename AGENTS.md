@@ -14,6 +14,8 @@ Punto de entrada del proyecto. Proyecto: web app responsive e instalable (PWA) p
 - Formularios y diálogos adaptados a pantallas estrechas y con poca altura.
 - Refresco temporal de Inicio al cambiar de clase, fecha o volver a la app, con pausa en segundo plano y sin reiniciar borradores.
 - Creación rápida de tareas con tres campos y «Más opciones» para conservar los detalles adicionales.
+- Borrado recuperable de tareas y faltas con «Deshacer» durante diez segundos; aviso y recuperación local tras recargar dentro del plazo.
+- Copia de un día del horario a varios destinos, con revisión y confirmación al sustituir casillas ocupadas; conserva las actividades sin duplicarlas.
 - Datos en `localStorage` con migración segura y copias JSON.
 - Código organizado en `src/css/` y `src/js/`; pruebas en `tests/`.
 - Repositorio: <https://github.com/qirris/mi-asistencia>.

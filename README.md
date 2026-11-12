@@ -29,6 +29,10 @@ Inicio actualiza la fecha, la clase actual o siguiente y los avisos al cambiar d
 
 Al crear una tarea se muestran título, asignatura y fecha de entrega. **Más opciones** reúne tipo, prioridad, estado y notas. Al editar una actividad con detalles adicionales, este apartado se abre automáticamente y conserva sus valores aunque se guarde plegado.
 
+Al eliminar tareas, notas o faltas aparece **Deshacer** durante diez segundos. Los borrados seguidos se agrupan; el plazo se pausa mientras el aviso tiene el foco, el puntero encima o la app está oculta. También puedes recuperar al recargar dentro del plazo. La recuperación temporal usa `salvatucursoDeshacer`, separada de los datos académicos, y se descarta al importar, borrar una asignatura o reiniciar el curso.
+
+En **Horario → Copiar día** elige un origen y uno o varios destinos. El resumen indica las casillas que cambiarán y solicita confirmación si ya estaban ocupadas. Se copian las clases y los huecos de las franjas compartidas, respetando la salida de cada día y omitiendo las asignaturas archivadas o eliminadas. No se duplican tareas ni faltas. Si una clase se sustituye, sus actividades se conservan en **Mis tareas** con su asignatura y detalles, sin un enlace incorrecto a la nueva clase.
+
 ## Apariencia y formularios
 
 En **Ajustes → Apariencia** puedes elegir **Automático, Claro u Oscuro**. La opción automática sigue el dispositivo y la elección manual se conserva en este navegador mediante `salvatucursoTema`, separada de los datos académicos. El tema se aplica antes del CSS y también funciona sin conexión.
@@ -76,6 +80,7 @@ mi-asistencia/
 │       ├── schedule.js         # Horario escolar, franjas y resumen de horas
 │       ├── tasks.js            # Agenda académica y tareas
 │       ├── history.js          # Calendario y historial de ausencias
+│       ├── recovery.js         # Recuperación breve de tareas y faltas borradas
 │       └── app.js              # Render, eventos e inicialización
 └── tests/
     ├── attendance.test.js      # Pruebas de cálculos y render
@@ -110,6 +115,7 @@ node tests/attendance.test.js   # cálculos FP/ESO, asistencia global y render
 node tests/check-ids.js         # consistencia de IDs entre HTML y JS
 node tests/theme.test.js        # tema, contraste, diálogos y recursos offline
 node tests/daily-use.test.js    # reloj, reanudación, borradores y tareas rápidas
+node tests/changes.test.js      # deshacer, copia de días y conservación de datos
 ```
 
 Verificación de sintaxis de los módulos:
@@ -119,6 +125,7 @@ node --check src/js/storage.js
 node --check src/js/schedule.js
 node --check src/js/tasks.js
 node --check src/js/history.js
+node --check src/js/recovery.js
 node --check src/js/attendance.js
 ```
 

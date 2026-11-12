@@ -112,12 +112,8 @@ function actualizarTarea(id, data) {
   return true;
 }
 
-function eliminarTarea(id) {
-  if (!confirm('¿Eliminar esta actividad o nota? Esta acción no se puede deshacer.')) return;
-  state.tareas = state.tareas.filter(x => x.id !== id);
-  saveState();
-  toast('Actividad eliminada');
-  render();
+function eliminarTarea(id, originDialog = null) {
+  return UndoManager.remove('tareas', id, originDialog);
 }
 
 function alternarEstadoTarea(id) {
@@ -505,7 +501,7 @@ function bindTasks() {
     }
     const del = e.target.closest('[data-deltask]');
     if (del) {
-      eliminarTarea(del.dataset.deltask);
+      eliminarTarea(del.dataset.deltask, del.closest('dialog'));
       return;
     }
 

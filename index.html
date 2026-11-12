@@ -6,11 +6,11 @@
   <meta name="theme-color" content="#f5f6f4">
   <meta name="description" content="SalvaTuCurso: tus faltas, horario y tareas en un solo lugar.">
   <title>SalvaTuCurso</title>
-  <script src="src/js/theme.js?v=28"></script>
+  <script src="src/js/theme.js?v=30"></script>
   <link rel="manifest" href="manifest.webmanifest">
   <link rel="apple-touch-icon" href="assets/icons/icon-192.png">
   <link rel="icon" type="image/png" href="assets/icons/icon-192.png">
-  <link rel="stylesheet" href="src/css/styles.css?v=28">
+  <link rel="stylesheet" href="src/css/styles.css?v=30">
 </head>
 <body>
   <div class="app-shell">
@@ -294,6 +294,10 @@
         </div>
 
         <!-- Cuadrícula semanal (Protagonista) -->
+        <div class="schedule-copy-toolbar">
+          <p class="hint" id="copy-day-hint">Repite las clases de un día sin volver a colocarlas.</p>
+          <button class="btn btn-secondary" id="btn-copy-day" type="button" aria-describedby="copy-day-hint"><svg class="ui-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><rect x="8" y="8" width="13" height="13" rx="2"/><path d="M16 8V5a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h3"/></svg> Copiar día</button>
+        </div>
         <div class="card" id="schedule-main-card">
           <div class="schedule-config-head" style="margin-bottom:.75rem">
             <h3 class="section-title" style="margin-top:0">Horario semanal</h3>
@@ -696,6 +700,32 @@
 </div>
   </dialog>
 
+  <dialog id="dialog-copy-day" aria-labelledby="copy-day-title" aria-describedby="copy-day-description">
+    <div class="dialog-body">
+      <div class="dialog-head">
+        <h3 id="copy-day-title">Copiar un día</h3>
+        <button class="btn btn-ghost btn-sm" id="copy-day-close" type="button">Cerrar</button>
+      </div>
+      <div class="dialog-content">
+        <p class="hint" id="copy-day-description">Copia las clases y los huecos libres en las mismas franjas. Las horas de cada día se mantienen. Las tareas y las faltas no se duplican.</p>
+        <div class="field">
+          <label for="copy-day-source">Día de origen</label>
+          <select id="copy-day-source"></select>
+        </div>
+        <fieldset class="copy-day-targets" id="copy-day-targets"><legend>Copiar en</legend></fieldset>
+        <div class="copy-day-preview" id="copy-day-preview" role="status" aria-live="polite" aria-atomic="true"></div>
+        <label class="copy-replace-row" id="copy-replace-row" hidden>
+          <span class="checkbox-target"><input type="checkbox" id="copy-replace-confirm"></span>
+          <span>Sustituir las casillas ocupadas que se indican arriba.</span>
+        </label>
+      </div>
+      <div class="dialog-actions">
+        <button class="btn btn-ghost" id="copy-day-cancel" type="button">Cancelar</button>
+        <button class="btn" id="btn-copy-day-apply" type="button" disabled>Copiar clases</button>
+      </div>
+    </div>
+  </dialog>
+
   <!-- Dialog detalle de clase -->
   <dialog id="dialog-class-detail" aria-labelledby="dlg-class-title">
     <div class="dialog-body">
@@ -792,6 +822,11 @@
 </div>
   </dialog>
 
+  <div class="undo-notice" id="undo-notice" hidden>
+    <span id="undo-message" role="status" aria-live="polite" aria-atomic="true"></span>
+    <button class="btn btn-secondary" id="btn-undo-delete" type="button">Deshacer</button>
+  </div>
+
   <div id="toast" class="toast" role="status" aria-live="polite"></div>
 
   <script>
@@ -803,12 +838,13 @@
       });
     }
   </script>
-  <script src="src/js/attendance.js?v=28"></script>
-  <script src="src/js/storage.js?v=28"></script>
-  <script src="src/js/schedule.js?v=28"></script>
-  <script src="src/js/tasks.js?v=28"></script>
-  <script src="src/js/history.js?v=28"></script>
-  <script src="src/js/app.js?v=28"></script>
+  <script src="src/js/attendance.js?v=30"></script>
+  <script src="src/js/storage.js?v=30"></script>
+  <script src="src/js/schedule.js?v=30"></script>
+  <script src="src/js/tasks.js?v=30"></script>
+  <script src="src/js/history.js?v=30"></script>
+  <script src="src/js/recovery.js?v=30"></script>
+  <script src="src/js/app.js?v=30"></script>
 
   <!-- Nodos ocultos de compatibilidad mientras se renueva la caché de la PWA -->
   <p id="falta-legal" class="hidden" aria-hidden="true"></p>

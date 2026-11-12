@@ -60,11 +60,18 @@ function toggleScheduleEdit(forceState) {
   if (scheduleEditing) {
     scheduleBackup = JSON.parse(JSON.stringify(state.horario));
   }
+  updateCopyDayAvailability();
 }
 
 function cancelarEdicionHorario() {
+  const previous = state.horario;
   if (scheduleBackup) {
     state.horario = normalizeHorario(scheduleBackup);
+  }
+  try { saveState(); } catch (error) {
+    state.horario = previous;
+    toast('No se ha podido guardar la cancelación. Inténtalo de nuevo.');
+    return;
   }
   toggleScheduleEdit(false);
   renderHorario();
@@ -371,6 +378,7 @@ function renderHorario() {
       <span><strong>${activas}</strong> asignatura${activas === 1 ? '' : 's'}</span>
       <span><strong>${fmtHoras(r.totalMin)}</strong> semanales</span>` : '';
   }
+  updateCopyDayAvailability();
 }
 
 function renderFranjas() {
@@ -782,6 +790,14 @@ function irAVista(view) {
 
 /* ---------- Eventos del horario ---------- */
 function bindSchedule() {
+  $('#btn-copy-day').addEventListener('click', openCopyDayDialog);
+  $('#copy-day-source').addEventListener('change', renderCopyDayTargets);
+  $('#copy-day-targets').addEventListener('change', () => renderCopyDayPreview());
+  $('#copy-replace-confirm').addEventListener('change', () => renderCopyDayPreview(false));
+  $('#btn-copy-day-apply').addEventListener('click', applyCopyDayDialog);
+  ['#copy-day-close', '#copy-day-cancel'].forEach(selector =>
+    $(selector).addEventListener('click', () => $('#dialog-copy-day').close()));
+
   const btnToggleEdit = $('#btn-toggle-schedule-edit');
   if (btnToggleEdit) {
     btnToggleEdit.addEventListener('click', () => toggleScheduleEdit());
@@ -929,3 +945,139 @@ function bindSchedule() {
     });
   }
 }
+
+
+  /* ---------- Copia de un día, con revisión previa ---------- */
+  let copyDaySignature = '';
+  function copyableCell(cell) {
+    if (!cell) return null;
+    if (cell.recreo) return { recreo: true };
+    const subject = asignaturaPorId(cell.asignaturaId);
+    return subject && !subject.archivada ? { asignaturaId: subject.id } : undefined;
+  }
+  function copyDaySources() {
+    const h = state.horario;
+    return h.dias.filter(day => h.franjas.some(f => f.tipo === 'clase' &&
+      franjaActivaEnDia(h, f, day) && copyableCell(getCasilla(h, day, f.id))));
+  }
+  function updateCopyDayAvailability() {
+    const button = $('#btn-copy-day');
+    if (!button) return;
+    const reason = scheduleEditing ? 'Guarda o cancela la edición antes de copiar.' :
+      state.horario.dias.length < 2 ? 'Activa al menos dos días para copiar clases.' :
+      !copyDaySources().length ? 'Añade una clase al horario para poder copiar un día.' : '';
+    button.disabled = !!reason;
+    $('#copy-day-hint').textContent = reason || 'Repite las clases de un día sin volver a colocarlas.';
+  }
+  function getCopyDayPlan(source, targets) {
+    const h = state.horario;
+    const plan = { source, targets: [], patches: [], rows: [], replaced: 0, detached: [], invalid: 0, error: '' };
+    if (scheduleEditing) plan.error = 'Termina de editar el horario antes de copiar.';
+    else if (!h.dias.includes(source) || !copyDaySources().includes(source)) plan.error = 'Elige un día que tenga clases para copiar.';
+    else if (!Array.isArray(targets) || !targets.length || targets.some(day => day === source || !h.dias.includes(day))) plan.error = 'Selecciona otros días de destino.';
+    if (plan.error) return plan;
+    plan.targets = h.dias.filter(day => targets.includes(day));
+    const sourceSlots = h.franjas.filter(f => f.tipo === 'clase' && franjaActivaEnDia(h, f, source));
+    plan.invalid = sourceSlots.filter(f => copyableCell(getCasilla(h, source, f.id)) === undefined).length;
+    plan.targets.forEach(day => {
+      const row = { day, changes: 0, replaced: 0, skipped: 0, kept: 0 };
+      sourceSlots.forEach(f => {
+        const after = copyableCell(getCasilla(h, source, f.id));
+        if (after === undefined) return; // No propagar asignaturas archivadas o eliminadas.
+        if (!franjaActivaEnDia(h, f, day)) { if (after) row.skipped++; return; }
+        const before = getCasilla(h, day, f.id);
+        const equal = (!before && !after) || (before && after &&
+          (before.recreo && after.recreo || !before.recreo && !after.recreo && before.asignaturaId === after.asignaturaId));
+        if (equal) return;
+        plan.patches.push({ key: day + '|' + f.id, before, after });
+        row.changes++;
+        if (before) { row.replaced++; plan.replaced++; }
+      });
+      row.kept = h.franjas.filter(f => f.tipo === 'clase' && franjaActivaEnDia(h, f, day) &&
+        !franjaActivaEnDia(h, f, source) && getCasilla(h, day, f.id)).length;
+      plan.rows.push(row);
+    });
+    const changed = new Map(plan.patches.map(patch => [patch.key, patch.after]));
+    plan.detached = state.tareas.filter(task => changed.has(task.slotKey) &&
+      (!changed.get(task.slotKey) || changed.get(task.slotKey).recreo ||
+        changed.get(task.slotKey).asignaturaId !== task.asignaturaId)).map(task => task.id);
+    plan.signature = JSON.stringify({ source, targets: plan.targets, patches: plan.patches, detached: plan.detached, rows: plan.rows, invalid: plan.invalid });
+    return plan;
+  }
+  function copyScheduleDay(source, targets, allowReplace = false) {
+    const plan = getCopyDayPlan(source, targets);
+    if (plan.error) return { ok: false, reason: plan.error };
+    if (!plan.patches.length) return { ok: false, reason: 'Los días seleccionados ya tienen las mismas clases.' };
+    if (plan.replaced && !allowReplace) return { ok: false, reason: 'Confirma la sustitución de las clases existentes.' };
+    try {
+      const saved = localStorage.getItem(STORAGE_KEY);
+      if (saved && saved !== JSON.stringify(state)) return { ok: false, reason: 'Los datos han cambiado en otra pestaña. Recarga antes de copiar.' };
+    } catch (error) { return { ok: false, reason: 'No se puede acceder al almacenamiento. El horario no se ha cambiado.' }; }
+    const previousCells = state.horario.casillas, previousTasks = state.tareas;
+    const cells = Object.assign({}, previousCells);
+    plan.patches.forEach(patch => {
+      if (patch.after) cells[patch.key] = Object.assign({}, patch.after);
+      else delete cells[patch.key];
+    });
+    const detach = new Set(plan.detached);
+    state.horario.casillas = cells;
+    state.tareas = previousTasks.map(task => detach.has(task.id)
+      ? Object.assign({}, task, { slotKey: '', dia: '', horaInicio: '', horaFin: '' }) : task);
+    try { saveState(); } catch (error) {
+      state.horario.casillas = previousCells; state.tareas = previousTasks;
+      return { ok: false, reason: 'No se ha podido guardar la copia. El horario no se ha cambiado.' };
+    }
+    return { ok: true, plan };
+  }
+  function selectedCopyDays() {
+    return Array.from($('#copy-day-targets').querySelectorAll('input:checked')).map(input => input.value);
+  }
+  function renderCopyDayTargets() {
+    const source = $('#copy-day-source').value;
+    $('#copy-day-targets').innerHTML = '<legend>Copiar en</legend>' + state.horario.dias.filter(day => day !== source).map(day =>
+      `<label class="day-check"><input type="checkbox" value="${day}"><span>${diaLabel(day)}</span></label>`).join('');
+    renderCopyDayPreview();
+  }
+  function renderCopyDayPreview(resetApproval = true) {
+    if (resetApproval) $('#copy-replace-confirm').checked = false;
+    const plan = getCopyDayPlan($('#copy-day-source').value, selectedCopyDays());
+    copyDaySignature = plan.signature || '';
+    const preview = $('#copy-day-preview');
+    $('#copy-replace-row').hidden = !plan.replaced;
+    $('#btn-copy-day-apply').disabled = !!plan.error || !plan.patches.length || (!!plan.replaced && !$('#copy-replace-confirm').checked);
+    $('#btn-copy-day-apply').textContent = plan.targets.length ? 'Copiar en ' + plan.targets.length + (plan.targets.length === 1 ? ' día' : ' días') : 'Copiar clases';
+    if (plan.error) { preview.textContent = plan.error; return; }
+    let html = '<ul class="copy-day-results">' + plan.rows.map(row => `<li><strong>${diaLabel(row.day)}</strong><span>${
+      row.changes ? row.changes + (row.changes === 1 ? ' casilla cambiará' : ' casillas cambiarán') : 'Sin cambios'}${
+      row.replaced ? ' · ' + row.replaced + (row.replaced === 1 ? ' ocupada' : ' ocupadas') : ''}${
+      row.skipped ? '. ' + row.skipped + (row.skipped === 1 ? ' clase no cabe' : ' clases no caben') + ' antes de la salida' : ''}${
+      row.kept ? '. Se mantienen ' + row.kept + (row.kept === 1 ? ' casilla posterior' : ' casillas posteriores') : ''}.</span></li>`).join('') + '</ul>';
+    if (!plan.patches.length) html += '<p>Estos días ya tienen las mismas clases.</p>';
+    if (plan.replaced) html += '<p class="copy-warning">' + uiIcon('warning') + '<span>Las casillas ocupadas se sustituirán. Las franjas vacías del día de origen también se copian.</span></p>';
+    if (plan.detached.length) html += '<p>' + plan.detached.length + (plan.detached.length === 1 ? ' actividad seguirá' : ' actividades seguirán') + ' en «Mis tareas», sin vinculación a la clase sustituida. Se conservan la asignatura, las fechas y los detalles.</p>';
+    if (plan.invalid) html += '<p>Se omiten las casillas con asignaturas archivadas o eliminadas.</p>';
+    preview.innerHTML = html;
+  }
+  function openCopyDayDialog() {
+    if ($('#btn-copy-day').disabled) return;
+    const sources = copyDaySources();
+    $('#copy-day-source').innerHTML = sources.map(day => `<option value="${day}">${diaLabel(day)}</option>`).join('');
+    $('#copy-day-source').value = sources.includes(scheduleMobileDay) ? scheduleMobileDay : sources[0];
+    renderCopyDayTargets();
+    $('#dialog-copy-day').querySelector('.dialog-content').scrollTop = 0;
+    $('#dialog-copy-day').showModal();
+  }
+  function applyCopyDayDialog() {
+    const source = $('#copy-day-source').value, targets = selectedCopyDays();
+    const fresh = getCopyDayPlan(source, targets);
+    if ((fresh.signature || '') !== copyDaySignature) {
+      renderCopyDayPreview();
+      toast('El horario ha cambiado. Revisa la copia antes de continuar.');
+      return;
+    }
+    const result = copyScheduleDay(source, targets, $('#copy-replace-confirm').checked);
+    if (!result.ok) { toast(result.reason); return; }
+    $('#dialog-copy-day').close();
+    render();
+    toast('Horario copiado en ' + result.plan.targets.length + (result.plan.targets.length === 1 ? ' día' : ' días'));
+  }

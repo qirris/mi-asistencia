@@ -775,6 +775,7 @@ function bindAsignaturas() {
         return;
       }
 
+      UndoManager.clear();
       state.asignaturas = state.asignaturas.filter(x => x.id !== a.id);
       state.faltas = state.faltas.filter(f => f.asignaturaId !== a.id);
       saveState();
@@ -1013,6 +1014,7 @@ function importJSON(file) {
       if (!confirm('Esto reemplazará tus datos actuales. ¿Continuar?')) return;
       // Copia de seguridad del estado actual antes de reemplazar
       localStorage.setItem(STORAGE_KEY + '_backup_' + Date.now(), localStorage.getItem(STORAGE_KEY) || '');
+      UndoManager.clear();
       state = normalizeState(data);
       saveState();
       toast('Datos importados');
@@ -1028,6 +1030,7 @@ function deleteAll() {
   if (!confirm('¿Borrar TODOS los datos? Se eliminarán asignaturas, faltas y configuración.')) return;
   if (!confirm('Esta acción no se puede deshacer. ¿Confirmar borrado definitivo?')) return;
   localStorage.setItem(STORAGE_KEY + '_backup_' + Date.now(), localStorage.getItem(STORAGE_KEY) || '');
+  UndoManager.clear();
   state = normalizeState(JSON.parse(JSON.stringify(DEFAULT_STATE)));
   saveState();
   toast('Todos los datos borrados');
@@ -1133,6 +1136,7 @@ function init() {
   bindConfig();
   setupInstall();
   render();
+  UndoManager.bind();
   bindDashboardRefresh();
 }
 

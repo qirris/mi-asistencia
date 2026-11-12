@@ -30,6 +30,14 @@ Web app responsive e instalable (PWA) para estudiantes de Andalucía que permite
 - Creación rápida de tareas con título, asignatura y fecha; tipo, prioridad, estado y notas en «Más opciones». La edición y el acceso a notas abren las opciones cuando corresponde, sin perder los campos plegados ni la vinculación con una clase.
 - La edición mantiene la asignatura archivada de una tarea existente. Se limpian los errores al abrir un formulario nuevo y el foco empieza en el título.
 
+- Recuperación con «Deshacer» durante diez segundos para tareas, notas y faltas; agrupa borrados consecutivos, pausa con foco/puntero/segundo plano y conserva un diario temporal local (`salvatucursoDeshacer`) para la recarga dentro del plazo.
+- La recuperación inserta los registros originales, respeta cambios posteriores, evita duplicados y limpia vínculos con clases que hayan cambiado. Importar, borrar una asignatura y borrar todos los datos descartan el diario pendiente.
+- Se conectaron los botones de editar y eliminar faltas del historial y del detalle diario. Al eliminar desde un diálogo se cierra para que «Deshacer» quede accesible.
+- Copia de un día del horario a varios destinos mediante un diálogo con resumen y confirmación explícita de casillas ocupadas. Respeta las salidas distintas, omite asignaturas archivadas o huérfanas y mantiene las franjas y los recreos generales.
+- No se duplican actividades ni faltas al copiar. Las actividades de clases sustituidas conservan sus datos en «Mis tareas» y pierden sólo el vínculo con la clase que ya no corresponde.
+- Cancelar la configuración del horario restaura también la versión persistida. La copia queda desactivada durante la edición y revierte los cambios si no puede guardarlos.
+- Caché de la PWA actualizada a `salvatucurso-v30`, incluyendo el módulo de recuperación.
+
 ## 3. Tecnologías y arquitectura
 - HTML5 + CSS3 + JavaScript Vanilla (sin frameworks ni dependencias npm).
 - Estructura modular en `src/css/` y `src/js/`:
@@ -39,6 +47,7 @@ Web app responsive e instalable (PWA) para estudiantes de Andalucía que permite
   - `schedule.js`: Horario escolar semanal, configuración de franjas y resumen de horas.
   - `tasks.js`: Agenda académica, deberes, exámenes, notas y su vinculación con clases.
   - `history.js`: Calendario mensual visual interactivo y registro de ausencias.
+  - `recovery.js`: Diario temporal local y recuperación de tareas y faltas borradas.
   - `app.js`: Inicialización global, render y eventos de navegación.
 - Nota histórica sobre OCR: inicialmente se evaluó e implementó un prototipo con `Tesseract.js` vía CDN, pero posteriormente se eliminó por completo para priorizar la construcción de un horario escolar semanal interactivo, nativo y conectado directamente a las asignaturas.
 
@@ -73,6 +82,10 @@ Web app responsive e instalable (PWA) para estudiantes de Andalucía que permite
 
 - `node tests/daily-use.test.js`: cambio de clase, medianoche, foco, visibilidad, recuperación de página, temporizador único, conservación de borradores, valores avanzados plegados, edición y asignatura archivada.
 - Prueba de creación y edición en la vista local: formulario de tres campos, validación del título, recuperación de detalles al editar y comprobación en claro/oscuro, móvil estrecho con altura reducida y escritorio.
+
+- `node tests/changes.test.js`: recuperación individual y agrupada, recarga, vencimiento, foco, segundo plano, fallos de almacenamiento, cambios en otra pestaña, reinicio, vínculos de clase, copia múltiple, destinos cortos, sustitución confirmada, tareas conservadas, revisión obsoleta, cancelación persistida y botones del historial.
+- Revisión local de la copia y de «Deshacer» a 320, 390, 768 y 1280 px, con altura reducida y temas claro/oscuro; cierre con Escape y retorno del foco. Sin desbordamiento de página en los tamaños comprobados.
+- Recarga con el servidor local apagado: las tareas, el tema oscuro, «Deshacer» y el diálogo de copia siguieron funcionando desde la caché.
 
 ## 7. Convención de commits acordada
 Para mantener una identidad profesional y seria, los mensajes de commit futuros seguirán rigurosamente esta estructura en español con prefijos normalizados:

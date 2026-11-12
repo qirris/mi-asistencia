@@ -10,6 +10,7 @@ const js = [
   'src/js/schedule.js',
   'src/js/tasks.js',
   'src/js/history.js',
+  'src/js/recovery.js',
   'src/js/app.js'
 ].map(f => fs.readFileSync(f, 'utf8')).join('\n');
 

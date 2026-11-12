@@ -1,5 +1,5 @@
 /* ============================================================
-   Mi Asistencia — history.js
+   SalvaTuCurso — history.js
    Gestión del historial de ausencias, calendario mensual visual
    y estadísticas filtradas.
    ============================================================ */
@@ -147,7 +147,7 @@ function openHistoryDayModal(dateStr) {
               <div style="display:flex;align-items:center;gap:.4rem">
                 <span class="h-hours">${fmt(f.horas)} h</span>
                 <button class="btn btn-ghost btn-sm" type="button" data-editfalta="${f.id}">Editar</button>
-                <button class="btn btn-danger btn-sm" type="button" data-delfalta="${f.id}">${uiIcon('trash')}</button>
+                <button class="btn btn-danger btn-sm" type="button" data-delfalta="${f.id}" aria-label="Eliminar falta">${uiIcon('trash')}</button>
               </div>
             </div>
           `;
@@ -200,6 +200,19 @@ function renderHistorialView() {
 }
 
 function bindHistory() {
+  document.addEventListener('click', event => {
+    const remove = event.target.closest('[data-delfalta]');
+    if (remove) {
+      UndoManager.remove('faltas', remove.dataset.delfalta, remove.closest('dialog'));
+      return;
+    }
+    const edit = event.target.closest('[data-editfalta]');
+    if (edit) {
+      const origin = edit.closest('dialog');
+      if (origin && origin.open) origin.close();
+      openFaltaEdit(edit.dataset.editfalta);
+    }
+  });
   const asigSel = $('#filtro-asig');
   if (asigSel) {
     const prev = asigSel.value;
