@@ -397,8 +397,9 @@ function renderGrid() {
       }
       if (c && c.asignaturaId) {
         const a = asignaturaPorId(c.asignaturaId);
+        const count = countTareasPendientesSlot(key);
         if (a) {
-          html += `<button class="sg-cell sc-${a.color}" type="button" data-cell="${key}" aria-label="${label}: ${esc(a.nombre)}"><span class="sg-name">${esc(a.nombre)}</span></button>`;
+          html += `<button class="sg-cell sc-${a.color}" type="button" data-cell="${key}" aria-label="${label}: ${esc(a.nombre)}"><span class="sg-name">${esc(a.nombre)}</span>${count > 0 ? `<span class="badge red task-badge">${count}</span>` : ''}</button>`;
         } else {
           html += `<button class="sg-cell sg-orphan" type="button" data-cell="${key}" aria-label="${label}: asignatura eliminada">Asignatura eliminada</button>`;
         }
@@ -625,6 +626,12 @@ function openCellDialog(key) {
   const fid = parts[1];
   const f = state.horario.franjas.find(x => x.id === fid);
   if (!f) return;
+
+  const c = getCasilla(state.horario, day, fid);
+  if (c && c.asignaturaId) {
+    openClassDetail(day, fid);
+    return;
+  }
 
   editingCellKey = key;
   $('#dlg-cell-title').textContent = diaLabel(day);

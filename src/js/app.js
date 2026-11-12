@@ -52,6 +52,8 @@ function render() {
   renderFaltas();
   renderHorario();
   renderDashboardNow();
+  renderDashboardTasks();
+  renderMisTareas();
   renderHistorial();
   renderConfig();
 }
@@ -664,6 +666,7 @@ function init() {
   bindDialogFalta();
   bindFaltas();
   bindSchedule();
+  bindTasks();
   bindHistorial();
   bindConfig();
   setupInstall();

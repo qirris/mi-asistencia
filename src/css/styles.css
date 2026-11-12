@@ -804,3 +804,58 @@ dialog::backdrop { background: rgba(15, 23, 42, .45); }
 }
 .cell-subject.active { outline: 3px solid var(--primary); outline-offset: 1px; }
 .cell-subject .color-dot { width: 14px; height: 14px; }
+
+/* ============================================================
+   Agenda académica y tareas
+   ============================================================ */
+.tasks-list { display: grid; gap: 0.75rem; }
+.task-card {
+  background: #fff;
+  border: 1px solid var(--border);
+  border-left: 5px solid var(--sc-dot, var(--primary));
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  padding: 1rem;
+  transition: opacity .15s;
+}
+.task-card.completed { opacity: 0.65; background: #f8fafc; }
+.task-card.completed .tc-title { text-decoration: line-through; color: var(--muted); }
+.tc-top { display: flex; align-items: center; gap: 0.6rem; margin-bottom: 0.4rem; }
+.tc-info { display: flex; flex-wrap: wrap; gap: 0.4rem; flex: 1; }
+.tc-title { font-weight: 700; font-size: 1rem; margin-bottom: 0.2rem; }
+.tc-desc { font-size: 0.85rem; color: var(--muted); margin-bottom: 0.6rem; white-space: pre-wrap; }
+.tc-footer { display: flex; flex-wrap: wrap; gap: 0.75rem; font-size: 0.76rem; color: var(--muted); border-top: 1px solid var(--border); padding-top: 0.5rem; margin-top: 0.5rem; }
+
+.tasks-mini-list { display: grid; gap: 0.5rem; margin-top: 0.5rem; }
+.task-mini-item {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  background: var(--gray-soft);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 0.5rem 0.7rem;
+  font-size: 0.85rem;
+}
+.task-mini-item.completed { opacity: 0.6; text-decoration: line-through; }
+.tmi-main { flex: 1; min-width: 0; }
+.tmi-title { font-weight: 700; }
+.tmi-sub { font-size: 0.75rem; color: var(--muted); }
+
+.class-detail-header {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.85rem 1rem;
+  border-radius: 12px;
+  background: var(--sc-bg);
+  border: 1px solid var(--sc-border);
+  color: var(--sc-text);
+}
+.class-detail-header h3 { font-size: 1.1rem; font-weight: 800; }
+
+.task-badge {
+  font-size: 0.68rem;
+  padding: 0.15rem 0.4rem;
+  margin-left: auto;
+}
