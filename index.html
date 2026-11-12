@@ -48,6 +48,8 @@
           </div>
         </div>
 
+        <div class="dash-onboarding hidden" id="dash-onboarding" aria-live="polite"></div>
+
         <!-- Alertas y avisos -->
         <div id="dash-alerts"></div>
 
@@ -73,13 +75,13 @@
           <!-- Columna derecha -->
           <div class="dash-col-right">
             <!-- Resumen de asistencia y normativa -->
-            <div class="dash-card">
+            <div class="dash-card" id="dash-attendance-card">
               <h3 class="section-title" style="margin-top:0">Estado de asistencia</h3>
               <div id="dash-attendance-summary"></div>
             </div>
 
             <!-- Mis asignaturas compacto -->
-            <div class="dash-card">
+            <div class="dash-card" id="dash-subjects-card">
               <div class="schedule-config-head" style="margin-bottom:.75rem">
                 <h3 class="section-title" style="margin-top:0">Mis asignaturas</h3>
                 <button class="btn btn-ghost btn-sm" type="button" onclick="document.querySelector('.nav-btn[data-view=\"asignaturas\"]').click()">Gestionar</button>
