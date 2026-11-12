@@ -914,3 +914,14 @@ dialog::backdrop { background: rgba(15, 23, 42, .45); }
   padding: 0.15rem 0.4rem;
   margin-left: auto;
 }
+
+.subject-preview-card {
+  background: var(--gray-soft);
+  border: 1px dashed var(--border);
+  border-radius: 10px;
+  padding: 0.85rem 1rem;
+  margin-top: 1rem;
+}
+.sp-title { font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.04em; color: var(--muted); font-weight: 800; margin-bottom: 0.35rem; }
+.sp-content { display: flex; align-items: center; gap: 0.6rem; font-size: 0.95rem; }
+.sp-content strong { flex: 1; }
