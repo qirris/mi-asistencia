@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-  <meta name="theme-color" content="#2563eb">
+  <meta name="theme-color" content="#f5f6f4">
   <meta name="description" content="Mi Asistencia: controla tus faltas y tu evaluación continua en Andalucía.">
   <title>Mi Asistencia</title>
   <link rel="manifest" href="manifest.webmanifest">
@@ -40,7 +40,7 @@
         <!-- Encabezado de bienvenida -->
         <div class="dash-welcome">
           <div class="dw-info">
-            <h2>¡Hola! Bienvenido a Mi Asistencia</h2>
+            <h2>Tu día en clase</h2>
             <p class="muted" id="dash-fecha-actual">Cargando fecha...</p>
           </div>
           <div class="dw-badge">
@@ -60,7 +60,7 @@
             <!-- Próximas clases: Mi día -->
             <div class="dash-card">
               <div class="schedule-config-head" style="margin-bottom:.75rem">
-                <h3 class="section-title" style="margin-top:0">📅 Clases de hoy</h3>
+                <h3 class="section-title" style="margin-top:0">Clases de hoy</h3>
                 <button class="btn btn-ghost btn-sm" type="button" onclick="document.querySelector('.nav-btn[data-view=\"horario\"]').click()">Ver horario</button>
               </div>
               <div id="dash-classes-today"></div>
@@ -74,7 +74,7 @@
           <div class="dash-col-right">
             <!-- Resumen de asistencia y normativa -->
             <div class="dash-card">
-              <h3 class="section-title" style="margin-top:0">📊 Estado de asistencia</h3>
+              <h3 class="section-title" style="margin-top:0">Estado de asistencia</h3>
               <div id="dash-attendance-summary"></div>
               <p class="legal" id="dash-formula" style="margin-top:.85rem"></p>
             </div>
@@ -82,7 +82,7 @@
             <!-- Mis asignaturas compacto -->
             <div class="dash-card">
               <div class="schedule-config-head" style="margin-bottom:.75rem">
-                <h3 class="section-title" style="margin-top:0">📚 Mis asignaturas</h3>
+                <h3 class="section-title" style="margin-top:0">Mis asignaturas</h3>
                 <button class="btn btn-ghost btn-sm" type="button" onclick="document.querySelector('.nav-btn[data-view=\"asignaturas\"]').click()">Gestionar</button>
               </div>
               <div id="dash-subjects"></div>
@@ -90,7 +90,7 @@
 
             <!-- Actividad reciente -->
             <div class="dash-card">
-              <h3 class="section-title" style="margin-top:0">⚡ Actividad reciente</h3>
+              <h3 class="section-title" style="margin-top:0">Actividad reciente</h3>
               <div id="dash-recent-activity"></div>
             </div>
           </div>
@@ -104,7 +104,7 @@
             <h2>Mis asignaturas</h2>
             <p>Crea tus materias una sola vez y utilízalas para rellenar tu horario y registrar faltas.</p>
           </div>
-          <button class="btn" id="btn-toggle-asig-form" type="button">➕ Añadir asignatura</button>
+          <button class="btn" id="btn-toggle-asig-form" type="button">Añadir asignatura</button>
         </div>
 
         <div class="card card-form hidden" id="asig-form-card" style="margin-bottom:1.25rem">
@@ -199,7 +199,7 @@
             <h2>Mi horario</h2>
             <p>Consulta tu semana escolar y clases de un vistazo.</p>
           </div>
-          <button class="btn" id="btn-toggle-schedule-edit" type="button">✏️ Editar mi horario</button>
+          <button class="btn" id="btn-toggle-schedule-edit" type="button">Editar mi horario</button>
         </div>
 
         <!-- Resumen superior compacto -->
