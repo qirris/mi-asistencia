@@ -45,6 +45,8 @@ const HORARIO_DEFAULT = {
 let scheduleMobileDay = null;
 let editingFranjaId = null;
 let editingCellKey = null;
+let editingCellValue = null;
+let editingCellSnapshot = '';
 let scheduleEditing = false;
 let scheduleBackup = null;
 
@@ -634,75 +636,133 @@ function leerConfigHorario() {
 }
 
 /* ---------- Diálogo de casilla ---------- */
-function openCellDialog(key) {
-  const parts = String(key).split('|');
-  const day = parts[0];
-  const fid = parts[1];
-  const f = state.horario.franjas.find(x => x.id === fid);
-  if (!f) return;
-
-  const c = getCasilla(state.horario, day, fid);
-  if (c && c.asignaturaId) {
+function cellEditorSnapshot(key) {
+  const [day, fid] = key.split('|');
+  const slot = state.horario.franjas.find(item => item.id === fid);
+  return JSON.stringify({ cell: getCasilla(state.horario, day, fid), slot,
+    active: !!slot && slot.tipo === 'clase' && franjaActivaEnDia(state.horario, slot, day) });
+}
+function cellDetachedTasks(patches) {
+  const changed = new Map(patches.map(patch => [patch.key, patch.after]));
+  return state.tareas.filter(task => changed.has(task.slotKey) &&
+    (!changed.get(task.slotKey) || changed.get(task.slotKey).recreo ||
+      changed.get(task.slotKey).asignaturaId !== task.asignaturaId)).map(task => task.id);
+}
+function clearTaskClassLink(task) {
+  return Object.assign({}, task, { slotKey: '', dia: '', horaInicio: '', horaFin: '' });
+}
+function saveScheduleCell(key, value, expectedSnapshot = null) {
+  if (scheduleEditing) return { ok: false, reason: 'Guarda o cancela la configuración del horario antes de cambiar una clase.' };
+  const [day, fid] = String(key).split('|');
+  const slot = state.horario.franjas.find(item => item.id === fid);
+  if (!slot || slot.tipo !== 'clase' || !franjaActivaEnDia(state.horario, slot, day)) {
+    return { ok: false, reason: 'Esta casilla ya no está disponible. Cierra y vuelve a abrir el horario.' };
+  }
+  if (expectedSnapshot !== null && cellEditorSnapshot(key) !== expectedSnapshot) {
+    return { ok: false, reason: 'La clase ha cambiado. Cierra el selector y vuelve a abrirla antes de guardar.' };
+  }
+  let after = null;
+  if (value && value.recreo === true) after = { recreo: true };
+  else if (value && value.asignaturaId) {
+    const subject = asignaturaPorId(value.asignaturaId);
+    if (!subject || subject.archivada) return { ok: false, reason: 'Elige una asignatura activa.' };
+    after = { asignaturaId: subject.id };
+  } else if (value !== null) return { ok: false, reason: 'Elige una asignatura, un recreo o una casilla vacía.' };
+  const before = getCasilla(state.horario, day, fid);
+  if (JSON.stringify(before) === JSON.stringify(after)) return { ok: true, changed: false, detached: 0 };
+  const detached = new Set(cellDetachedTasks([{ key, after }]));
+  const previousCells = state.horario.casillas, previousTasks = state.tareas;
+  try {
+    if (!isStoredStateCurrent()) return { ok: false, reason: 'Los datos han cambiado en otra pestaña. Recarga antes de guardar.' };
+    const cells = Object.assign({}, previousCells);
+    if (after) cells[key] = after; else delete cells[key];
+    state.horario.casillas = cells;
+    state.tareas = previousTasks.map(task => detached.has(task.id) ? clearTaskClassLink(task) : task);
+    saveState();
+  } catch (error) {
+    state.horario.casillas = previousCells; state.tareas = previousTasks;
+    return { ok: false, reason: 'No se ha podido guardar la clase. La casilla y sus actividades siguen igual.' };
+  }
+  return { ok: true, changed: true, detached: detached.size };
+}
+function openCellDialog(key, forceEditor = false) {
+  const [day, fid] = String(key).split('|');
+  const f = state.horario.franjas.find(item => item.id === fid);
+  if (!f || f.tipo !== 'clase' || !franjaActivaEnDia(state.horario, f, day)) return;
+  const cell = getCasilla(state.horario, day, fid);
+  if (!forceEditor && cell && cell.asignaturaId && asignaturaPorId(cell.asignaturaId)) {
     openClassDetail(day, fid);
     return;
   }
-
+  if (scheduleEditing) { toast('Guarda o cancela la configuración del horario antes de cambiar una clase.'); return; }
   editingCellKey = key;
-  $('#dlg-cell-title').textContent = diaLabel(day);
-  $('#dlg-cell-subtitle').textContent = f.inicio + '–' + f.fin + (f.tipo === 'recreo' ? ' · Recreo' : '');
+  editingCellSnapshot = cellEditorSnapshot(key);
+  editingCellValue = cell ? Object.assign({}, cell) : null;
+  $('#dlg-cell-title').textContent = 'Cambiar clase';
+  $('#dlg-cell-subtitle').textContent = diaLabel(day) + ' · ' + f.inicio + '–' + f.fin;
+  const subject = cell && cell.asignaturaId ? asignaturaPorId(cell.asignaturaId) : null;
+  $('#cell-current-description').textContent = 'Actual: ' + (cell && cell.recreo ? 'Recreo' :
+    subject ? subject.nombre + (subject.archivada ? ' (archivada)' : '') : cell ? 'Asignatura eliminada' : 'Casilla vacía') + '.';
+  $('#cell-change-feedback').textContent = '';
   renderCellSubjects();
+  $('#dialog-cell').querySelector('.dialog-content').scrollTop = 0;
   $('#dialog-cell').showModal();
 }
-
 function renderCellSubjects() {
   const cont = $('#dlg-cell-subjects');
   if (!cont || !editingCellKey) return;
-  const parts = editingCellKey.split('|');
-  const c = getCasilla(state.horario, parts[0], parts[1]);
-  const actual = c && c.asignaturaId ? c.asignaturaId : null;
-  const activas = state.asignaturas.filter(a => !a.archivada);
-
-  if (!activas.length) {
-    cont.innerHTML = `<div class="empty" style="padding:1rem"><strong>Sin asignaturas</strong>Crea primero tus materias en «Asignaturas».</div>`;
-    return;
+  const focusedSubject = document.activeElement && document.activeElement.dataset ? document.activeElement.dataset.pick : null;
+  const active = state.asignaturas.filter(subject => !subject.archivada);
+  cont.innerHTML = active.length ? active.map(subject => {
+    const selected = !!editingCellValue && editingCellValue.asignaturaId === subject.id;
+    return `<button type="button" class="cell-subject sc-${subject.color} ${selected ? 'active' : ''}"
+        data-pick="${esc(subject.id)}" aria-pressed="${selected}"><span class="color-dot"></span><span>${esc(subject.nombre)}</span>${selected ? uiIcon('check') : ''}</button>`;
+  }).join('') : '<p class="hint">No hay asignaturas activas. Puedes añadir una en «Asignaturas» o dejar esta casilla libre.</p>';
+  const isBreak = !!editingCellValue && editingCellValue.recreo === true;
+  $('#dlg-cell-break').setAttribute('aria-pressed', String(isBreak));
+  $('#dlg-cell-clear').setAttribute('aria-pressed', String(editingCellValue === null));
+  const count = cellDetachedTasks([{ key: editingCellKey, after: editingCellValue }]).length;
+  const subject = editingCellValue && editingCellValue.asignaturaId ? asignaturaPorId(editingCellValue.asignaturaId) : null;
+  const choice = isBreak ? 'Recreo' : editingCellValue === null ? 'Casilla vacía' : subject ? subject.nombre : 'Asignatura eliminada';
+  $('#cell-choice-summary').textContent = 'Selección: ' + choice + '.' + (count
+    ? ' ' + count + (count === 1 ? ' actividad seguirá' : ' actividades seguirán') +
+      ' en «Mis tareas», con su asignatura y detalles, sin vínculo con esta clase.'
+    : ' Las actividades mantienen su vinculación.');
+  const snapshot = JSON.parse(editingCellSnapshot);
+  $('#dlg-cell-save').disabled = JSON.stringify(snapshot.cell) === JSON.stringify(editingCellValue) ||
+    !!editingCellValue && !isBreak && (!subject || subject.archivada);
+  if (focusedSubject) {
+    const replacement = Array.from(cont.querySelectorAll('[data-pick]')).find(button => button.dataset.pick === focusedSubject);
+    if (replacement) replacement.focus({ preventScroll: true });
   }
-
-  cont.innerHTML = activas.map(a => `
-    <button type="button" class="cell-subject sc-${a.color} ${actual === a.id ? 'active' : ''}" data-pick="${a.id}">
-      <span class="color-dot"></span>
-      <span>${esc(a.nombre)}</span>
-    </button>
-  `).join('');
 }
-
 function aplicarAsignatura(id) {
-  if (!editingCellKey) return;
-  const parts = editingCellKey.split('|');
-  setCasilla(state.horario, parts[0], parts[1], { asignaturaId: id });
-  saveState();
-  $('#dialog-cell').close();
-  toast('Asignatura colocada');
-  render();
+  const subject = asignaturaPorId(id);
+  if (!editingCellKey || !subject || subject.archivada) return;
+  editingCellValue = { asignaturaId: id };
+  $('#cell-change-feedback').textContent = '';
+  renderCellSubjects();
 }
-
 function vaciarCasilla() {
   if (!editingCellKey) return;
-  const parts = editingCellKey.split('|');
-  setCasilla(state.horario, parts[0], parts[1], null);
-  saveState();
-  $('#dialog-cell').close();
-  toast('Casilla vaciada');
-  render();
+  editingCellValue = null;
+  $('#cell-change-feedback').textContent = '';
+  renderCellSubjects();
 }
-
 function marcarRecreo() {
   if (!editingCellKey) return;
-  const parts = editingCellKey.split('|');
-  setCasilla(state.horario, parts[0], parts[1], { recreo: true });
-  saveState();
+  editingCellValue = { recreo: true };
+  $('#cell-change-feedback').textContent = '';
+  renderCellSubjects();
+}
+function guardarCasilla() {
+  if (!editingCellKey) return false;
+  const result = saveScheduleCell(editingCellKey, editingCellValue, editingCellSnapshot);
+  if (!result.ok) { $('#cell-change-feedback').textContent = result.reason; return false; }
   $('#dialog-cell').close();
-  toast('Casilla marcada como recreo');
   render();
+  toast(result.detached ? 'Clase guardada. Las actividades se conservan en «Mis tareas».' : 'Clase guardada');
+  return true;
 }
 
 /* ---------- Diálogo de franja ---------- */
@@ -898,6 +958,14 @@ function bindSchedule() {
     });
   }
 
+  $('#dlg-cell-save').addEventListener('click', guardarCasilla);
+  $('#dialog-cell').addEventListener('close', () => {
+    if (document.querySelector('dialog[open]') || !$('#view-horario').classList.contains('active')) return;
+    const origin = Array.from($('#view-horario').querySelectorAll('[data-cell]')).find(element =>
+      element.dataset.cell === editingCellKey && element.getClientRects().length);
+    if (origin) origin.focus({ preventScroll: true });
+  });
+  $('#dlg-cell-cancel').addEventListener('click', () => $('#dialog-cell').close());
   const closeCell = $('#dlg-cell-close');
   if (closeCell) closeCell.addEventListener('click', () => $('#dialog-cell').close());
 
@@ -997,10 +1065,7 @@ function bindSchedule() {
         !franjaActivaEnDia(h, f, source) && getCasilla(h, day, f.id)).length;
       plan.rows.push(row);
     });
-    const changed = new Map(plan.patches.map(patch => [patch.key, patch.after]));
-    plan.detached = state.tareas.filter(task => changed.has(task.slotKey) &&
-      (!changed.get(task.slotKey) || changed.get(task.slotKey).recreo ||
-        changed.get(task.slotKey).asignaturaId !== task.asignaturaId)).map(task => task.id);
+    plan.detached = cellDetachedTasks(plan.patches);
     plan.signature = JSON.stringify({ source, targets: plan.targets, patches: plan.patches, detached: plan.detached, rows: plan.rows, invalid: plan.invalid });
     return plan;
   }
@@ -1010,8 +1075,7 @@ function bindSchedule() {
     if (!plan.patches.length) return { ok: false, reason: 'Los días seleccionados ya tienen las mismas clases.' };
     if (plan.replaced && !allowReplace) return { ok: false, reason: 'Confirma la sustitución de las clases existentes.' };
     try {
-      const saved = localStorage.getItem(STORAGE_KEY);
-      if (saved && saved !== JSON.stringify(state)) return { ok: false, reason: 'Los datos han cambiado en otra pestaña. Recarga antes de copiar.' };
+      if (!isStoredStateCurrent()) return { ok: false, reason: 'Los datos han cambiado en otra pestaña. Recarga antes de copiar.' };
     } catch (error) { return { ok: false, reason: 'No se puede acceder al almacenamiento. El horario no se ha cambiado.' }; }
     const previousCells = state.horario.casillas, previousTasks = state.tareas;
     const cells = Object.assign({}, previousCells);
@@ -1022,7 +1086,7 @@ function bindSchedule() {
     const detach = new Set(plan.detached);
     state.horario.casillas = cells;
     state.tareas = previousTasks.map(task => detach.has(task.id)
-      ? Object.assign({}, task, { slotKey: '', dia: '', horaInicio: '', horaFin: '' }) : task);
+      ? clearTaskClassLink(task) : task);
     try { saveState(); } catch (error) {
       state.horario.casillas = previousCells; state.tareas = previousTasks;
       return { ok: false, reason: 'No se ha podido guardar la copia. El horario no se ha cambiado.' };

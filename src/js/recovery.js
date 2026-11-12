@@ -104,8 +104,7 @@ var UndoManager = (function recoveryController() {
     if (!pauses.size && Date.now() >= batch.expiresAt) { expire(); return false; }
     try {
       if (read()?.token !== batch.token) { clear(false); return false; }
-      const saved = localStorage.getItem(STORAGE_KEY);
-      if (saved && saved !== JSON.stringify(state)) {
+      if (!isStoredStateCurrent()) {
         clear(false);
         toast('Los datos han cambiado en otra pestaña. Recarga antes de deshacer.');
         return false;

@@ -6,11 +6,11 @@
   <meta name="theme-color" content="#f5f6f4">
   <meta name="description" content="SalvaTuCurso: tus faltas, horario y tareas en un solo lugar.">
   <title>SalvaTuCurso</title>
-  <script src="src/js/theme.js?v=30"></script>
+  <script src="src/js/theme.js?v=35"></script>
   <link rel="manifest" href="manifest.webmanifest">
   <link rel="apple-touch-icon" href="assets/icons/icon-192.png">
   <link rel="icon" type="image/png" href="assets/icons/icon-192.png">
-  <link rel="stylesheet" href="src/css/styles.css?v=30">
+  <link rel="stylesheet" href="src/css/styles.css?v=35">
 </head>
 <body>
   <div class="app-shell">
@@ -482,6 +482,34 @@
           <p class="legal" id="cfg-legal" style="margin-top:.75rem"></p>
         </div>
 
+        <div class="card school-calendar" id="school-calendar-card" style="margin-bottom:1.25rem">
+          <h3 class="section-title" id="school-calendar-title" tabindex="-1" style="margin-top:0">Calendario del curso</h3>
+          <p class="hint">Indica cuándo hay clases para que Inicio respete tus vacaciones y festivos. No cambia las horas planificadas ni las faltas registradas.</p>
+          <form id="course-dates-form" novalidate>
+            <div class="form-row">
+              <div class="field">
+                <label for="course-start">Inicio del curso</label>
+                <input type="date" id="course-start" min="0001-01-01" max="9999-12-31" aria-describedby="course-dates-help">
+              </div>
+              <div class="field">
+                <label for="course-end">Fin del curso</label>
+                <input type="date" id="course-end" min="0001-01-01" max="9999-12-31" aria-describedby="course-dates-help">
+              </div>
+            </div>
+            <p class="hint" id="course-dates-help">Opcionales: completa ambas fechas o deja las dos vacías.</p>
+            <p class="form-feedback" id="course-dates-feedback" role="alert"></p>
+            <div class="calendar-save-row">
+              <p class="hint" id="course-dates-summary" role="status"></p>
+              <button class="btn btn-secondary" type="submit">Guardar fechas</button>
+            </div>
+          </form>
+          <div class="calendar-periods-heading">
+            <h4>Días sin clase</h4>
+            <button class="text-action" id="btn-add-calendar-period" type="button"><svg class="ui-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg> Añadir día o periodo</button>
+          </div>
+          <ul class="calendar-periods-list" id="calendar-periods-list"></ul>
+        </div>
+
         <div class="card appearance-card" style="margin-bottom:1.25rem">
           <h3 class="section-title" style="margin-top:0">Apariencia</h3>
           <div class="field appearance-control">
@@ -643,24 +671,30 @@
   <!-- Dialog de casilla del horario -->
   <dialog id="dialog-cell" aria-labelledby="dlg-cell-title">
     <div class="dialog-body">
-<div class="dialog-head">
-        <div>
-          <h3 id="dlg-cell-title">Casilla</h3>
-          <p class="muted" id="dlg-cell-subtitle" style="font-size:.82rem"></p>
-        </div>
+      <div class="dialog-head">
+        <div><h3 id="dlg-cell-title">Cambiar clase</h3><p class="muted" id="dlg-cell-subtitle" style="font-size:.82rem"></p></div>
         <button class="btn btn-ghost btn-sm" id="dlg-cell-close" type="button">Cerrar</button>
       </div>
-<div class="dialog-content">
-<p class="field-label">Elige una asignatura</p>
-      <div class="cell-subjects" id="dlg-cell-subjects"></div>
-</div>
-<div class="dialog-actions">
-<button class="btn btn-ghost" id="dlg-cell-break" type="button">Marcar recreo</button>
-        <button class="btn btn-ghost" id="dlg-cell-clear" type="button">Vaciar</button>
-<button class="btn btn-ghost" id="dlg-cell-editfranja" type="button">Editar franja</button>
-        <button class="btn btn-ghost" id="dlg-cell-addasig" type="button">Ir a asignaturas</button>
-</div>
-</div>
+      <div class="dialog-content">
+        <p class="hint" id="cell-current-description"></p>
+        <p class="field-label" id="cell-subject-label">Elige una asignatura</p>
+        <div class="cell-subjects" id="dlg-cell-subjects" role="group" aria-labelledby="cell-subject-label"></div>
+        <div class="cell-kind-options" role="group" aria-label="Otras opciones de clase">
+          <button class="btn btn-secondary" id="dlg-cell-break" type="button" aria-pressed="false">Marcar recreo</button>
+          <button class="btn btn-secondary" id="dlg-cell-clear" type="button" aria-pressed="false">Dejar vacía</button>
+        </div>
+        <p class="cell-choice-summary" id="cell-choice-summary" role="status" aria-live="polite"></p>
+        <p class="form-feedback" id="cell-change-feedback" role="alert"></p>
+        <div class="cell-other-actions">
+          <button class="text-action" id="dlg-cell-editfranja" type="button">Editar franja</button>
+          <button class="text-action" id="dlg-cell-addasig" type="button">Ir a asignaturas</button>
+        </div>
+      </div>
+      <div class="dialog-actions">
+        <button class="btn btn-ghost" id="dlg-cell-cancel" type="button">Cancelar</button>
+        <button class="btn" id="dlg-cell-save" type="button" disabled>Guardar clase</button>
+      </div>
+    </div>
   </dialog>
 
   <!-- Dialog de franja horaria -->
@@ -722,6 +756,38 @@
       <div class="dialog-actions">
         <button class="btn btn-ghost" id="copy-day-cancel" type="button">Cancelar</button>
         <button class="btn" id="btn-copy-day-apply" type="button" disabled>Copiar clases</button>
+      </div>
+    </div>
+  </dialog>
+
+  <dialog id="dialog-calendar-period" aria-labelledby="calendar-period-title">
+    <div class="dialog-body">
+      <div class="dialog-head">
+        <h3 id="calendar-period-title">Añadir días sin clase</h3>
+        <button class="btn btn-ghost btn-sm" id="period-close" type="button">Cerrar</button>
+      </div>
+      <div class="dialog-content">
+        <p class="hint">Añade un festivo o un periodo de vacaciones de tu centro. Las fechas inicial y final se incluyen.</p>
+        <div class="form-grid">
+          <div class="field">
+            <label for="period-start">Primer día sin clase *</label>
+            <input type="date" id="period-start" min="0001-01-01" max="9999-12-31">
+          </div>
+          <div class="field">
+            <label for="period-end">Último día sin clase</label>
+            <input type="date" id="period-end" min="0001-01-01" max="9999-12-31" aria-describedby="period-end-help">
+            <span class="hint" id="period-end-help">Déjalo vacío si es un solo día.</span>
+          </div>
+          <div class="field">
+            <label for="period-name">Nombre (opcional)</label>
+            <input type="text" id="period-name" placeholder="Ej: Vacaciones de Navidad">
+          </div>
+        </div>
+        <p class="form-feedback" id="period-feedback" role="alert"></p>
+      </div>
+      <div class="dialog-actions">
+        <button class="btn btn-ghost" id="period-cancel" type="button">Cancelar</button>
+        <button class="btn" id="period-save" type="button">Guardar periodo</button>
       </div>
     </div>
   </dialog>
@@ -838,13 +904,14 @@
       });
     }
   </script>
-  <script src="src/js/attendance.js?v=30"></script>
-  <script src="src/js/storage.js?v=30"></script>
-  <script src="src/js/schedule.js?v=30"></script>
-  <script src="src/js/tasks.js?v=30"></script>
-  <script src="src/js/history.js?v=30"></script>
-  <script src="src/js/recovery.js?v=30"></script>
-  <script src="src/js/app.js?v=30"></script>
+  <script src="src/js/attendance.js?v=35"></script>
+  <script src="src/js/calendar.js?v=35"></script>
+  <script src="src/js/storage.js?v=35"></script>
+  <script src="src/js/schedule.js?v=35"></script>
+  <script src="src/js/tasks.js?v=35"></script>
+  <script src="src/js/history.js?v=35"></script>
+  <script src="src/js/recovery.js?v=35"></script>
+  <script src="src/js/app.js?v=35"></script>
 
   <!-- Nodos ocultos de compatibilidad mientras se renueva la caché de la PWA -->
   <p id="falta-legal" class="hidden" aria-hidden="true"></p>

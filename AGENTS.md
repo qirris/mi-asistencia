@@ -16,6 +16,8 @@ Punto de entrada del proyecto. Proyecto: web app responsive e instalable (PWA) p
 - Creación rápida de tareas con tres campos y «Más opciones» para conservar los detalles adicionales.
 - Borrado recuperable de tareas y faltas con «Deshacer» durante diez segundos; aviso y recuperación local tras recargar dentro del plazo.
 - Copia de un día del horario a varios destinos, con revisión y confirmación al sustituir casillas ocupadas; conserva las actividades sin duplicarlas.
+- Edición de clases ocupadas con selección provisional, guardado explícito y conservación de actividades en «Mis tareas» al desvincularlas.
+- Calendario manual en Ajustes: fechas del curso y días o periodos sin clase. Inicio comparte sus reglas y salta vacaciones largas.
 - Datos en `localStorage` con migración segura y copias JSON.
 - Código organizado en `src/css/` y `src/js/`; pruebas en `tests/`.
 - Repositorio: <https://github.com/qirris/mi-asistencia>.

@@ -124,18 +124,36 @@ function getSetupProgress() {
 function findNextClass(now = new Date()) {
   const h = state.horario;
   if (!h) return null;
-  const activeIds = new Set(state.asignaturas.filter(a => !a.archivada).map(a => a.id));
+  const active = new Set(state.asignaturas.filter(subject => !subject.archivada).map(subject => subject.id));
+  const weekly = new Map();
+  h.dias.forEach(day => {
+    weekly.set(day, h.franjas.filter(slot => {
+      const cell = getCasilla(h, day, slot.id);
+      return slot.tipo === 'clase' && franjaActivaEnDia(h, slot, day) && cell && !cell.recreo && active.has(cell.asignaturaId);
+    }).sort((a, b) => toMin(a.inicio) - toMin(b.inicio)));
+  });
+  if (![...weekly.values()].some(slots => slots.length)) return null;
+  const today = calendarISO(now), calendar = state.config.calendario;
+  if (!today) return null;
+  let candidate = calendar.inicio && today < calendar.inicio ? calendar.inicio : today;
   const minute = now.getHours() * 60 + now.getMinutes();
-  for (let offset = 0; offset <= 7; offset++) {
-    const date = new Date(now.getFullYear(), now.getMonth(), now.getDate() + offset);
+  // Los periodos completos se saltan de una vez; entre ellos basta una semana.
+  while (candidate && (!calendar.fin || candidate <= calendar.fin)) {
+    const status = getSchoolDayStatus(candidate);
+    if (status.motivo === 'noLectivo') { candidate = calendarAddDays(status.hasta, 1); continue; }
+    if (status.motivo === 'despues') break;
+    const date = calendarDate(candidate);
     const day = DIAS[(date.getDay() + 6) % 7];
-    if (!h.dias.includes(day.key)) continue;
-    const slots = h.franjas.filter(f => f.tipo === 'clase' && franjaActivaEnDia(h, f, day.key)).sort((a, b) => toMin(a.inicio) - toMin(b.inicio));
-    for (const slot of slots) {
-      const cell = getCasilla(h, day.key, slot.id);
-      if (!cell || !activeIds.has(cell.asignaturaId) || (offset === 0 && toMin(slot.fin) <= minute)) continue;
-      return { subject: asignaturaPorId(cell.asignaturaId), slot, day, date, offset, current: offset === 0 && minute >= toMin(slot.inicio) };
+    if (status.lectivo) {
+      for (const slot of weekly.get(day.key) || []) {
+        if (candidate === today && toMin(slot.fin) <= minute) continue;
+        const cell = getCasilla(h, day.key, slot.id);
+        const offset = calendarDayNumber(candidate) - calendarDayNumber(today);
+        return { subject: asignaturaPorId(cell.asignaturaId), slot, day, date, offset,
+          current: offset === 0 && minute >= toMin(slot.inicio) };
+      }
     }
+    candidate = calendarAddDays(candidate, 1);
   }
   return null;
 }
@@ -150,14 +168,17 @@ function renderDashboardPriorities() {
   if (!hasContent) { cont.innerHTML = ''; return; }
   const next = findNextClass();
   const task = pending[0];
-  const classWhen = next ? (next.current ? 'En curso' : next.offset === 0 ? 'Hoy' : next.offset === 1 ? 'Mañana' : next.day.label + ' ' + next.date.toLocaleDateString('es-ES', { day: 'numeric', month: 'short' })) + ' · ' + next.slot.inicio + '–' + next.slot.fin : 'Coloca tus asignaturas para ver tu próxima clase.';
+  const schoolStatus = getSchoolDayStatus(new Date());
+  const emptyClassTitle = schoolStatus.motivo === 'despues' ? 'Curso finalizado' : progress.assigned ? 'Sin clases previstas' : 'Prepara tu semana';
+  const emptyClassMessage = ['antes', 'despues', 'noLectivo'].includes(schoolStatus.motivo) ? schoolDayMessage(schoolStatus) : progress.assigned ? 'Revisa las fechas del curso y las clases de tu horario.' : 'Coloca tus asignaturas para ver tu próxima clase.';
+  const classWhen = next ? (next.current ? 'En curso' : next.offset === 0 ? 'Hoy' : next.offset === 1 ? 'Mañana' : next.day.label + ' ' + next.date.toLocaleDateString('es-ES', { day: 'numeric', month: 'short' })) + ' · ' + next.slot.inicio + '–' + next.slot.fin : emptyClassMessage;
   const taskSubject = task ? asignaturaPorId(task.asignaturaId) : null;
   cont.innerHTML = `
     <section class="priority-item priority-class">
       <h3>${uiIcon('calendar')} ${next && next.current ? 'Tu clase ahora' : 'Próxima clase'}</h3>
-      <p class="priority-title">${next ? esc(next.subject.nombre) : 'Prepara tu semana'}</p>
+      <p class="priority-title">${next ? esc(next.subject.nombre) : emptyClassTitle}</p>
       <p class="priority-meta">${esc(classWhen)}</p>
-      <button class="text-action" type="button" data-dashboard-action="horario">${next ? 'Ver horario' : 'Completar horario'} ${uiIcon('arrow')}</button>
+      <button class="text-action" type="button" data-dashboard-action="${next || !progress.assigned ? 'horario' : 'calendario'}">${next ? 'Ver horario' : progress.assigned ? 'Revisar calendario' : 'Completar horario'} ${uiIcon('arrow')}</button>
     </section>
     <section class="priority-item priority-task">
       <h3>${uiIcon('clock')} Entrega más cercana</h3>
@@ -273,6 +294,12 @@ function renderDashboardClassesToday() {
   if (!cont || !state || !state.horario) return;
   const h = state.horario;
   const now = new Date();
+  const schoolStatus = getSchoolDayStatus(now);
+  if (!schoolStatus.lectivo) {
+    cont.innerHTML = '<div class="quiet-empty"><p>' + esc(schoolDayMessage(schoolStatus)) +
+      '</p><button class="text-action" type="button" data-dashboard-action="calendario">Revisar calendario ' + uiIcon('arrow') + '</button></div>';
+    return;
+  }
   const dayKey = DIAS[(now.getDay() + 6) % 7].key;
   const minute = now.getHours() * 60 + now.getMinutes();
   const rows = h.dias.includes(dayKey) ? h.franjas.filter(f => franjaActivaEnDia(h, f, dayKey) && f.tipo === 'clase').map(f => {
@@ -416,7 +443,7 @@ function renderDashboardOnboarding() {
   const descriptions = [
     'Así podrás consultar la asistencia con las opciones de tu enseñanza.',
     'Empieza por una asignatura. Después podrás añadir el resto.',
-    'Toca una clase del horario y elige su asignatura. Puedes completar el resto después.'
+    'Toca una casilla, elige su asignatura y guarda la clase. Puedes completar el resto después.'
   ];
   const options = Object.entries(ETAPAS).map(([key, item]) => `<option value="${key}" ${state.etapa === key ? 'selected' : ''}>${esc(item.label)}</option>`).join('');
   const stageForm = progress.step === 1 ? `<div class="setup-stage"><label for="setup-etapa">Tu etapa educativa</label><select id="setup-etapa">${options}</select></div>` : '';
@@ -521,6 +548,7 @@ function renderFaltas() {
 }
 
 function renderConfig() {
+  renderSchoolCalendar();
   if (typeof SalvaTuCursoTheme !== 'undefined') SalvaTuCursoTheme.syncSettings();
   $('#cfg-etapa').value = state.etapa;
   $('#cfg-zoom').checked = isZoomAllowed();
@@ -596,6 +624,12 @@ function bindNav() {
     const action = event.target.closest('[data-dashboard-action]');
     if (!action) return;
     const actionName = action.dataset.dashboardAction;
+    if (actionName === 'calendario') {
+      showView('config');
+      $('#school-calendar-card').scrollIntoView({ block: 'start' });
+      $('#school-calendar-title').focus({ preventScroll: true });
+      return;
+    }
     if (actionName === 'preparar') {
       state.config.onboarding.oculto = false;
       state.config.onboarding.etapaConfirmada = false;
@@ -1078,7 +1112,7 @@ function promptInstall() {
 function refreshDashboardTime() {
   if (!state || !state.horario || document.hidden) return false;
   const next = findNextClass();
-  const signature = JSON.stringify([todayISO(), next ? [next.day.key, next.slot.id, next.slot.inicio, next.slot.fin, next.subject.id, next.current, next.offset] : null]);
+  const signature = JSON.stringify([todayISO(), getSchoolDayStatus(new Date()), next ? [next.day.key, next.slot.id, next.slot.inicio, next.slot.fin, next.subject.id, next.current, next.offset] : null]);
   if (signature === dashboardClockSignature) return false;
   dashboardClockSignature = signature;
 
@@ -1134,6 +1168,7 @@ function init() {
   bindTasks();
   bindHistory();
   bindConfig();
+  bindSchoolCalendar();
   setupInstall();
   render();
   UndoManager.bind();

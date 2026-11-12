@@ -36,12 +36,20 @@ Web app responsive e instalable (PWA) para estudiantes de Andalucía que permite
 - Copia de un día del horario a varios destinos mediante un diálogo con resumen y confirmación explícita de casillas ocupadas. Respeta las salidas distintas, omite asignaturas archivadas o huérfanas y mantiene las franjas y los recreos generales.
 - No se duplican actividades ni faltas al copiar. Las actividades de clases sustituidas conservan sus datos en «Mis tareas» y pierden sólo el vínculo con la clase que ya no corresponde.
 - Cancelar la configuración del horario restaura también la versión persistida. La copia queda desactivada durante la edición y revierte los cambios si no puede guardarlos.
-- Caché de la PWA actualizada a `salvatucurso-v30`, incluyendo el módulo de recuperación.
+- Caché de la PWA actualizada a `salvatucurso-v35`, incluyendo el calendario y el módulo de recuperación.
+- «Cambiar clase» permite sustituir asignaturas, marcar recreos o vaciar casillas con una selección provisional y guardado explícito. Cancelar, cerrar y Escape conservan los datos anteriores; se protege la edición general abierta y se pueden reparar casillas huérfanas.
+- Los cambios de casilla y de vínculos se guardan conjuntamente y se revierten si falla el almacenamiento. Las actividades desvinculadas conservan asignatura, fechas, estado y contenido en «Mis tareas». Se comparte esta limpieza con la copia de días.
+- Calendario manual en Ajustes, persistido en `config.calendario = { inicio, fin, noLectivos: [{ id, nombre, inicio, fin }] }`. Fechas del curso opcionales como pareja, intervalos inclusivos y fecha final opcional para días sueltos. Se admiten solapamientos y se confirma la eliminación de periodos.
+- Inicio usa una comprobación compartida de día lectivo, salta periodos completos y respeta el comienzo y el final del curso. Mantiene mensajes específicos y acceso directo al calendario sin modificar asistencia, faltas ni fechas de tareas.
+- Fechas civiles locales para evitar errores de zona horaria y cambios de hora. La normalización añade un calendario vacío a formatos anteriores sin reiniciar el curso ni su guía inicial.
+- La protección frente a cambios de otra pestaña compara con la copia realmente leída del almacenamiento, evitando falsos conflictos al ampliar el formato durante la normalización.
+- Los selectores mantienen el foco al elegir una asignatura y lo devuelven al origen al cerrarse; el periodo editado también recupera su botón de origen tras guardar.
 
 ## 3. Tecnologías y arquitectura
 - HTML5 + CSS3 + JavaScript Vanilla (sin frameworks ni dependencias npm).
 - Estructura modular en `src/css/` y `src/js/`:
   - `theme.js`: Resuelve el tema antes de pintar y conserva la preferencia de apariencia por navegador.
+  - `calendar.js`: Calendario manual del curso, fechas civiles, exclusiones y formularios de configuración.
   - `storage.js`: Persistencia, migración de datos y normalización de estado.
   - `attendance.js`: Etapas educativas, umbrales normativos y cálculos de asistencia.
   - `schedule.js`: Horario escolar semanal, configuración de franjas y resumen de horas.
@@ -86,6 +94,10 @@ Web app responsive e instalable (PWA) para estudiantes de Andalucía que permite
 - `node tests/changes.test.js`: recuperación individual y agrupada, recarga, vencimiento, foco, segundo plano, fallos de almacenamiento, cambios en otra pestaña, reinicio, vínculos de clase, copia múltiple, destinos cortos, sustitución confirmada, tareas conservadas, revisión obsoleta, cancelación persistida y botones del historial.
 - Revisión local de la copia y de «Deshacer» a 320, 390, 768 y 1280 px, con altura reducida y temas claro/oscuro; cierre con Escape y retorno del foco. Sin desbordamiento de página en los tamaños comprobados.
 - Recarga con el servidor local apagado: las tareas, el tema oscuro, «Deshacer» y el diálogo de copia siguieron funcionando desde la caché.
+
+- `node tests/calendar.test.js`: fechas válidas, años bisiestos, límites incluidos, unión de periodos, vacaciones largas, domingos configurados, cambios de hora, migración del formato anterior, recarga, guardados fallidos, cambios externos y conservación de datos. Incluye selección provisional, cancelación, sustitución, recreo, vaciado y reparación de clases huérfanas.
+- Revisión de las dos interfaces nuevas en claro y oscuro a 320, 390, 768 y 1280 px, con altura reducida: sin desbordamiento horizontal, acciones visibles y controles de al menos 44 px. Verificados Escape, navegación por teclado y retorno del foco.
+- Recarga con el servidor apagado y caché `salvatucurso-v35`: se conservaron calendario, tema, clases y actividades; se guardaron una clase y un periodo sin conexión, y se mantuvo el salto de vacaciones en Inicio.
 
 ## 7. Convención de commits acordada
 Para mantener una identidad profesional y seria, los mensajes de commit futuros seguirán rigurosamente esta estructura en español con prefijos normalizados:

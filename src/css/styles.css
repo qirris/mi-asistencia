@@ -51,6 +51,40 @@
   --safe-top: env(safe-area-inset-top, 0px);
   color-scheme: light;
 }
+
+/* Calendario del curso y edición protegida de una clase */
+.school-calendar { scroll-margin-top: calc(5rem + var(--safe-top)); }
+.school-calendar > .hint { max-width: 66ch; margin-bottom: 1rem; }
+.calendar-save-row { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: .75rem; margin-top: .75rem; }
+.calendar-save-row p { flex: 1 1 18rem; margin: 0; }
+.calendar-save-row .btn { flex: 0 0 auto; }
+.calendar-periods-heading { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: .4rem 1rem; margin-top: 1.4rem; padding-top: 1rem; border-top: 1px solid var(--border); }
+.calendar-periods-heading h4 { font-size: 1rem; margin: 0; }
+.calendar-periods-list { list-style: none; padding: 0; margin: .5rem 0 0; }
+.calendar-period { display: grid; grid-template-columns: minmax(0,1fr) auto; align-items: center; gap: .75rem 1rem; padding: .9rem 0; border-bottom: 1px solid var(--border); }
+.calendar-period:last-child { border-bottom: 0; padding-bottom: 0; }
+.calendar-period strong { display: block; font-size: .92rem; overflow-wrap: anywhere; }
+.calendar-period > div > span { display: block; color: var(--muted); font-size: .82rem; margin-top: .25rem; }
+.calendar-period-actions { display: flex; gap: .5rem; align-items: center; }
+.calendar-empty { color: var(--muted); font-size: .87rem; padding: .6rem 0; }
+.form-feedback { color: var(--red); font-size: .85rem; line-height: 1.5; margin: .75rem 0 0; }
+.form-feedback:empty { display: none; }
+#course-dates-help { margin-top: .5rem; }
+#cell-current-description { margin: 0 0 1rem; }
+.cell-kind-options { display: flex; flex-wrap: wrap; gap: .5rem; margin-top: .75rem; }
+.cell-kind-options .btn { flex: 1 1 110px; }
+.cell-kind-options .btn[aria-pressed="true"] { background: var(--selection-bg); color: var(--selection-text); border-color: var(--selection-bg); }
+.cell-choice-summary { padding: .85rem 1rem; margin-top: 1rem; border-radius: 10px; background: var(--surface-soft); color: var(--text); font-size: .87rem; line-height: 1.55; }
+.cell-other-actions { display: flex; justify-content: space-between; flex-wrap: wrap; gap: .4rem 1rem; margin-top: .75rem; }
+#dlg-cell-save:disabled { background: var(--surface-soft); color: var(--muted); border: 1px solid var(--border); }
+.cell-subject.active { background: var(--selection-bg); color: var(--selection-text); border-color: var(--selection-bg); box-shadow: none; }
+.cell-subject > .ui-icon { margin-left: auto; }
+.quiet-empty p, .priority-meta { overflow-wrap: anywhere; }
+#dialog-calendar-period .dialog-content > .hint { margin: 0 0 1rem; }
+@media (max-width: 599px) {
+  .calendar-period { grid-template-columns: minmax(0,1fr); gap: .5rem; }
+  .calendar-period-actions { justify-content: flex-end; }
+}
 :root[data-theme="dark"] {
   --bg: #0f1925;
   --card: #172535;

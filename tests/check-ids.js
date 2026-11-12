@@ -6,6 +6,7 @@ const html = fs.readFileSync('index.html', 'utf8');
 const js = [
   'src/js/theme.js',
   'src/js/attendance.js',
+  'src/js/calendar.js',
   'src/js/storage.js',
   'src/js/schedule.js',
   'src/js/tasks.js',

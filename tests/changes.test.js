@@ -1,7 +1,7 @@
 /* Pruebas de recuperación y copia segura del horario. */
 (function changesTest() {
   const fs = require('fs'), vm = require('vm'), assert = require('assert/strict');
-  const code = ['attendance', 'storage', 'schedule', 'tasks', 'history', 'recovery', 'app']
+  const code = ['attendance', 'calendar', 'storage', 'schedule', 'tasks', 'history', 'recovery', 'app']
     .map(name => fs.readFileSync('src/js/' + name + '.js', 'utf8')).join('\n') +
     '\nthis.getState=()=>state; this.setState=s=>{state=s;}; this.setEditing=v=>{scheduleEditing=v;};';
   const clone = value => JSON.parse(JSON.stringify(value));

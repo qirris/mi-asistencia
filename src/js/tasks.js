@@ -282,9 +282,11 @@ function openClassDetail(day, fid) {
 
     <div class="class-actions-bar" style="margin-top:1rem">
       <button class="btn btn-sm" type="button" id="btn-class-add-task" data-slot="${slotKey}" data-asig="${a.id}" data-dia="${day}" data-inicio="${f.inicio}" data-fin="${f.fin}">${uiIcon('plus')} Añadir tarea / examen</button>
+      <button class="btn btn-secondary btn-sm" type="button" id="btn-class-change" data-cell-key="${esc(slotKey)}" ${scheduleEditing ? 'disabled' : ''}>${uiIcon('edit')} Cambiar clase</button>
       <button class="btn btn-ghost btn-sm" type="button" id="btn-class-add-note" data-slot="${slotKey}" data-asig="${a.id}" data-dia="${day}" data-inicio="${f.inicio}" data-fin="${f.fin}">${uiIcon('note')} Añadir nota</button>
     </div>
 
+    ${scheduleEditing ? '<p class="hint">Guarda o cancela la configuración del horario antes de cambiar esta clase.</p>' : ''}
     <div class="class-tasks-section" style="margin-top:1.25rem">
       <h4 class="section-title" style="margin-top:0">Tareas de esta sesión (${tareasSlot.length})</h4>
       ${tareasSlot.length === 0 ? '<p class="muted" style="font-size:0.85rem">No hay actividades registradas para esta clase concreta.</p>' : ''}
@@ -505,6 +507,13 @@ function bindTasks() {
       return;
     }
 
+    const changeClass = e.target.closest('#btn-class-change');
+    if (changeClass) {
+      if (scheduleEditing) return;
+      $('#dialog-class-detail').close();
+      openCellDialog(changeClass.dataset.cellKey, true);
+      return;
+    }
     const addTaskFromClass = e.target.closest('#btn-class-add-task');
     if (addTaskFromClass) {
       const ds = addTaskFromClass.dataset;

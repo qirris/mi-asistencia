@@ -5,6 +5,7 @@
 
 const STORAGE_KEY = 'miAsistenciaState';
 const LEGACY_KEY = 'asistenciaData';
+let persistedStateJSON = null;
 
 const DEFAULT_STATE = {
   version: 2,
@@ -29,6 +30,7 @@ function todayISO() {
 /* ---------- Persistencia ---------- */
 function loadState() {
   const raw = localStorage.getItem(STORAGE_KEY);
+  persistedStateJSON = raw;
   if (raw) {
     try {
       const parsed = JSON.parse(raw);
@@ -80,7 +82,15 @@ function migrateLegacy() {
 }
 
 function saveState() {
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+  const serialized = JSON.stringify(state);
+  localStorage.setItem(STORAGE_KEY, serialized);
+  persistedStateJSON = serialized;
+}
+
+// Comparar con la copia leída, para admitir ampliaciones del formato al normalizar.
+function isStoredStateCurrent() {
+  const saved = localStorage.getItem(STORAGE_KEY);
+  return persistedStateJSON !== null ? saved === persistedStateJSON : !saved || saved === JSON.stringify(state);
 }
 
 function normalizeState(input) {
@@ -136,6 +146,7 @@ function normalizeState(input) {
     oculto: savedOnboarding.oculto === true
   };
   out.config.criterio = Object.assign({ tipo: '', valor: null }, (out.config || {}).criterio || {});
+  out.config.calendario = normalizeCalendar(out.config.calendario);
   out.horario = normalizeHorario(out.horario);
   return out;
 }

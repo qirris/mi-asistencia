@@ -44,7 +44,7 @@
     clearTimeout(id) { timers.delete(id); },
     confirm: () => true, alert() {}, Blob: function () {}, URL: {}, FileReader: function () {}
   };
-  const source = ['attendance', 'storage', 'schedule', 'tasks', 'history', 'app'].map(name => fs.readFileSync('src/js/' + name + '.js', 'utf8')).join('\n') +
+  const source = ['attendance', 'calendar', 'storage', 'schedule', 'tasks', 'history', 'app'].map(name => fs.readFileSync('src/js/' + name + '.js', 'utf8')).join('\n') +
     '\nthis.getState = () => state; this.setState = value => { state = value; };';
   vm.createContext(sandbox);
   vm.runInContext(source, sandbox);

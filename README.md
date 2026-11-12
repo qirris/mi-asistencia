@@ -33,6 +33,24 @@ Al eliminar tareas, notas o faltas aparece **Deshacer** durante diez segundos. L
 
 En **Horario → Copiar día** elige un origen y uno o varios destinos. El resumen indica las casillas que cambiarán y solicita confirmación si ya estaban ocupadas. Se copian las clases y los huecos de las franjas compartidas, respetando la salida de cada día y omitiendo las asignaturas archivadas o eliminadas. No se duplican tareas ni faltas. Si una clase se sustituye, sus actividades se conservan en **Mis tareas** con su asignatura y detalles, sin un enlace incorrecto a la nueva clase.
 
+## Horario y calendario
+
+### Cambiar una clase
+
+Toca una clase del horario y pulsa **Cambiar clase**. Elige otra asignatura activa, **Marcar recreo** o **Dejar vacía**, y confirma con **Guardar clase**. Cancelar, cerrar o pulsar Escape descartan la selección provisional.
+
+El selector indica cuántas actividades quedarán desvinculadas. Se conservan en **Mis tareas** con su asignatura original, fecha, estado y detalles. Mantener la misma asignatura conserva sus vínculos. Las casillas con asignaturas eliminadas también se pueden reparar. Guarda o cancela primero la configuración general del horario si está abierta.
+
+### Calendario del curso
+
+En **Ajustes → Calendario del curso** puedes indicar inicio y fin del curso: ambos días se incluyen. Completa las dos fechas o deja ambas vacías para seguir utilizando el horario semanal sin límites de curso.
+
+En **Días sin clase** puedes añadir, editar y eliminar festivos o periodos de vacaciones. La fecha final es opcional para días sueltos y los periodos solapados se consideran una unión de días excluidos. La eliminación solicita confirmación.
+
+Inicio omite esos días al mostrar las clases de hoy y buscar la próxima clase, incluso durante vacaciones de varias semanas. Antes y después del curso muestra el mensaje correspondiente, con acceso al calendario. El horario semanal sigue disponible para editarlo.
+
+El calendario es manual y se guarda con los datos académicos en `config.calendario`. No cambia las horas planificadas, los porcentajes de asistencia, las faltas ni las fechas de entrega. Los cursos existentes empiezan sin fechas ni exclusiones y conservan sus datos.
+
 ## Apariencia y formularios
 
 En **Ajustes → Apariencia** puedes elegir **Automático, Claro u Oscuro**. La opción automática sigue el dispositivo y la elección manual se conserva en este navegador mediante `salvatucursoTema`, separada de los datos académicos. El tema se aplica antes del CSS y también funciona sin conexión.
@@ -75,6 +93,7 @@ mi-asistencia/
 │   │   └── styles.css          # Sistema de diseño unificado y moderno
 │   └── js/
 │       ├── theme.js            # Apariencia automática y preferencia local
+│       ├── calendar.js         # Calendario manual, fechas locales y periodos sin clase
        ├── attendance.js       # Etapas y cálculos de asistencia
 │       ├── storage.js          # Persistencia, migración y normalización
 │       ├── schedule.js         # Horario escolar, franjas y resumen de horas
@@ -116,12 +135,14 @@ node tests/check-ids.js         # consistencia de IDs entre HTML y JS
 node tests/theme.test.js        # tema, contraste, diálogos y recursos offline
 node tests/daily-use.test.js    # reloj, reanudación, borradores y tareas rápidas
 node tests/changes.test.js      # deshacer, copia de días y conservación de datos
+node tests/calendar.test.js     # calendario manual, vacaciones y edición de clases
 ```
 
 Verificación de sintaxis de los módulos:
 ```bash
 node --check src/js/app.js
 node --check src/js/storage.js
+node --check src/js/calendar.js
 node --check src/js/schedule.js
 node --check src/js/tasks.js
 node --check src/js/history.js
