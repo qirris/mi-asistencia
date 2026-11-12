@@ -76,7 +76,6 @@
             <div class="dash-card">
               <h3 class="section-title" style="margin-top:0">Estado de asistencia</h3>
               <div id="dash-attendance-summary"></div>
-              <p class="legal" id="dash-formula" style="margin-top:.85rem"></p>
             </div>
 
             <!-- Mis asignaturas compacto -->
@@ -186,7 +185,6 @@
             </div>
             <button class="btn btn-block" id="btn-add-falta" type="button">Registrar falta</button>
           </div>
-          <p class="legal" id="falta-legal"></p>
         </div>
 
         <div id="falta-recientes"></div>
@@ -449,23 +447,10 @@
           <p class="legal" id="cfg-legal" style="margin-top:.75rem"></p>
         </div>
 
-        <!-- 2. Copia de seguridad y datos -->
-        <div class="card" style="margin-bottom:1.25rem">
-          <h3 class="section-title" style="margin-top:0">💾 Copia de seguridad</h3>
-          <p class="note">Tus datos se guardan solo en este dispositivo y navegador.</p>
-          <div class="form-row" style="margin-top:.75rem">
-            <button class="btn btn-secondary" id="btn-export" type="button">Exportar JSON</button>
-            <label class="btn btn-secondary" for="import-file" style="cursor:pointer;display:inline-flex;align-items:center;justify-content:center;">Importar JSON</label>
-            <input type="file" id="import-file" accept="application/json" class="hidden">
-          </div>
-        </div>
-
-        <!-- 3. Privacidad y almacenamiento local -->
-        <div class="card" style="margin-bottom:1.25rem">
-          <h3 class="section-title" style="margin-top:0">🛡️ Privacidad y almacenamiento</h3>
-          <p class="muted" style="font-size:0.88rem;line-height:1.6;">
-            <strong>Mi Asistencia</strong> opera 100% en tu dispositivo. No utiliza cuentas de usuario, servidores externos ni bases de datos remotas. Toda tu información académica vive exclusivamente en el almacenamiento local (<code>localStorage</code>) de tu navegador.
-          </p>
+        <!-- Acceso con cuenta en preparación -->
+        <div class="card account-note" style="margin-bottom:1.25rem">
+          <h3 class="section-title" style="margin-top:0">Acceso con cuenta</h3>
+          <p class="muted">El registro aún no está activado. Por ahora, tus datos siguen guardados en este navegador.</p>
         </div>
 
         <!-- 4. Instalar la aplicación (PWA) -->
