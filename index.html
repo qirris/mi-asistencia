@@ -194,14 +194,21 @@
 
       <!-- ===================== HORARIO ===================== -->
       <section class="view" id="view-horario">
-        <div class="view-header">
-          <h2>Mi horario</h2>
-          <p>Construye tu semana real: configura las franjas y toca cada casilla para asignar una asignatura.</p>
+        <div class="view-header" style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:1rem;">
+          <div>
+            <h2>Mi horario</h2>
+            <p>Consulta tu semana escolar y clases de un vistazo.</p>
+          </div>
+          <button class="btn" id="btn-toggle-schedule-edit" type="button">✏️ Editar mi horario</button>
         </div>
 
-        <div class="card schedule-config">
+        <!-- Resumen superior compacto -->
+        <div class="stats-grid" id="schedule-header-summary" style="margin-bottom:1.25rem"></div>
+
+        <!-- Panel de edición (Oculto por defecto) -->
+        <div class="card schedule-config hidden" id="schedule-edit-panel" style="margin-bottom:1.25rem">
           <div class="schedule-config-head">
-            <h3 class="section-title" style="margin-top:0">Configuración del horario</h3>
+            <h3 class="section-title" style="margin-top:0">Configuración general y franjas</h3>
             <span class="badge gray" id="schedule-count">0 franjas</span>
           </div>
           <div class="schedule-config-grid">
@@ -244,20 +251,26 @@
 
           <button class="btn btn-block" id="btn-generar-franjas" type="button" style="margin-top:1rem">Generar franjas</button>
           <p class="note info">Al generar se conservan las asignaturas ya colocadas por orden de franja. Puedes editar cada franja después.</p>
-        </div>
 
-        <div class="card" style="margin-top:1rem">
-          <div class="schedule-config-head">
-            <h3 class="section-title" style="margin-top:0">Franjas horarias</h3>
-            <button class="btn btn-ghost btn-sm" id="btn-add-franja" type="button">Añadir franja</button>
+          <div style="margin-top:1.25rem;border-top:1px solid var(--border);padding-top:1rem;">
+            <div class="schedule-config-head">
+              <h3 class="section-title" style="margin-top:0">Franjas horarias individuales</h3>
+              <button class="btn btn-ghost btn-sm" id="btn-add-franja" type="button">Añadir franja</button>
+            </div>
+            <div id="schedule-franjas" class="franja-list"></div>
           </div>
-          <div id="schedule-franjas" class="franja-list"></div>
+
+          <div style="display:flex;gap:.5rem;margin-top:1.25rem;">
+            <button class="btn btn-secondary" id="btn-cancel-schedule" type="button" style="flex:1">Cancelar</button>
+            <button class="btn" id="btn-save-schedule" type="button" style="flex:2">💾 Guardar cambios</button>
+          </div>
         </div>
 
-        <div class="card" style="margin-top:1rem">
-          <div class="schedule-config-head">
-            <h3 class="section-title" style="margin-top:0">Semana</h3>
-            <span class="hint">Toca una casilla para asignar, cambiar o vaciar.</span>
+        <!-- Cuadrícula semanal (Protagonista) -->
+        <div class="card" id="schedule-main-card">
+          <div class="schedule-config-head" style="margin-bottom:.75rem">
+            <h3 class="section-title" style="margin-top:0">Horario semanal</h3>
+            <span class="hint">Toca cualquier clase para ver tareas, cambiar asignatura o añadir notas.</span>
           </div>
           <div class="schedule-wrap">
             <div class="schedule-grid" id="horario-grid" role="grid" aria-label="Horario semanal"></div>
@@ -265,8 +278,11 @@
           <div class="schedule-mobile" id="horario-mobile"></div>
         </div>
 
-        <h3 class="section-title">Resumen de horas</h3>
-        <div id="horario-resumen" class="schedule-summary"></div>
+        <!-- Resumen de horas por asignatura -->
+        <div class="card" style="margin-top:1.25rem">
+          <h3 class="section-title" style="margin-top:0">Resumen de horas por asignatura</h3>
+          <div id="horario-resumen" class="schedule-summary"></div>
+        </div>
       </section>
 
       <!-- ===================== MIS TAREAS ===================== -->

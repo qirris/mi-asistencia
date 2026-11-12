@@ -45,6 +45,39 @@ const HORARIO_DEFAULT = {
 let scheduleMobileDay = null;
 let editingFranjaId = null;
 let editingCellKey = null;
+let scheduleEditing = false;
+let scheduleBackup = null;
+
+function toggleScheduleEdit(forceState) {
+  scheduleEditing = forceState !== undefined ? forceState : !scheduleEditing;
+  const panel = $('#schedule-edit-panel');
+  const btn = $('#btn-toggle-schedule-edit');
+  if (panel) panel.classList.toggle('hidden', !scheduleEditing);
+  if (btn) {
+    btn.textContent = scheduleEditing ? '✖ Cerrar edición' : '✏️ Editar mi horario';
+    btn.className = scheduleEditing ? 'btn btn-secondary' : 'btn';
+  }
+  if (scheduleEditing) {
+    scheduleBackup = JSON.parse(JSON.stringify(state.horario));
+  }
+}
+
+function cancelarEdicionHorario() {
+  if (scheduleBackup) {
+    state.horario = normalizeHorario(scheduleBackup);
+  }
+  toggleScheduleEdit(false);
+  renderHorario();
+  toast('Edición cancelada');
+}
+
+function guardarEdicionHorario() {
+  leerConfigHorario();
+  saveState();
+  toggleScheduleEdit(false);
+  renderHorario();
+  toast('Horario guardado');
+}
 
 /* ---------- Utilidades de tiempo y color ---------- */
 function horaValida(s) {
@@ -327,6 +360,30 @@ function renderHorario() {
   renderGrid();
   renderMobileHorario();
   renderResumenHorario();
+
+  const r = calcularResumenHorario(h);
+  const activas = state.asignaturas.filter(a => !a.archivada).length;
+  const summaryEl = $('#schedule-header-summary');
+  if (summaryEl) {
+    summaryEl.innerHTML = `
+      <div class="stat">
+        <span class="stat-label">Hora de entrada</span>
+        <span class="stat-value" style="font-size:1.1rem;">${h.entrada}</span>
+      </div>
+      <div class="stat">
+        <span class="stat-label">Hora de salida</span>
+        <span class="stat-value" style="font-size:1.1rem;">${h.salida}</span>
+      </div>
+      <div class="stat">
+        <span class="stat-label">Asignaturas</span>
+        <span class="stat-value" style="font-size:1.1rem;">${activas}</span>
+      </div>
+      <div class="stat">
+        <span class="stat-label">Total semanal</span>
+        <span class="stat-value" style="font-size:1.1rem;">${fmtHoras(r.totalMin)}</span>
+      </div>
+    `;
+  }
 }
 
 function renderFranjas() {
@@ -738,6 +795,19 @@ function irAVista(view) {
 
 /* ---------- Eventos del horario ---------- */
 function bindSchedule() {
+  const btnToggleEdit = $('#btn-toggle-schedule-edit');
+  if (btnToggleEdit) {
+    btnToggleEdit.addEventListener('click', () => toggleScheduleEdit());
+  }
+  const btnSaveSched = $('#btn-save-schedule');
+  if (btnSaveSched) {
+    btnSaveSched.addEventListener('click', guardarEdicionHorario);
+  }
+  const btnCancelSched = $('#btn-cancel-schedule');
+  if (btnCancelSched) {
+    btnCancelSched.addEventListener('click', cancelarEdicionHorario);
+  }
+
   ['#schedule-entrada', '#schedule-salida', '#schedule-duracion-clase',
    '#schedule-duracion-recreo', '#schedule-recreo-tras', '#schedule-num-recreos'].forEach(sel => {
     const el = $(sel);
