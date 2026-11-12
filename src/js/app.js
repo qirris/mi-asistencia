@@ -222,7 +222,7 @@ function renderDashboardClassesToday() {
     const finMin = toMin(f.fin);
     const isNow = min >= iniMin && min < finMin;
 
-    const nombre = a ? a.nombre : 'Casilla sin asignar';
+    const nombre = a ? a.nombre : 'Sin asignatura';
     const colorClass = a ? 'sc-' + a.color : 'sg-empty';
     const count = countTareasPendientesSlot(dayKey + '|' + f.id);
 
@@ -244,12 +244,10 @@ function renderDashboardAttendanceSummary() {
 
   const g = calcGlobal();
 
+  const card = cont.closest('.dash-card');
+  if (card) card.classList.toggle('hidden', g.activas.length === 0);
   if (g.activas.length === 0) {
-    cont.innerHTML = `
-      <div class="dash-setup">
-        <p>Aún no tienes asignaturas. Empieza por añadir una para consultar aquí tu asistencia.</p>
-        <button class="btn btn-secondary btn-sm" type="button" data-dashboard-action="asignaturas">Añadir asignatura</button>
-      </div>`;
+    cont.innerHTML = '';
     return;
   }
 
@@ -279,12 +277,10 @@ function renderDashboardSubjects() {
   if (!cont) return;
   const activas = state.asignaturas.filter(a => !a.archivada);
 
+  const card = cont.closest('.dash-card');
+  if (card) card.classList.toggle('hidden', activas.length === 0);
   if (activas.length === 0) {
-    cont.innerHTML = `
-      <div class="dash-setup">
-        <p>Añade tus módulos para tener a mano tu progreso y el control de asistencia.</p>
-        <button class="btn btn-secondary btn-sm" type="button" data-dashboard-action="asignaturas">Crear primera asignatura</button>
-      </div>`;
+    cont.innerHTML = '';
     return;
   }
 
@@ -341,8 +337,36 @@ function renderDashboardRecentActivity() {
   `).join('') + `</div>`;
 }
 
+function renderDashboardOnboarding() {
+  const cont = $('#dash-onboarding');
+  if (!cont) return;
+  const activas = state.asignaturas.filter(a => !a.archivada);
+  const tieneHorario = Object.values(state.horario.casillas || {}).some(c => c && c.asignaturaId);
+  if (activas.length === 0) {
+    cont.innerHTML = `
+      <div>
+        <h3>Empieza por tus asignaturas</h3>
+        <p>Añade tus módulos para completar el horario y consultar tu asistencia.</p>
+      </div>
+      <button class="btn" type="button" data-dashboard-action="nueva-asignatura">Añadir asignatura</button>`;
+    cont.classList.remove('hidden');
+  } else if (!tieneHorario) {
+    cont.innerHTML = `
+      <div>
+        <h3>Completa tu horario</h3>
+        <p>Coloca tus asignaturas en las clases para empezar a ver el resumen de asistencia.</p>
+      </div>
+      <button class="btn" type="button" data-dashboard-action="horario">Abrir horario</button>`;
+    cont.classList.remove('hidden');
+  } else {
+    cont.classList.add('hidden');
+    cont.innerHTML = '';
+  }
+}
+
 function renderDashboard() {
   renderDashboardWelcome();
+  renderDashboardOnboarding();
   renderDashboardStats();
   renderDashboardAlerts();
   renderDashboardClassesToday();
@@ -450,9 +474,15 @@ function bindNav() {
   document.addEventListener('click', (event) => {
     const action = event.target.closest('[data-dashboard-action]');
     if (!action) return;
-    const view = action.dataset.dashboardAction;
+    const actionName = action.dataset.dashboardAction;
+    const view = actionName === 'nueva-asignatura' ? 'asignaturas' : actionName;
     const navButton = document.querySelector('.nav-btn[data-view="' + view + '"]');
     if (navButton) navButton.click();
+    if (actionName === 'nueva-asignatura') {
+      const toggle = $('#btn-toggle-asig-form');
+      const form = $('#asig-form-card');
+      if (toggle && form && form.classList.contains('hidden')) toggle.click();
+    }
   });
 
   document.querySelectorAll('.nav-btn').forEach(btn => {
