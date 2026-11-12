@@ -10,6 +10,7 @@ let deferredInstallPrompt = null;
 let manualTotalAdd = false;
 let manualTotalDlg = false;
 let toastTimer = null;
+const ZOOM_PREFERENCE_KEY = 'miAsistenciaZoomPermitido';
 
 /* ---------- Utilidades y Validación ---------- */
 function clearFormErrors(formElement) {
@@ -62,7 +63,25 @@ function fmt(n) {
   return (Math.round(n * 10) / 10).toString().replace('.', ',');
 }
 function $(sel) { return document.querySelector(sel); }
-function $$(sel) { return Array.from(document.querySelectorAll(sel)); }
+function $(sel) { return Array.from(document.querySelectorAll(sel)); }
+
+function isZoomAllowed() {
+  try {
+    return localStorage.getItem(ZOOM_PREFERENCE_KEY) === 'true';
+  } catch (error) {
+    return false;
+  }
+}
+
+function applyZoomPreference(allowZoom) {
+  const viewport = $('meta[name="viewport"]');
+  if (!viewport) return;
+  const enabled = typeof allowZoom === 'boolean' ? allowZoom : isZoomAllowed();
+  const base = 'width=device-width, initial-scale=1';
+  viewport.setAttribute('content', enabled
+    ? base + ', viewport-fit=cover'
+    : base + ', maximum-scale=1, user-scalable=no, viewport-fit=cover');
+}
 
 function toast(msg) {
   const t = $('#toast');
@@ -455,6 +474,7 @@ function renderFaltas() {
 
 function renderConfig() {
   $('#cfg-etapa').value = state.etapa;
+  $('#cfg-zoom').checked = isZoomAllowed();
   const tipo = (ETAPAS[state.etapa] || {}).tipo;
   $('#cfg-criterio-wrap').style.display = tipo === 'fp' ? 'none' : 'block';
 
@@ -470,28 +490,71 @@ function renderConfig() {
 }
 
 /* ---------- Eventos: navegación ---------- */
+function closeMobileMore(restoreFocus) {
+  const menu = $('#mobile-more-menu');
+  const button = $('#mobile-more-button');
+  if (!menu || !button || menu.hidden) return;
+  menu.hidden = true;
+  button.setAttribute('aria-expanded', 'false');
+  if (restoreFocus) button.focus();
+}
+
+function showView(view) {
+  if (!$('#view-' + view)) return;
+  const moreViews = ['asignaturas', 'historial', 'config'];
+  document.querySelectorAll('.nav-btn, .mobile-tab-button').forEach((button) => {
+    const active = button.dataset.view === view;
+    button.classList.toggle('active', active);
+    if (active) button.setAttribute('aria-current', 'page');
+    else button.removeAttribute('aria-current');
+  });
+  const moreButton = $('#mobile-more-button');
+  if (moreButton) {
+    const moreActive = moreViews.includes(view);
+    moreButton.classList.toggle('active', moreActive);
+    if (moreActive) moreButton.setAttribute('aria-current', 'page');
+    else moreButton.removeAttribute('aria-current');
+  }
+  document.querySelectorAll('.view').forEach((section) => {
+    section.classList.toggle('active', section.id === 'view-' + view);
+  });
+  closeMobileMore(false);
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
 function bindNav() {
+  document.querySelectorAll('.nav-btn[data-view], .mobile-tab-button[data-view], .mobile-more-link[data-view]').forEach((button) => {
+    button.addEventListener('click', () => showView(button.dataset.view));
+  });
+
+  const moreButton = $('#mobile-more-button');
+  const moreMenu = $('#mobile-more-menu');
+  if (moreButton && moreMenu) {
+    moreButton.addEventListener('click', () => {
+      moreMenu.hidden = !moreMenu.hidden;
+      moreButton.setAttribute('aria-expanded', String(!moreMenu.hidden));
+    });
+    document.addEventListener('keydown', (event) => {
+      if (event.key === 'Escape') closeMobileMore(true);
+    });
+    document.addEventListener('click', (event) => {
+      if (!moreMenu.hidden && !event.target.closest('#mobile-more-menu, #mobile-more-button')) {
+        closeMobileMore(false);
+      }
+    });
+  }
+
   document.addEventListener('click', (event) => {
     const action = event.target.closest('[data-dashboard-action]');
     if (!action) return;
     const actionName = action.dataset.dashboardAction;
     const view = actionName === 'nueva-asignatura' ? 'asignaturas' : actionName;
-    const navButton = document.querySelector('.nav-btn[data-view="' + view + '"]');
-    if (navButton) navButton.click();
+    showView(view);
     if (actionName === 'nueva-asignatura') {
       const toggle = $('#btn-toggle-asig-form');
       const form = $('#asig-form-card');
       if (toggle && form && form.classList.contains('hidden')) toggle.click();
     }
-  });
-
-  document.querySelectorAll('.nav-btn').forEach(btn => {
-    btn.addEventListener('click', () => {
-      const view = btn.dataset.view;
-      document.querySelectorAll('.nav-btn').forEach(b => b.classList.toggle('active', b === btn));
-      document.querySelectorAll('.view').forEach(v => v.classList.toggle('active', v.id === 'view-' + view));
-      window.scrollTo({ top: 0, behavior: 'smooth' });
-    });
   });
 }
 
@@ -809,6 +872,19 @@ function bindConfig() {
     render();
   });
 
+  $('#cfg-zoom').addEventListener('change', (event) => {
+    const allowZoom = event.target.checked;
+    try {
+      localStorage.setItem(ZOOM_PREFERENCE_KEY, String(allowZoom));
+      applyZoomPreference(allowZoom);
+      toast(allowZoom ? 'Zoom permitido' : 'Zoom desactivado');
+    } catch (error) {
+      event.target.checked = isZoomAllowed();
+      applyZoomPreference();
+      toast('No se pudo guardar esta preferencia');
+    }
+  });
+
   $('#cfg-criterio-tipo').addEventListener('change', (e) => {
     state.config.criterio.tipo = e.target.value;
     saveState();
@@ -914,6 +990,7 @@ function promptInstall() {
 
 /* ---------- Inicio ---------- */
 function init() {
+  applyZoomPreference();
   loadState();
   initColorPicker('#asig-color-picker', '#asig-color');
   initColorPicker('#dlg-color-picker', '#dlg-color');

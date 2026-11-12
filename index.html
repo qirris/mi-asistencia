@@ -2,14 +2,14 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
   <meta name="theme-color" content="#f5f6f4">
   <meta name="description" content="Mi Asistencia: controla tus faltas y tu evaluación continua en Andalucía.">
   <title>Mi Asistencia</title>
   <link rel="manifest" href="manifest.webmanifest">
   <link rel="apple-touch-icon" href="assets/icons/icon-192.png">
   <link rel="icon" href="assets/icons/icon-192.png">
-  <link rel="stylesheet" href="src/css/styles.css?v=14">
+  <link rel="stylesheet" href="src/css/styles.css?v=15">
 </head>
 <body>
   <div class="app-shell">
@@ -32,6 +32,30 @@
       <button class="nav-btn" data-view="tareas" type="button"><svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 11l3 3L22 4"/><path stroke-linecap="round" stroke-linejoin="round" d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg> Mis tareas</button>
       <button class="nav-btn" data-view="historial" type="button"><svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg> Historial</button>
       <button class="nav-btn" data-view="config" type="button"><svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path stroke-linecap="round" stroke-linejoin="round" d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg> Ajustes</button>
+    </nav>
+
+
+    <nav class="mobile-tabbar" aria-label="Navegación móvil">
+      <button class="mobile-tab-button active" data-view="dashboard" type="button" aria-current="page">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m3 10 9-7 9 7v10a1 1 0 0 1-1 1h-5v-7H9v7H4a1 1 0 0 1-1-1z"/></svg>
+        <span>Inicio</span>
+      </button>
+      <button class="mobile-tab-button" data-view="tareas" type="button">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
+        <span>Mis tareas</span>
+      </button>
+      <button class="mobile-tab-button" data-view="horario" type="button">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>
+        <span>Horario</span>
+      </button>
+      <button class="mobile-tab-button" data-view="faltas" type="button">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="m15 9-6 6M9 9l6 6"/></svg>
+        <span>Faltas</span>
+      </button>
+      <button class="mobile-tab-button" id="mobile-more-button" type="button" aria-expanded="false" aria-controls="mobile-more-menu">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="5" cy="12" r="1"/><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/></svg>
+        <span>Más</span>
+      </button>
     </nav>
 
     <main class="app-main">
@@ -449,6 +473,17 @@
           <p class="legal" id="cfg-legal" style="margin-top:.75rem"></p>
         </div>
 
+        <div class="card preference-card" style="margin-bottom:1.25rem">
+          <h3 class="section-title" style="margin-top:0">Accesibilidad y pantalla</h3>
+          <div class="preference-row">
+            <div>
+              <label for="cfg-zoom">Permitir ampliar con zoom</label>
+              <p class="hint">Desactivado inicialmente para evitar ampliaciones al tocar la pantalla. Actívalo si quieres usar el zoom con gestos.</p>
+            </div>
+            <input id="cfg-zoom" type="checkbox">
+          </div>
+        </div>
+
         <!-- Acceso con cuenta en preparación -->
         <div class="card account-note" style="margin-bottom:1.25rem">
           <h3 class="section-title" style="margin-top:0">Acceso con cuenta</h3>
@@ -487,6 +522,18 @@
         </div>
       </section>
     </main>
+
+      <div class="mobile-more-menu" id="mobile-more-menu" aria-label="Más secciones" hidden>
+        <button class="mobile-more-link" data-view="asignaturas" type="button">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5Z"/><path d="M7 6h9M7 10h9"/></svg>Asignaturas
+        </button>
+        <button class="mobile-more-link" data-view="historial" type="button">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2M3 12H1m3.1-6.9L2.7 3.7"/></svg>Historial
+        </button>
+        <button class="mobile-more-link" data-view="config" type="button">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 0 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5v.2a2 2 0 0 1-4 0v-.2a1.7 1.7 0 0 0-1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 0 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 0 1 0-4h.2a1.7 1.7 0 0 0 1.5-1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 0 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3 1.7 1.7 0 0 0 1-1.5V3a2 2 0 0 1 4 0v.2a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 0 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8 1.7 1.7 0 0 0 1.5 1h.2a2 2 0 0 1 0 4h-.2a1.7 1.7 0 0 0-1.5 1Z"/></svg>Ajustes
+        </button>
+      </div>
   </div>
 
   <footer class="app-footer">
@@ -723,7 +770,7 @@
   <script src="src/js/schedule.js"></script>
   <script src="src/js/tasks.js"></script>
   <script src="src/js/history.js"></script>
-  <script src="src/js/app.js?v=15"></script>
+  <script src="src/js/app.js?v=16"></script>
 
   <!-- Nodos ocultos de compatibilidad mientras se renueva la caché de la PWA -->
   <p id="falta-legal" class="hidden" aria-hidden="true"></p>

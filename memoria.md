@@ -13,7 +13,7 @@ Web app responsive e instalable (PWA) para estudiantes de Andalucía que permite
 - Vistas principales: Dashboard (Inicio), Asignaturas, Faltas, Mi horario, Mis tareas, Historial y Ajustes.
 - PWA: manifest, service worker con caché del app shell, iconos 192/512 e instalación.
 - Datos 100% locales en `localStorage` (clave `miAsistenciaState`) con migración segura y copias JSON.
-- Repositorio privado de GitHub: <https://github.com/qirris/mi-asistencia>.
+- La aplicación se publica como sitio estático en GitHub Pages; los datos académicos permanecen en el navegador.
 
 ## 3. Tecnologías y arquitectura
 - HTML5 + CSS3 + JavaScript Vanilla (sin frameworks ni dependencias npm).
@@ -31,7 +31,7 @@ Web app responsive e instalable (PWA) para estudiantes de Andalucía que permite
 - Seguir sistema de memoria (`AGENTS.md`, `instrucciones/`).
 - No inventar reglas legales ni umbrales no verificados.
 - No usar «Aprobado»/«Suspendido» como resultado del cálculo de asistencia.
-- Aplicación local y privada: sin bases de datos remotas, sin Firebase/Supabase, sin cuentas de usuario.
+- Los datos se mantienen en el navegador; no se incorporan bases de datos remotas, Firebase, Supabase ni cuentas de usuario.
 
 ## 5. Funcionalidades implementadas
 - Selector de etapa: ESO, Bachillerato, FP Básico/Medio/Superior.
@@ -41,7 +41,7 @@ Web app responsive e instalable (PWA) para estudiantes de Andalucía que permite
 - Historial con calendario mensual visual, indicadores diarios y modales de detalle.
 - Dashboard completo con saludo en español, estadísticas con cifras tabulares y alertas en tiempo real.
 - Copias de seguridad locales (Exportar/Importar JSON) y borrado seguro con confirmación.
-- Instalación PWA y soporte offline.
+- Instalación PWA y soporte offline.\n- En móvil, navegación inferior con Inicio, Mis tareas, Horario, Faltas y Más (Asignaturas, Historial y Ajustes).\n- Zoom bloqueado por defecto en móvil, con opción para permitirlo en Ajustes; la preferencia se conserva en el navegador.
 
 ## 6. Pruebas verificadas
 - Validación sintáctica mediante `node --check` en todos los módulos JS y service worker.
