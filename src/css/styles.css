@@ -1150,3 +1150,43 @@ input:focus, select:focus, textarea:focus { box-shadow: 0 0 0 3px var(--primary-
 .day-tab.active { background: var(--primary-soft); color: var(--primary-dark); border-color: #c7d8e0; box-shadow: none; }
 .progress > span, .progress.tone-yellow > span, .progress.tone-red > span { background: currentColor; }
 @media (min-width: 900px) { .app-nav { padding: 24px 12px; } .nav-btn { border-radius: 8px; padding: 10px 12px; } }
+
+
+/* Ajustes de claridad y controles para pantallas táctiles */
+.btn-danger, .btn-danger:hover {
+  background: #fff;
+  color: var(--red);
+  border: 1px solid #d99a96;
+  box-shadow: none;
+}
+.btn-danger:hover { background: #fbefed; border-color: var(--red); }
+.btn-danger:focus-visible { outline-color: #d99a96; }
+.btn-danger-solid, .btn-danger-solid:hover { background: var(--red); color: #fff; }
+.btn-danger-solid:hover { background: #8f2925; }
+
+@media (max-width: 899px) {
+  .nav-btn { min-height: 44px; }
+  .btn-sm { min-height: 44px; }
+}
+
+.subject, .task-card, .mobile-class, .summary-row {
+  border-left-width: 1px;
+}
+.mobile-class.sc-azul, .mobile-class.sc-verde, .mobile-class.sc-morado,
+.mobile-class.sc-naranja, .mobile-class.sc-rosa, .mobile-class.sc-turquesa,
+.mobile-class.sc-amarillo, .mobile-class.sc-gris {
+  border-left-color: var(--sc-border);
+}
+
+.sc-azul, .sc-verde, .sc-morado, .sc-naranja, .sc-rosa, .sc-turquesa, .sc-amarillo, .sc-gris {
+  background: var(--sc-bg);
+}
+.now-card { background: var(--primary-soft); border-color: #c7d8e0; }
+.progress > span { background: var(--green); }
+.progress.tone-yellow > span { background: var(--yellow); }
+.progress.tone-red > span { background: var(--red); }
+.progress.tone-gray > span { background: #8a969b; }
+
+:root { --selection: #d9e8ee; }
+::selection { background: var(--selection); color: var(--text); }
+a { text-underline-offset: .18em; text-decoration-thickness: 1px; }
