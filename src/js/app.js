@@ -63,7 +63,7 @@ function fmt(n) {
   return (Math.round(n * 10) / 10).toString().replace('.', ',');
 }
 function $(sel) { return document.querySelector(sel); }
-function $(sel) { return Array.from(document.querySelectorAll(sel)); }
+function $$(sel) { return Array.from(document.querySelectorAll(sel)); }
 
 function isZoomAllowed() {
   try {
