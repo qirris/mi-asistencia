@@ -7,6 +7,8 @@ Regla: NO guardar aquí contraseñas, tokens ni ningún secreto.
 Web app responsive e instalable (PWA) para estudiantes de Andalucía que permite configurar asignaturas, registrar faltas, consultar el horario escolar semanal, gestionar la agenda académica (tareas y notas) y visualizar el riesgo respecto a la evaluación continua. Idiomas: español. Carácter informativo: no sustituye al centro ni a la normativa oficial.
 
 ## 2. Estado actual
+- Se retiraron del panel la fórmula técnica y la nota normativa bajo el formulario de faltas; las fuentes legales siguen en los ajustes y la documentación.
+- La interfaz ahora indica que el acceso con cuenta aún no está activo y que los datos permanecen en el navegador.
 - Aplicación completada con rediseño visual moderno y profesional (estética inspirada en Notion, Linear y Apple).
 - Vistas principales: Dashboard (Inicio), Asignaturas, Faltas, Mi horario, Mis tareas, Historial y Ajustes.
 - PWA: manifest, service worker con caché del app shell, iconos 192/512 e instalación.
