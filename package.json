@@ -1,0 +1,17 @@
+{
+  "name": "salvatucurso",
+  "private": true,
+  "scripts": {
+    "test": "node tests/run.js",
+    "build": "node scripts/build-cloudflare.js",
+    "dev": "wrangler dev",
+    "deploy": "npm run build && wrangler deploy"
+  },
+  "dependencies": {
+    "better-auth": "1.7.22",
+    "web-push": "3.6.7"
+  },
+  "devDependencies": {
+    "wrangler": "4.161.0"
+  }
+}

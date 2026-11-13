@@ -85,6 +85,8 @@ function saveState() {
   const serialized = JSON.stringify(state);
   localStorage.setItem(STORAGE_KEY, serialized);
   persistedStateJSON = serialized;
+  if (typeof CourseAccount !== 'undefined') CourseAccount.queueSync();
+  if (typeof TaskReminders !== 'undefined') TaskReminders.queueSync();
 }
 
 // Comparar con la copia leída, para admitir ampliaciones del formato al normalizar.

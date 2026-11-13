@@ -25,12 +25,8 @@ const PRIORIDADES = {
 
 /* ---------- Utilidades de fecha y estado ---------- */
 function diasHasta(fechaStr) {
-  if (!fechaStr) return null;
-  const hoy = new Date();
-  hoy.setHours(0, 0, 0, 0);
-  const entrega = new Date(fechaStr + 'T00:00:00');
-  const diffTime = entrega - hoy;
-  return Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+  if (!validCalendarDate(fechaStr)) return null;
+  return calendarDayNumber(fechaStr) - calendarDayNumber(todayISO());
 }
 
 function formatoEntrega(fechaStr) {

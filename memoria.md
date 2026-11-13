@@ -18,7 +18,7 @@ Web app responsive e instalable (PWA) para estudiantes de Andalucía que permite
 - Tareas y horario muestran resúmenes compactos; los filtros de tareas se despliegan cuando se necesitan.
 - Inicio prioriza la clase actual o siguiente y la entrega más cercana, con acceso a registrar faltas. Las clases de la semana siguiente incluyen fecha.
 - Guía opcional de tres pasos (etapa, asignaturas y horario), con progreso persistente y reconocimiento de datos existentes. Sin datos se evitan estadísticas vacías y clases sin asignatura.
-- Se mantienen las cuentas y la sincronización fuera de esta entrega.
+- La versión publicada hasta el 13/11/2026 conserva el modo local. El usuario ha autorizado preparar cuentas, sincronización y avisos en Cloudflare; requieren conexión y despliegue.
 
 - Apariencia automática/clara/oscura en Ajustes, con preferencia local `salvatucursoTema`, aplicada antes del CSS y sin alterar los datos académicos.
 - Colores semánticos compartidos y variantes oscuras para los ocho colores de asignatura y los avisos.
@@ -71,7 +71,7 @@ Web app responsive e instalable (PWA) para estudiantes de Andalucía que permite
 - Seguir sistema de memoria (`AGENTS.md`, `instrucciones/`).
 - No inventar reglas legales ni umbrales no verificados.
 - No usar «Aprobado»/«Suspendido» como resultado del cálculo de asistencia.
-- Los datos se mantienen en el navegador; no se incorporan bases de datos remotas, Firebase, Supabase ni cuentas de usuario.
+- El modo estático mantiene datos locales. El usuario ha autorizado Cloudflare para cuentas, sincronización y recordatorios; no se utiliza Supabase. No activar servicios de pago sin autorización.
 
 ## 5. Funcionalidades implementadas
 - Selector de etapa: ESO, Bachillerato, FP Básico/Medio/Superior.
@@ -123,5 +123,20 @@ Para mantener una identidad profesional y seria, los mensajes de commit futuros 
 
 ## 8. Restricciones permanentes del proyecto
 - Publicación estática en GitHub Pages autorizada por el usuario; los datos académicos siguen siendo locales.
-- Almacenamiento exclusivo en el navegador mediante `localStorage` (`miAsistenciaState`).
-- Sin servidores, bases de datos remotas ni cuentas de usuario.
+- Almacenamiento local en modo estático (`miAsistenciaState`); sincronización voluntaria con una cuenta de SalvaTuCurso en la versión de Cloudflare.
+- No guardar secretos en el repositorio ni dar por activa una función pendiente de configurar.
+
+## 9. Ampliación preparada el 13/11/2026: cuentas, sincronización y avisos
+
+- El usuario eligió notificaciones con la app cerrada, Cloudflare (ya tiene cuenta), datos compartidos entre móvil y ordenador y acceso con Google y correo/contraseña.
+- Interfaz de cuenta, registro, recuperación, revisión de versiones y copias JSON en Ajustes. No se suben datos existentes al entrar sin revisión explícita. Se mantienen cursos de cuenta e invitado por separado.
+- Sincronización con revisión de concurrencia, guardado local sin conexión y consulta cada 30 segundos con la app visible; conservación de formularios y versiones conflictivas. Vaciar/importar indica el efecto sobre la cuenta.
+- Backend Workers + D1, Better Auth 1.7.22 y web-push 3.6.7; dependencias fijadas en package-lock. Migraciones en cloudflare/migrations y preparación pública mediante scripts/build-cloudflare.js. No se copian secretos ni servidor a dist.
+- Recordatorios configurables por dispositivo: exámenes 3 días antes, tareas 1 día antes, 18:00 inicialmente; permiso voluntario y prueba. El servidor programa desde el curso guardado, actualiza todos los dispositivos al cambiar una tarea y conserva una referencia para evitar avisos repetidos. Hasta 10 dispositivos por cuenta.
+- Caché fuente salvatucurso-v45, recursos de interfaz v43. Se excluyen todas las API privadas, se actualiza por red la configuración pública y se devuelve una respuesta de navegación limpia cuando el alojamiento redirige index.html.
+- Pasaron todas las pruebas (existentes y nuevas account/reminders/cloudflare), las migraciones D1 locales y la compilación simulada del Worker. Auditoría de producción sin vulnerabilidades conocidas.
+- UI revisada en ambos temas a 320/390/768/1280 y altura 480, con acciones visibles, entradas de 16 px, Escape y foco. Recarga del Worker local apagado conservó el tema y las preferencias.
+- PENDIENTE de activación real: autorizar Cloudflare, identificar dominio/remitente, revisar plan, crear D1 remoto, configurar Google, publicar Worker y probar correo y Push reales en móvil. No se han contratado planes, creado recursos remotos ni enviado datos académicos reales.
+- Cloudflare Email Sending a destinatarios arbitrarios exige Workers Paid. Se informó al usuario: base de Workers desde 5 USD/mes, sin activar pagos. No respondió todavía si dispone de dominio propio.
+- La primera propuesta con Supabase se descartó al elegir Cloudflare. No conectar ni pedir Supabase.
+- Detalles y procedimiento: docs/notificaciones.md.

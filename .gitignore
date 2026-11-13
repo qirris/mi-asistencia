@@ -49,3 +49,11 @@ mi-asistencia-backup-*.json
 # Cobertura y artefactos de pruebas
 coverage/
 .nyc_output/
+
+# Cloudflare y recursos generados
+dist/
+.wrangler/
+.dev.vars
+.dev.vars.*
+*.sqlite
+*.sqlite-*

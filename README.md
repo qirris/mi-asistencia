@@ -2,6 +2,8 @@
 
 Web app responsive e instalable (PWA) para que estudiantes de Andalucía controlen sus faltas y su situación respecto a la evaluación continua en ESO, Bachillerato y Formación Profesional.
 
+> **Ampliación preparada, pendiente de conectar:** cuentas con Google y correo, sincronización y avisos con la app cerrada mediante Cloudflare. La versión estática mantiene el guardado local. [Configuración, pruebas y límites](docs/notificaciones.md).
+
 > Herramienta informativa. No sustituye al centro educativo ni a la normativa oficial.
 
 ---
@@ -69,11 +71,11 @@ La paleta de asignaturas y los avisos tienen variantes para cada tema. Los diál
 
 ## Tecnologías y Arquitectura
 
-- HTML5, CSS3 y JavaScript Vanilla (sin frameworks ni dependencias externas).
+- Interfaz HTML5, CSS3 y JavaScript Vanilla; servidor opcional Cloudflare Workers + D1 con Better Auth y Web Push.
 - Almacenamiento local mediante `localStorage` (clave: `miAsistenciaState`).
 - Service Worker y Web App Manifest para funcionamiento como PWA instalable.
 - Organización modular por responsabilidades en `src/css/` y `src/js/`.
-- Sin procesos de compilación ni dependencias npm.
+- La interfaz estática puede abrirse sin npm. Para cuentas y avisos, npm prepara los recursos públicos y Wrangler compila el Worker.
 
 ---
 
@@ -105,7 +107,7 @@ mi-asistencia/
 │       ├── theme.js            # Apariencia automática y preferencia local
 │       ├── calendar.js         # Calendario manual, fechas locales y periodos sin clase
 │       ├── absence-day.js      # Registro por día, sesiones, coincidencias y duraciones
-       ├── attendance.js       # Etapas y cálculos de asistencia
+│       ├── attendance.js       # Etapas y cálculos de asistencia
 │       ├── storage.js          # Persistencia, migración y normalización
 │       ├── schedule.js         # Horario escolar, franjas y resumen de horas
 │       ├── tasks.js            # Agenda académica y tareas
@@ -139,6 +141,8 @@ Abre `http://localhost:8080` en el navegador.
 
 ## Pruebas
 
+Para todas las pruebas, incluidas cuentas y Cloudflare: `npm ci --ignore-scripts` y `npm test`. La integración se ejecuta localmente, sin enviar correos ni avisos reales.
+
 Desde la raíz del proyecto:
 ```bash
 node tests/attendance.test.js   # cálculos FP/ESO, asistencia global y render
@@ -167,8 +171,8 @@ node --check src/js/attendance.js
 
 ## Privacidad y almacenamiento local
 
-- Todos los datos se guardan **exclusivamente en el dispositivo y navegador** mediante `localStorage` (`miAsistenciaState`).
-- **No hay servidores, cuentas de usuario, analítica ni sincronización en la nube.**
+- En la versión estática, los datos se guardan **en el dispositivo y navegador** mediante `localStorage` (`miAsistenciaState`).
+- La versión con cuentas preparada para Cloudflare necesita conectar y desplegar el servicio antes de compartir datos. Se explica qué se guarda y cuándo en [la documentación](docs/notificaciones.md).
 - Usa **Ajustes → Exportar JSON** para realizar copias de seguridad de tus datos.
 
 ---

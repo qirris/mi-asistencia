@@ -548,6 +548,11 @@ function renderFaltas() {
 }
 
 function renderConfig() {
+  if (typeof CourseAccount !== 'undefined') CourseAccount.renderSettings();
+  const accountCourse = typeof CourseAccount !== 'undefined' && !!CourseAccount.user();
+  $('#delete-all-help').textContent = accountCourse ? 'Vaciar el curso también se sincronizará con los otros dispositivos de esta cuenta.' : 'Eliminar todos tus datos de forma definitiva en este navegador.';
+  $('#btn-delete-all').textContent = accountCourse ? 'Vaciar mi curso' : 'Borrar todos los datos';
+  if (typeof TaskReminders !== 'undefined') TaskReminders.renderSettings();
   renderSchoolCalendar();
   if (typeof SalvaTuCursoTheme !== 'undefined') SalvaTuCursoTheme.syncSettings();
   $('#cfg-etapa').value = state.etapa;
@@ -1046,7 +1051,8 @@ function importJSON(file) {
       if (!data || !Array.isArray(data.asignaturas) || !Array.isArray(data.faltas)) {
         throw new Error('Estructura no válida');
       }
-      if (!confirm('Esto reemplazará tus datos actuales. ¿Continuar?')) return;
+      const accountCourse = typeof CourseAccount !== 'undefined' && !!CourseAccount.user();
+      if (!confirm(accountCourse ? 'Esto reemplazará el curso actual y se sincronizará con tus otros dispositivos. ¿Continuar?' : 'Esto reemplazará tus datos actuales. ¿Continuar?')) return;
       // Copia de seguridad del estado actual antes de reemplazar
       localStorage.setItem(STORAGE_KEY + '_backup_' + Date.now(), localStorage.getItem(STORAGE_KEY) || '');
       UndoManager.clear();
@@ -1062,7 +1068,8 @@ function importJSON(file) {
 }
 
 function deleteAll() {
-  if (!confirm('¿Borrar TODOS los datos? Se eliminarán asignaturas, faltas y configuración.')) return;
+  const accountCourse = typeof CourseAccount !== 'undefined' && !!CourseAccount.user();
+  if (!confirm(accountCourse ? '¿Vaciar el curso de esta cuenta? Se eliminarán asignaturas, tareas, faltas y horario, también en los dispositivos sincronizados.' : '¿Borrar TODOS los datos? Se eliminarán asignaturas, faltas y configuración.')) return;
   if (!confirm('Esta acción no se puede deshacer. ¿Confirmar borrado definitivo?')) return;
   localStorage.setItem(STORAGE_KEY + '_backup_' + Date.now(), localStorage.getItem(STORAGE_KEY) || '');
   UndoManager.clear();
@@ -1175,6 +1182,8 @@ function init() {
   render();
   UndoManager.bind();
   bindDashboardRefresh();
+  if (typeof CourseAccount !== 'undefined') CourseAccount.bind();
+  if (typeof TaskReminders !== 'undefined') TaskReminders.bind();
 }
 
 document.addEventListener('DOMContentLoaded', init);

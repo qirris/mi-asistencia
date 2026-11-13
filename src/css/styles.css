@@ -416,7 +416,7 @@ button, input, select, textarea { font: inherit; }
 .field label { font-size: 0.85rem; font-weight: 700; color: var(--text); }
 .field .hint { font-size: 0.78rem; color: var(--muted); }
 
-input[type="text"], input[type="number"], input[type="date"], select, textarea {
+input[type="text"], input[type="email"], input[type="password"], input[type="number"], input[type="date"], input[type="time"], select, textarea {
   width: 100%;
   padding: 0.75rem 0.9rem;
   border-radius: 12px;
@@ -1583,7 +1583,7 @@ button:disabled, input:disabled, select:disabled { cursor: not-allowed; opacity:
 a { color: var(--primary); text-underline-offset: 3px; }
 a:hover { color: var(--accent-dark); }
 .field label, .field-label { color: var(--text); font-weight: 600; }
-input[type="text"], input[type="number"], input[type="time"], input[type="date"], select, textarea { background: var(--input-bg); color: var(--text); border: 1px solid var(--border-strong); min-height: 46px; box-shadow: none; }
+input[type="text"], input[type="email"], input[type="password"], input[type="number"], input[type="time"], input[type="date"], select, textarea { background: var(--input-bg); color: var(--text); border: 1px solid var(--border-strong); min-height: 46px; box-shadow: none; }
 input::placeholder, textarea::placeholder { color: var(--muted); opacity: 1; }
 input:focus, select:focus, textarea:focus { outline: 2px solid var(--focus); outline-offset: 2px; border-color: var(--focus); box-shadow: none; }
 .field.field-error input, .field.field-error select, .field.field-error textarea { border-color: var(--red); box-shadow: none; }
@@ -1616,7 +1616,7 @@ input:focus, select:focus, textarea:focus { outline: 2px solid var(--focus); out
 .toast { background: var(--strong-bg); color: var(--on-strong); }
 @media (max-width: 899px) { .toast { bottom: calc(5rem + var(--safe-bottom)); } }
 @media (max-width: 719px) {
-  input[type="text"], input[type="number"], input[type="time"], input[type="date"], select, textarea { font-size: 16px; }
+  input[type="text"], input[type="email"], input[type="password"], input[type="number"], input[type="time"], input[type="date"], select, textarea { font-size: 16px; }
   .schedule-config-grid { grid-template-columns: minmax(0,1fr); }
   .field, .form-grid, .form-row { min-width: 0; }
 }
@@ -1723,3 +1723,26 @@ body.has-undo .toast { bottom: calc(6rem + var(--safe-bottom)); }
   #view-faltas > .view-header > .btn { width: 100%; }
   .day-absence-list-head { align-items: flex-start; }
 }
+
+/* Preferencias de avisos: misma escala y controles que los ajustes del curso. */
+.reminder-preferences { margin-top: 1.25rem; }
+.reminder-actions { display: flex; flex-wrap: wrap; align-items: center; gap: .75rem; margin-top: 1rem; }
+.reminder-actions [hidden] { display: none; }
+.reminder-settings .hint { margin-top: .75rem; }
+@media (max-width: 480px) {
+  .reminder-actions .btn { flex: 1 1 100%; }
+  .reminder-actions .text-action { min-height: 44px; }
+}
+
+.account-settings [hidden], #dialog-account [hidden] { display: none; }
+.account-backups { margin-top: 1.25rem; border-top: 1px solid var(--border); padding-top: 1rem; }
+.account-backups summary { min-height: 44px; cursor: pointer; font-weight: 600; }
+#auth-form { display: grid; gap: 1rem; margin-top: 1.25rem; }
+#auth-status:empty { display: none; }
+.auth-options { display: flex; flex-wrap: wrap; justify-content: space-between; gap: .5rem 1rem; margin-top: 1rem; }
+.auth-options .text-action { min-height: 44px; }
+.sync-comparison { display: grid; gap: .35rem; margin: 1.25rem 0; }
+.sync-comparison dt { font-weight: 700; margin-top: .75rem; }
+.sync-comparison dd { margin: 0; color: var(--muted); overflow-wrap: anywhere; }
+.sync-actions { flex-wrap: wrap; }
+.sync-actions .btn { flex: 1 1 100%; white-space: normal; }

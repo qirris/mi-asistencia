@@ -22,7 +22,9 @@ Punto de entrada del proyecto. Proyecto: web app responsive e instalable (PWA) p
 - Datos en `localStorage` con migración segura y copias JSON.
 - Código organizado en `src/css/` y `src/js/`; pruebas en `tests/`.
 - Repositorio: <https://github.com/qirris/mi-asistencia>.
-- Publicación estática en GitHub Pages autorizada por el usuario; los datos académicos permanecen en el navegador.
+- Publicación estática en GitHub Pages autorizada por el usuario; ese modo mantiene datos locales.
+- Preparados: cuentas con Google/correo, sincronización y avisos en Cloudflare (Workers + D1). Servicio aún sin conectar; consultar docs/notificaciones.md antes de activar o desplegar. No se utiliza Supabase.
+- npm test incluye las pruebas de cuentas y backend, además de las anteriores. Las claves locales y dist se excluyen con .gitignore.
 - Pendiente: prueba real de instalación PWA en dispositivo. La interfaz se revisó en móvil estrecho y escritorio.
 
 ### Reglas duras
