@@ -29,7 +29,7 @@ function renderHistorialStats() {
     </div>
     <div class="stat">
       <span class="stat-label">Horas ausentes</span>
-      <span class="stat-value">${fmt(totalHoras)} h</span>
+      <span class="stat-value">${formatAbsenceDuration(totalHoras)}</span>
       <span class="stat-sub">acumuladas</span>
     </div>
     <div class="stat">
@@ -114,7 +114,7 @@ function renderHistoryCalendar() {
     html += `
       <button type="button" class="cal-day ${isToday ? 'today' : ''} ${hasFalta ? 'has-absence' : ''}" data-caldate="${dateStr}">
         <span class="cal-day-num">${day}</span>
-        ${hasFalta ? `<span class="cal-badge">${dayFaltas.reduce((s, x) => s + x.horas, 0)}h</span>` : ''}
+        ${hasFalta ? `<span class="cal-badge">${formatAbsenceDuration(dayFaltas.reduce((s, x) => s + x.horas, 0))}</span>` : ''}
       </button>
     `;
   }
@@ -134,7 +134,7 @@ function openHistoryDayModal(dateStr) {
   } else {
     const totalH = faltas.reduce((s, x) => s + x.horas, 0);
     bodyEl.innerHTML = `
-      <p class="muted" style="margin-bottom:.75rem;font-weight:700;">Total ausente: ${fmt(totalH)} horas</p>
+      <p class="muted" style="margin-bottom:.75rem;font-weight:700;">Total ausente: ${formatAbsenceDuration(totalH)}</p>
       <div class="history-list">
         ${faltas.map(f => {
           const a = asignaturaPorId(f.asignaturaId);
@@ -142,10 +142,10 @@ function openHistoryDayModal(dateStr) {
             <div class="history-item sc-${a ? a.color : 'gris'}">
               <div class="h-main">
                 <div><strong>${esc(a ? a.nombre : 'Asignatura eliminada')}</strong></div>
-                <div class="h-sub">${f.tipo === 'justificada' ? 'Justificada' : 'No justificada'}${f.motivo ? ' · ' + esc(f.motivo) : ''}</div>
+                <div class="h-sub">${f.sesion ? absenceSessionText(f) + ' · ' : ''}${f.tipo === 'justificada' ? 'Justificada' : 'No justificada'}${f.motivo ? ' · ' + esc(f.motivo) : ''}</div>
               </div>
               <div style="display:flex;align-items:center;gap:.4rem">
-                <span class="h-hours">${fmt(f.horas)} h</span>
+                <span class="h-hours">${formatAbsenceDuration(f.horas)}</span>
                 <button class="btn btn-ghost btn-sm" type="button" data-editfalta="${f.id}">Editar</button>
                 <button class="btn btn-danger btn-sm" type="button" data-delfalta="${f.id}" aria-label="Eliminar falta">${uiIcon('trash')}</button>
               </div>
@@ -181,10 +181,10 @@ function renderHistoryList() {
       <div class="history-item sc-${color}">
         <div class="h-main">
           <div><strong>${esc(a ? a.nombre : 'Asignatura eliminada')}</strong></div>
-          <div class="h-sub">${esc(f.fecha)} · <span class="badge ${f.tipo === 'justificada' ? 'green' : 'red'}">${f.tipo === 'justificada' ? 'Justificada' : 'No justificada'}</span>${f.motivo ? ' · ' + esc(f.motivo) : ''}</div>
+          <div class="h-sub">${esc(f.fecha)}${f.sesion ? ' · ' + absenceSessionText(f) : ''} · <span class="badge ${f.tipo === 'justificada' ? 'green' : 'red'}">${f.tipo === 'justificada' ? 'Justificada' : 'No justificada'}</span>${f.motivo ? ' · ' + esc(f.motivo) : ''}</div>
         </div>
         <div style="display:flex;align-items:center;gap:.5rem">
-          <span class="h-hours">${fmt(f.horas)} h</span>
+          <span class="h-hours">${formatAbsenceDuration(f.horas)}</span>
           <button class="btn btn-ghost btn-sm" type="button" data-editfalta="${f.id}" aria-label="Editar falta">Editar</button>
           <button class="btn btn-danger btn-sm" type="button" data-delfalta="${f.id}" aria-label="Eliminar falta">${uiIcon('trash')}</button>
         </div>

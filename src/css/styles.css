@@ -1683,3 +1683,43 @@ body.has-undo .toast { bottom: calc(6rem + var(--safe-bottom)); }
   body.has-undo { padding-bottom: calc(10rem + var(--safe-bottom)); }
   body.has-undo .toast { bottom: calc(10rem + var(--safe-bottom)); }
 }
+
+/* Registro de faltas por día: selección y revisión antes de guardar */
+#view-faltas > .view-header { display: flex; flex-wrap: wrap; align-items: flex-start; justify-content: space-between; gap: .8rem 1.25rem; }
+#day-absence-source { margin: 0 0 1rem; }
+.day-absence-date-row { display: flex; gap: .5rem; align-items: stretch; }
+.day-absence-date-row input { min-width: 0; flex: 1 1 0; }
+.day-absence-date-row .btn { flex: 0 0 auto; }
+.day-absence-list-head { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: .25rem .75rem; margin-top: 1rem; }
+#day-absence-status { flex: 1 1 16rem; font-size: .87rem; font-weight: 600; overflow-wrap: anywhere; }
+.day-absence-warnings { color: var(--muted); font-size: .82rem; line-height: 1.5; margin: .5rem 0; }
+.day-absence-warnings p + p { margin-top: .4rem; }
+.day-absence-warnings:empty { display: none; }
+.day-absence-list { list-style: none; padding: 0; margin: .5rem 0 1rem; }
+.day-absence-item { padding: .4rem 0; border-bottom: 1px solid var(--border); }
+.day-absence-choice { display: grid; grid-template-columns: 44px minmax(0,1fr); gap: .25rem .5rem; align-items: center; min-height: 60px; cursor: pointer; }
+.day-absence-class { min-width: 0; }
+.day-absence-class strong { display: block; font-size: .92rem; overflow-wrap: anywhere; }
+.day-absence-class > span { display: block; color: var(--muted); font-size: .82rem; margin-top: .25rem; }
+.day-absence-choice.is-registered { cursor: default; }
+.day-absence-choice.is-registered .checkbox-target { color: var(--teal); grid-row: span 2; }
+.day-absence-choice .badge { grid-column: 2; justify-self: start; margin-bottom: .4rem; }
+.day-absence-conflict { padding: .75rem; margin: .3rem 0 .6rem; border: 1px solid var(--yellow-border); border-radius: 9px; background: var(--yellow-soft); color: var(--yellow); font-size: .83rem; line-height: 1.5; }
+.day-absence-conflict[hidden], .day-absence-common[hidden] { display: none; }
+.day-absence-conflict ul { padding-left: 1.1rem; margin-top: .45rem; }
+.day-absence-conflict li { overflow-wrap: anywhere; margin-bottom: .4rem; }
+.day-absence-approval { display: flex; gap: .4rem; align-items: flex-start; margin-top: .5rem; cursor: pointer; }
+.day-absence-approval > span:last-child { padding-top: .65rem; }
+.day-absence-common { margin-top: 1rem; }
+.day-absence-links { display: flex; flex-wrap: wrap; gap: .25rem 1rem; margin-top: .5rem; }
+.day-absence-actions > p { flex: 1 0 100%; margin: 0 0 .3rem; color: var(--text); font-size: .87rem; font-weight: 600; }
+#btn-day-absence-save:disabled { background: var(--surface-soft); color: var(--muted); border: 1px solid var(--border); }
+.cal-badge { white-space: normal; overflow-wrap: anywhere; }
+.history-list { min-width: 0; grid-template-columns: minmax(0,1fr); }
+.history-item { min-width: 0; flex-wrap: wrap; }
+.history-item .h-main { flex: 1 1 12rem; overflow-wrap: anywhere; }
+.history-item > :last-child { margin-left: auto; }
+@media (max-width: 599px) {
+  #view-faltas > .view-header > .btn { width: 100%; }
+  .day-absence-list-head { align-items: flex-start; }
+}

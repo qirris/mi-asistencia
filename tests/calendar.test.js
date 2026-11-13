@@ -2,7 +2,7 @@
 (function schoolCalendarTest() {
   const fs = require('fs'), vm = require('vm'), assert = require('assert/strict');
   const clone = value => JSON.parse(JSON.stringify(value));
-  const source = ['attendance', 'calendar', 'storage', 'schedule', 'tasks', 'history', 'recovery', 'app']
+  const source = ['attendance', 'calendar', 'absence-day', 'storage', 'schedule', 'tasks', 'history', 'recovery', 'app']
     .map(name => fs.readFileSync('src/js/' + name + '.js', 'utf8')).join('\n') +
     '\nthis.getState=()=>state; this.setState=s=>{state=s;};';
   const days = ['lunes', 'martes', 'miercoles', 'jueves', 'viernes', 'sabado', 'domingo'];

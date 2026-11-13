@@ -1,20 +1,21 @@
 /* Service Worker — SalvaTuCurso
    Cachea los recursos esenciales para funcionar sin conexión. */
 
-const CACHE_VERSION = 'salvatucurso-v35';
+const CACHE_VERSION = 'salvatucurso-v39';
 const APP_SHELL = [
   './',
   './index.html',
-  './src/css/styles.css?v=35',
-  './src/js/theme.js?v=35',
-  './src/js/attendance.js?v=35',
-  './src/js/calendar.js?v=35',
-  './src/js/storage.js?v=35',
-  './src/js/schedule.js?v=35',
-  './src/js/tasks.js?v=35',
-  './src/js/history.js?v=35',
-  './src/js/recovery.js?v=35',
-  './src/js/app.js?v=35',
+  './src/css/styles.css?v=39',
+  './src/js/theme.js?v=39',
+  './src/js/attendance.js?v=39',
+  './src/js/calendar.js?v=39',
+  './src/js/absence-day.js?v=39',
+  './src/js/storage.js?v=39',
+  './src/js/schedule.js?v=39',
+  './src/js/tasks.js?v=39',
+  './src/js/history.js?v=39',
+  './src/js/recovery.js?v=39',
+  './src/js/app.js?v=39',
   './manifest.webmanifest',
   './assets/icons/icon-192.png',
   './assets/icons/icon-512.png'

@@ -7,6 +7,7 @@ const js = [
   'src/js/theme.js',
   'src/js/attendance.js',
   'src/js/calendar.js',
+  'src/js/absence-day.js',
   'src/js/storage.js',
   'src/js/schedule.js',
   'src/js/tasks.js',

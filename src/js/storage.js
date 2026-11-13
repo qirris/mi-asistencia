@@ -110,14 +110,16 @@ function normalizeState(input) {
     : [];
 
   out.faltas = Array.isArray(out.faltas)
-    ? out.faltas.filter(f => f && f.id && f.asignaturaId).map(f => ({
-        id: String(f.id),
-        asignaturaId: String(f.asignaturaId),
-        fecha: String(f.fecha || todayISO()),
-        horas: Number(f.horas) || 0,
-        tipo: f.tipo === 'justificada' ? 'justificada' : 'no_justificada',
-        motivo: String(f.motivo || '')
-      }))
+    ? out.faltas.filter(f => f && f.id && f.asignaturaId).map(f => {
+        const record = {
+          id: String(f.id), asignaturaId: String(f.asignaturaId), fecha: String(f.fecha || todayISO()),
+          horas: Number(f.horas) || 0, tipo: f.tipo === 'justificada' ? 'justificada' : 'no_justificada',
+          motivo: String(f.motivo || '')
+        };
+        const session = normalizeAbsenceSession(f.sesion, record.horas);
+        if (session) record.sesion = session;
+        return record;
+      })
     : [];
 
   out.tareas = Array.isArray(out.tareas)

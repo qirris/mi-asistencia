@@ -35,6 +35,16 @@ En **Horario → Copiar día** elige un origen y uno o varios destinos. El resum
 
 ## Horario y calendario
 
+### Registrar las faltas de un día
+
+En **Faltas → Registrar faltas de un día** elige hoy o una fecha pasada; **Ayer** permite ir al día anterior. Marca las clases perdidas o usa **Seleccionar todas**, elige un tipo común y añade un motivo opcional. El resumen muestra clases y duración total antes de guardar.
+
+Se registran clases completas, una falta por sesión, calculando los minutos reales del horario. Los recreos y las franjas que no caben antes de la salida quedan fuera. La pantalla avisa de asignaturas sin colocar, archivadas o eliminadas. El calendario del curso determina los días disponibles; para excepciones y faltas parciales se mantiene el formulario manual.
+
+La consulta usa **el horario actual**, porque no existe un histórico de horarios. Las faltas nuevas conservan su intervalo en el campo opcional `sesion: { inicio, fin }`, aunque después cambies o regeneres las franjas. Las repeticiones exactas aparecen como **Ya registrada** y no se pueden seleccionar. Ante faltas manuales o intervalos solapados, se muestran los registros existentes y se exige revisar cada clase antes de añadirla.
+
+Después de guardar, **Deshacer** permite retirar el último lote durante diez segundos, también tras recargar dentro del plazo. Conserva las faltas anteriores y cualquier registro del lote que hayas modificado después. Un fallo de guardado conserva el estado anterior. Al editar una falta automática, cambiar fecha, asignatura u horas retira su identificación de sesión; cambiar solo motivo o justificación la mantiene.
+
 ### Cambiar una clase
 
 Toca una clase del horario y pulsa **Cambiar clase**. Elige otra asignatura activa, **Marcar recreo** o **Dejar vacía**, y confirma con **Guardar clase**. Cancelar, cerrar o pulsar Escape descartan la selección provisional.
@@ -94,6 +104,7 @@ mi-asistencia/
 │   └── js/
 │       ├── theme.js            # Apariencia automática y preferencia local
 │       ├── calendar.js         # Calendario manual, fechas locales y periodos sin clase
+│       ├── absence-day.js      # Registro por día, sesiones, coincidencias y duraciones
        ├── attendance.js       # Etapas y cálculos de asistencia
 │       ├── storage.js          # Persistencia, migración y normalización
 │       ├── schedule.js         # Horario escolar, franjas y resumen de horas
@@ -136,6 +147,7 @@ node tests/theme.test.js        # tema, contraste, diálogos y recursos offline
 node tests/daily-use.test.js    # reloj, reanudación, borradores y tareas rápidas
 node tests/changes.test.js      # deshacer, copia de días y conservación de datos
 node tests/calendar.test.js     # calendario manual, vacaciones y edición de clases
+node tests/absence-day.test.js  # lotes de faltas, coincidencias, precisión y Deshacer
 ```
 
 Verificación de sintaxis de los módulos:
@@ -143,6 +155,7 @@ Verificación de sintaxis de los módulos:
 node --check src/js/app.js
 node --check src/js/storage.js
 node --check src/js/calendar.js
+node --check src/js/absence-day.js
 node --check src/js/schedule.js
 node --check src/js/tasks.js
 node --check src/js/history.js

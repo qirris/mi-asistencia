@@ -6,11 +6,11 @@
   <meta name="theme-color" content="#f5f6f4">
   <meta name="description" content="SalvaTuCurso: tus faltas, horario y tareas en un solo lugar.">
   <title>SalvaTuCurso</title>
-  <script src="src/js/theme.js?v=35"></script>
+  <script src="src/js/theme.js?v=39"></script>
   <link rel="manifest" href="manifest.webmanifest">
   <link rel="apple-touch-icon" href="assets/icons/icon-192.png">
   <link rel="icon" type="image/png" href="assets/icons/icon-192.png">
-  <link rel="stylesheet" href="src/css/styles.css?v=35">
+  <link rel="stylesheet" href="src/css/styles.css?v=39">
 </head>
 <body>
   <div class="app-shell">
@@ -179,8 +179,8 @@
       <!-- ===================== FALTAS ===================== -->
       <section class="view" id="view-faltas">
         <div class="view-header">
-          <h2>Registrar faltas</h2>
-          <p>Añade las ausencias de cada día</p>
+          <div><h2>Registrar faltas</h2><p>Añade las ausencias de cada día</p></div>
+          <button class="btn btn-secondary" id="btn-add-day-absences" type="button"><svg class="ui-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M16 3v4M8 3v4M3 11h18m4 5 2 2 4-4"/></svg> Registrar faltas de un día</button>
         </div>
 
         <div class="card" id="faltas-form-card">
@@ -196,7 +196,7 @@
               </div>
               <div class="field">
                 <label for="falta-horas">Horas ausentes</label>
-                <input type="number" id="falta-horas" min="0" step="0.5" placeholder="Ej: 2">
+                <input type="number" id="falta-horas" min="0" step="any" placeholder="Ej: 2">
               </div>
             </div>
             <div class="form-row">
@@ -642,7 +642,7 @@
           </div>
           <div class="field">
             <label for="dlg-falta-horas">Horas</label>
-            <input type="number" id="dlg-falta-horas" min="0" step="0.5">
+            <input type="number" id="dlg-falta-horas" min="0" step="any">
           </div>
         </div>
         <div class="form-row">
@@ -666,6 +666,49 @@
           <button class="btn" id="dlg-falta-save" type="button">Guardar</button>
 </div>
 </div>
+  </dialog>
+
+  <dialog id="dialog-day-absence" aria-labelledby="day-absence-title" aria-describedby="day-absence-source">
+    <div class="dialog-body">
+      <div class="dialog-head">
+        <h3 id="day-absence-title">Faltas de un día</h3>
+        <button class="btn btn-ghost btn-sm" id="btn-day-absence-close" type="button">Cerrar</button>
+      </div>
+      <div class="dialog-content">
+        <p class="hint" id="day-absence-source">Basado en tu horario actual. Revisa las clases si lo has cambiado desde esa fecha.</p>
+        <div class="field">
+          <label for="day-absence-date">Día de la ausencia</label>
+          <div class="day-absence-date-row">
+            <input type="date" id="day-absence-date" min="0001-01-01" max="9999-12-31">
+            <button class="btn btn-secondary" id="btn-day-absence-yesterday" type="button">Ayer</button>
+          </div>
+        </div>
+        <div class="day-absence-list-head">
+          <p id="day-absence-status" role="status"></p>
+          <button class="text-action" id="btn-day-absence-all" type="button">Seleccionar todas</button>
+        </div>
+        <div class="day-absence-warnings" id="day-absence-warnings"></div>
+        <ul class="day-absence-list" id="day-absence-list" aria-label="Clases del día"></ul>
+        <div class="form-grid day-absence-common" id="day-absence-common">
+          <div class="field">
+            <label for="day-absence-type">Tipo para las clases seleccionadas</label>
+            <select id="day-absence-type"><option value="no_justificada">No justificada</option><option value="justificada">Justificada</option></select>
+          </div>
+          <div class="field">
+            <label for="day-absence-reason">Motivo común (opcional)</label>
+            <input type="text" id="day-absence-reason" placeholder="Ej: cita médica">
+          </div>
+        </div>
+        <p class="form-feedback" id="day-absence-selection-help" role="status"></p>
+        <p class="form-feedback" id="day-absence-feedback" role="alert"></p>
+        <div class="day-absence-links" id="day-absence-links"></div>
+      </div>
+      <div class="dialog-actions day-absence-actions">
+        <p id="day-absence-summary" role="status" aria-live="polite">0 clases · 0 min</p>
+        <button class="btn btn-ghost" id="btn-day-absence-cancel" type="button">Cancelar</button>
+        <button class="btn" id="btn-day-absence-save" type="button" disabled>Registrar 0 faltas</button>
+      </div>
+    </div>
   </dialog>
 
   <!-- Dialog de casilla del horario -->
@@ -904,14 +947,15 @@
       });
     }
   </script>
-  <script src="src/js/attendance.js?v=35"></script>
-  <script src="src/js/calendar.js?v=35"></script>
-  <script src="src/js/storage.js?v=35"></script>
-  <script src="src/js/schedule.js?v=35"></script>
-  <script src="src/js/tasks.js?v=35"></script>
-  <script src="src/js/history.js?v=35"></script>
-  <script src="src/js/recovery.js?v=35"></script>
-  <script src="src/js/app.js?v=35"></script>
+  <script src="src/js/attendance.js?v=39"></script>
+  <script src="src/js/calendar.js?v=39"></script>
+  <script src="src/js/absence-day.js?v=39"></script>
+  <script src="src/js/storage.js?v=39"></script>
+  <script src="src/js/schedule.js?v=39"></script>
+  <script src="src/js/tasks.js?v=39"></script>
+  <script src="src/js/history.js?v=39"></script>
+  <script src="src/js/recovery.js?v=39"></script>
+  <script src="src/js/app.js?v=39"></script>
 
   <!-- Nodos ocultos de compatibilidad mientras se renueva la caché de la PWA -->
   <p id="falta-legal" class="hidden" aria-hidden="true"></p>

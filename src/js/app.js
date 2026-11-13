@@ -392,7 +392,7 @@ function renderDashboardRecentActivity() {
     const a = asignaturaPorId(f.asignaturaId);
     items.push({
       fecha: f.fecha,
-      texto: `Falta registrada en <strong>${esc(a ? a.nombre : 'Asignatura')}</strong> (${fmt(f.horas)} h)`
+      texto: `Falta registrada en <strong>${esc(a ? a.nombre : 'Asignatura')}</strong> (${formatAbsenceDuration(f.horas)})`
     });
   });
   tareasRecientes.forEach(t => {
@@ -518,9 +518,9 @@ function histItem(f) {
     <div class="history-item">
       <div class="h-main">
         <div>${esc(nombre)}</div>
-        <div class="h-sub">${esc(f.fecha)} · ${f.tipo === 'justificada' ? 'Justificada' : 'No justificada'}${f.motivo ? ' · ' + esc(f.motivo) : ''}</div>
+        <div class="h-sub">${esc(f.fecha)}${f.sesion ? ' · ' + absenceSessionText(f) : ''} · ${f.tipo === 'justificada' ? 'Justificada' : 'No justificada'}${f.motivo ? ' · ' + esc(f.motivo) : ''}</div>
       </div>
-      <div class="h-hours">${fmt(f.horas)} h</div>
+      <div class="h-hours">${formatAbsenceDuration(f.horas)}</div>
     </div>
   `;
 }
@@ -965,6 +965,7 @@ function bindDialogFalta() {
     if (!fecha) return toast('Selecciona una fecha');
     if (isNaN(horas) || horas <= 0) return toast('Las horas deben ser mayores que 0');
 
+    if (f.asignaturaId !== asignaturaId || f.fecha !== fecha || f.horas !== horas) delete f.sesion;
     f.asignaturaId = asignaturaId;
     f.fecha = fecha;
     f.horas = horas;
@@ -1164,6 +1165,7 @@ function init() {
   bindDialog();
   bindDialogFalta();
   bindFaltas();
+  bindAbsenceDay();
   bindSchedule();
   bindTasks();
   bindHistory();

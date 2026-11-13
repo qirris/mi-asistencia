@@ -18,6 +18,7 @@ Punto de entrada del proyecto. Proyecto: web app responsive e instalable (PWA) p
 - Copia de un día del horario a varios destinos, con revisión y confirmación al sustituir casillas ocupadas; conserva las actividades sin duplicarlas.
 - Edición de clases ocupadas con selección provisional, guardado explícito y conservación de actividades en «Mis tareas» al desvincularlas.
 - Calendario manual en Ajustes: fechas del curso y días o periodos sin clase. Inicio comparte sus reglas y salta vacaciones largas.
+- Registro de faltas por día desde el horario: clases completas, minutos precisos, revisión de coincidencias y Deshacer del último lote.
 - Datos en `localStorage` con migración segura y copias JSON.
 - Código organizado en `src/css/` y `src/js/`; pruebas en `tests/`.
 - Repositorio: <https://github.com/qirris/mi-asistencia>.
