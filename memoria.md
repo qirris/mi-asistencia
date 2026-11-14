@@ -173,3 +173,14 @@ Para mantener una identidad profesional y seria, los mensajes de commit futuros 
 - Alcance limitado a este primer paso. La presentación del README y el acceso público de Google quedan para después.
 - Comprobación pública: el enlace anterior del repositorio devuelve 301 al nuevo; las direcciones de Pages antiguas y nuevas devuelven 404. Cloudflare devuelve 200, mantiene Google y Web Push configurados y rechaza con 401 la consulta del curso sin sesión.
 - Commit: mantenimiento: renombrar el repositorio y retirar GitHub Pages.
+
+## 12. Presentación del repositorio
+
+- README renovado en español con el logo existente de SalvaTuCurso, lema, enlace principal a Cloudflare, funciones y primeros pasos.
+- Capturas actuales de Inicio y Horario en escritorio y Mis tareas en móvil con modo oscuro. Se preparó un curso ficticio en una copia estática aislada: no se usaron datos personales, cuentas ni el curso real. Las imágenes se conservan en docs/capturas/.
+- Instrucciones de instalación en Android y iPhone con enlaces a las ayudas oficiales. Explicación del uso sin conexión, el guardado local, la sincronización con revisión y las copias JSON; se corrigieron los textos antiguos que afirmaban almacenamiento exclusivamente local.
+- La guía detallada de uso se trasladó a docs/guia-de-uso.md y queda enlazada desde el README. Se conservaron las instrucciones de clases, calendario, faltas, recuperación y apariencia.
+- Google sigue en modo Prueba para la cuenta autorizada. No se abrió el registro, se cambiaron servicios ni se desplegó una versión nueva de la app. GitHub Pages continúa desactivado.
+- Verificados los destinos relativos y las secciones enlazadas del README y la guía. Las tres capturas son JPEG sin metadatos EXIF, XMP ni IPTC. No hay cambios en el código de la aplicación.
+- Alcance de esta entrega: documentación y tres capturas de ejemplo. Commit: documentación: renovar la presentación de SalvaTuCurso.
+
