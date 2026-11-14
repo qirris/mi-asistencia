@@ -23,7 +23,7 @@ Punto de entrada del proyecto. Proyecto: web app responsive e instalable (PWA) p
 - Código organizado en `src/css/` y `src/js/`; pruebas en `tests/`.
 - Repositorio: <https://github.com/qirris/mi-asistencia>.
 - Publicación estática en GitHub Pages autorizada por el usuario; ese modo mantiene datos locales.
-- Cloudflare y Google conectados: Worker publicado en https://salvatucurso.qirris.workers.dev y D1 de la UE con migraciones aplicadas. Claves de producción guardadas como secretos. Acceso real y primer guardado verificados con la cuenta autorizada en Google (modo Prueba). Pendientes: traslado de los datos anteriores, comprobación en dos dispositivos, Push real en móvil y apertura general de Google. Consultar docs/notificaciones.md antes de activar o desplegar. No se utiliza Supabase.
+- Cloudflare y Google conectados: Worker publicado en https://salvatucurso.qirris.workers.dev y D1 de la UE con migraciones aplicadas. Claves de producción guardadas como secretos. Acceso real, primer guardado y notificación programada recibida con la app cerrada verificados con el usuario. Google sigue en modo Prueba. Pendientes: traslado de los datos anteriores, comprobación de sus contenidos en dos dispositivos y apertura general de Google. Consultar docs/notificaciones.md antes de activar o desplegar. No se utiliza Supabase.
 - El usuario eligió el 14/11/2026 mantener el plan gratuito y activar primero Google; no tiene dominio propio. Correo/contraseña aplazados. No contratar planes ni habilitar correo.
 - npm test incluye las pruebas de cuentas y backend, además de las anteriores. Las claves locales y dist se excluyen con .gitignore.
 - Pendiente: prueba real de instalación PWA en dispositivo. La interfaz se revisó en móvil estrecho y escritorio.

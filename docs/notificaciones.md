@@ -2,9 +2,9 @@
 
 ## Estado
 
-**Cloudflare y Google están conectados en https://salvatucurso.qirris.workers.dev. Se ha verificado un inicio de sesión real y el primer guardado del curso.** Google sigue en modo Prueba, con la cuenta del propietario autorizada; todavía no se admite el acceso general de otras cuentas. La base D1 tiene jurisdicción de la Unión Europea y ambas migraciones aplicadas. Las claves de producción están guardadas como secretos del Worker y el cron está publicado. Falta activar y comprobar una notificación real en el móvil.
+**Cloudflare y Google están conectados en https://salvatucurso.qirris.workers.dev. Se han verificado un inicio de sesión real, el primer guardado del curso y una notificación programada recibida en el móvil con la app cerrada.** Google sigue en modo Prueba, con la cuenta del propietario autorizada; todavía no se admite el acceso general de otras cuentas. La base D1 tiene jurisdicción de la Unión Europea y ambas migraciones aplicadas. Las claves de producción están guardadas como secretos del Worker y el cron está publicado.
 
-El 14/11/2026 el usuario eligió mantener el plan gratuito y activar primero Google; no dispone de dominio propio. El registro con correo/contraseña queda aplazado. No se ha contratado ningún plan ni activado envío de correo. La base comenzó vacía; después del acceso real se comprobaron una cuenta, un curso y cero dispositivos de avisos. No se han importado los datos académicos anteriores de GitHub Pages, que conserva el guardado local y el acceso a las copias JSON.
+El 14/11/2026 el usuario eligió mantener el plan gratuito y activar primero Google; no dispone de dominio propio. El registro con correo/contraseña queda aplazado. No se ha contratado ningún plan ni activado envío de correo. La base comenzó vacía; después de la activación en móvil se comprobaron una cuenta, un curso y un dispositivo con prueba registrada. No se han importado los datos académicos anteriores de GitHub Pages, que conserva el guardado local y el acceso a las copias JSON.
 
 La configuración pública solo habilita el acceso cuando existe un proveedor y un secreto de sesión válido. La versión de Cloudflare ofrece Google; la versión estática de GitHub Pages mantiene el acceso desactivado. Los avisos se habilitan en cada dispositivo después de sincronizar la cuenta y aceptar el permiso del navegador.
 
@@ -76,7 +76,9 @@ En el despliegue remoto se comprobó la respuesta de la configuración pública,
 
 El acceso real con Google volvió a la app y mostró «Curso sincronizado». La cuenta se conservó al recargar. Se corrigió el refresco de los avisos al cambiar el estado de la cuenta: el botón de activación reconoce la sincronización sin necesitar otra recarga. La caché actual es salvatucurso-v46, con account.js?v=44. Pasaron las pruebas completas y se publicó y revisó la corrección.
 
-**Pendiente:** trasladar los datos anteriores con revisión del usuario, comprobar el mismo curso en móvil y ordenador, instalar la versión nueva en el móvil y verificar una entrega Push real con la app cerrada. La apertura general del acceso de Google necesita completar la información de marca y publicar la app en Google; por ahora solo entra la cuenta de prueba autorizada. El correo queda aplazado por decisión del usuario. No dar por verificadas estas comprobaciones con las pruebas locales.
+El usuario confirmó la recepción de «Enviar prueba» en el móvil. Después autorizó una prueba programada y cerró la app. Se añadió un único aviso temporal a la cola del dispositivo ya registrado, sin cambiar tareas, asignaturas, faltas ni curso. El cron lo envió en el primer intento y el usuario confirmó que llegó con SalvaTuCurso cerrada. Se retiró solo ese aviso temporal después de la comprobación; el dispositivo sigue asociado a la cuenta.
+
+**Pendiente:** trasladar los datos anteriores con revisión del usuario y comprobar sus contenidos en móvil y ordenador. La apertura general del acceso de Google necesita completar la información de marca y publicar la app en Google; por ahora solo entra la cuenta de prueba autorizada. El correo queda aplazado por decisión del usuario. La prueba real confirma el transporte y la ejecución del cron; no garantiza que el sistema del móvil entregue siempre todos los avisos sin retrasos.
 
 ## Fuentes
 
