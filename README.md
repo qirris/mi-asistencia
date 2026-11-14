@@ -2,7 +2,7 @@
 
 Web app responsive e instalable (PWA) para que estudiantes de Andalucía controlen sus faltas y su situación respecto a la evaluación continua en ESO, Bachillerato y Formación Profesional.
 
-> **Cloudflare, Google y avisos verificados:** [versión publicada en Cloudflare](https://salvatucurso.qirris.workers.dev), con acceso real, primer guardado del curso y una notificación programada recibida en el móvil con la app cerrada. Google sigue en modo Prueba para la cuenta autorizada; el acceso general está pendiente. El usuario eligió mantener el plan gratuito y aplazar correo/contraseña. Los datos anteriores de GitHub Pages requieren exportar e importar una copia. [Configuración, pruebas y límites](docs/notificaciones.md).
+> **Cloudflare, Google y avisos verificados:** [versión publicada en Cloudflare](https://salvatucurso.qirris.workers.dev), con acceso real, primer guardado del curso y una notificación programada recibida en el móvil con la app cerrada. Google sigue en modo Prueba para la cuenta autorizada; el acceso general está pendiente. El usuario eligió mantener el plan gratuito y aplazar correo/contraseña. Cloudflare es la única web publicada; GitHub Pages está desactivado. [Configuración, pruebas y límites](docs/notificaciones.md).
 
 > Herramienta informativa. No sustituye al centro educativo ni a la normativa oficial.
 
@@ -82,7 +82,7 @@ La paleta de asignaturas y los avisos tienen variantes para cada tema. Los diál
 ## Estructura del proyecto
 
 ```
-mi-asistencia/
+salvatucurso/
 ├── index.html                  # Estructura de la interfaz y vistas
 ├── manifest.webmanifest        # Manifiesto de la PWA
 ├── service-worker.js           # Caché del app shell y funcionamiento offline
@@ -172,7 +172,7 @@ node --check src/js/attendance.js
 ## Privacidad y almacenamiento local
 
 - En la versión estática, los datos se guardan **en el dispositivo y navegador** mediante `localStorage` (`miAsistenciaState`).
-- La versión con cuentas preparada para Cloudflare necesita conectar y desplegar el servicio antes de compartir datos. Se explica qué se guarda y cuándo en [la documentación](docs/notificaciones.md).
+- La versión publicada en Cloudflare permite compartir los datos mediante una cuenta autorizada. GitHub Pages está desactivado. Se explica qué se guarda y cuándo en [la documentación](docs/notificaciones.md).
 - Usa **Ajustes → Exportar JSON** para realizar copias de seguridad de tus datos.
 
 ---

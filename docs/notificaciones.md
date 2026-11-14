@@ -4,14 +4,14 @@
 
 **Cloudflare y Google están conectados en https://salvatucurso.qirris.workers.dev. Se han verificado un inicio de sesión real, el primer guardado del curso y una notificación programada recibida en el móvil con la app cerrada.** Google sigue en modo Prueba, con la cuenta del propietario autorizada; todavía no se admite el acceso general de otras cuentas. La base D1 tiene jurisdicción de la Unión Europea y ambas migraciones aplicadas. Las claves de producción están guardadas como secretos del Worker y el cron está publicado.
 
-El 14/11/2026 el usuario eligió mantener el plan gratuito y activar primero Google; no dispone de dominio propio. El registro con correo/contraseña queda aplazado. No se ha contratado ningún plan ni activado envío de correo. La base comenzó vacía; después de la activación en móvil se comprobaron una cuenta, un curso y un dispositivo con prueba registrada. No se han importado los datos académicos anteriores de GitHub Pages, que conserva el guardado local y el acceso a las copias JSON.
+El 14/11/2026 el usuario eligió mantener el plan gratuito y activar primero Google; no dispone de dominio propio. El registro con correo/contraseña queda aplazado. No se ha contratado ningún plan ni activado envío de correo. La base comenzó vacía; después de la activación en móvil se comprobaron una cuenta, un curso y un dispositivo con prueba registrada. GitHub Pages está retirado: la versión antigua estaba vacía y no requirió migración.
 
-La configuración pública solo habilita el acceso cuando existe un proveedor y un secreto de sesión válido. La versión de Cloudflare ofrece Google; la versión estática de GitHub Pages mantiene el acceso desactivado. Los avisos se habilitan en cada dispositivo después de sincronizar la cuenta y aceptar el permiso del navegador.
+La configuración pública solo habilita el acceso cuando existe un proveedor y un secreto de sesión válido. La web publicada en Cloudflare ofrece Google. La ejecución estática local conserva el guardado en el navegador sin acceso a cuentas. Los avisos se habilitan en cada dispositivo después de sincronizar la cuenta y aceptar el permiso del navegador.
 
 ## Arquitectura
 
 - Interfaz existente en HTML/CSS/JS, conservando calendario, horario, tareas, faltas, temas y PWA.
-- Worker con recursos estáticos y API en el mismo origen: evita depender de cookies de terceros en Safari. La versión con cuentas se abrirá desde su dirección de Cloudflare.
+- Worker con recursos estáticos y API en el mismo origen: evita depender de cookies de terceros en Safari. La versión con cuentas se abre desde su dirección de Cloudflare.
 - D1 guarda usuarios, sesiones, curso, cinco copias recientes y recordatorios. Better Auth 1.7.22 gestiona Google, contraseñas, verificación y recuperación. No se implementan algoritmos de contraseñas propios.
 - Las sesiones usan cookies de Better Auth. No se guardan contraseñas ni tokens de sesión en localStorage. Los datos académicos y las copias locales siguen disponibles en este navegador.
 - La implementación de correo admite verificaciones y recuperaciones mediante Cloudflare Email Service, pero está desactivada: AUTH_EMAIL_ENABLED=false y no hay binding EMAIL en el despliegue gratuito. Requiere un dominio habilitado y, para destinatarios arbitrarios, Workers Paid. A 13/11/2026, Workers parte de 5 USD/mes; Email Sending incluye 3000 correos mensuales y después 0,35 USD por 1000. No activar servicios de pago sin autorización.
@@ -31,11 +31,13 @@ Los cambios locales se agrupan antes de subirlos. Se consulta la cuenta cada 30 
 
 Al salir, se retiran los avisos de ese dispositivo y se recupera el curso de invitado. Los cursos de cuenta tienen una copia local separada. Si hay cambios pendientes se requiere resolverlos antes de salir y se ofrece una descarga de seguridad. Vaciar o importar un curso con cuenta avisa expresamente de que el cambio se sincronizará en los otros dispositivos.
 
-## Traslado desde GitHub Pages
+## Retirada de GitHub Pages y copias
 
-Una dirección nueva no puede leer el almacenamiento de otra web. Desde la dirección anterior, descargar una copia en Ajustes → Tu cuenta y tus datos → Copias y traslado de datos. En la nueva dirección, iniciar sesión, importar la copia y revisar la sincronización. Repetir la revisión si el otro dispositivo tenía datos distintos. No borrar el navegador anterior hasta comprobar el curso.
+GitHub Pages se desactivó el 14/11/2026 seleccionando None como rama de publicación. Cloudflare es la única dirección de uso de la app. No había registros pendientes de conservar en la versión anterior y no se realizó una migración.
 
-No redirigir automáticamente GitHub Pages a la nueva dirección antes de ofrecer la descarga de los datos existentes.
+El repositorio es https://github.com/qirris/salvatucurso y conserva su historial. El enlace anterior del repositorio redirige al nuevo; la antigua dirección de GitHub Pages está retirada. No recrear un repositorio llamado mi-asistencia ni reactivar Pages.
+
+Una dirección nueva no puede leer el almacenamiento de otra web. Si ya se dispone de una copia JSON, puede importarse en Cloudflare desde Ajustes → Tu cuenta y tus datos → Copias y traslado de datos y revisarse antes de sincronizar. Las copias siguen siendo útiles para el funcionamiento local y con cuenta.
 
 ## Avisos
 
@@ -60,7 +62,7 @@ En iPhone/iPad se requiere iOS/iPadOS 16.4 o posterior y abrir la app añadida a
 5. Mantener AUTH_EMAIL_ENABLED=false y sin binding EMAIL durante esta entrega gratuita. Si se retoma el correo, revisar por separado dominio, remitente y autorización de pago antes de habilitarlo; probar entonces verificación y recuperación reales.
 6. Ejecutar `npm test`, `npm run build` y `npx wrangler deploy --dry-run`. Publicar después de completar la configuración y las autorizaciones necesarias.
 7. Comprobar Google y correo en dos navegadores, sesiones, conflictos, traslado de datos y cambios sin conexión. Instalar en un móvil, activar avisos, enviar una prueba, cerrar la app y verificar una entrega programada.
-8. Publicar la dirección definitiva y conservar acceso a la exportación en GitHub Pages.
+8. Mantener Cloudflare como única web publicada y GitHub Pages desactivado con la rama None. El código y su historial se conservan en el repositorio salvatucurso.
 
 Los recursos públicos se construyen con una lista cerrada (index, manifest, service worker, src y assets). Las claves privadas, .dev.vars, la base local, node_modules y los archivos del servidor no se incluyen en dist. Las API privadas quedan fuera de la caché de la PWA; tampoco se conservan parámetros de recuperación en las claves de navegación.
 
@@ -78,7 +80,7 @@ El acceso real con Google volvió a la app y mostró «Curso sincronizado». La 
 
 El usuario confirmó la recepción de «Enviar prueba» en el móvil. Después autorizó una prueba programada y cerró la app. Se añadió un único aviso temporal a la cola del dispositivo ya registrado, sin cambiar tareas, asignaturas, faltas ni curso. El cron lo envió en el primer intento y el usuario confirmó que llegó con SalvaTuCurso cerrada. Se retiró solo ese aviso temporal después de la comprobación; el dispositivo sigue asociado a la cuenta.
 
-**Pendiente:** trasladar los datos anteriores con revisión del usuario y comprobar sus contenidos en móvil y ordenador. La apertura general del acceso de Google necesita completar la información de marca y publicar la app en Google; por ahora solo entra la cuenta de prueba autorizada. El correo queda aplazado por decisión del usuario. La prueba real confirma el transporte y la ejecución del cron; no garantiza que el sistema del móvil entregue siempre todos los avisos sin retrasos.
+**Pendiente:** comprobar los contenidos del curso en móvil y ordenador. No hay traslado pendiente desde la versión antigua, que estaba vacía. La apertura general del acceso de Google necesita completar la información de marca y publicar la app en Google; por ahora solo entra la cuenta de prueba autorizada. El correo queda aplazado por decisión del usuario. La prueba real confirma el transporte y la ejecución del cron; no garantiza que el sistema del móvil entregue siempre todos los avisos sin retrasos.
 
 ## Fuentes
 

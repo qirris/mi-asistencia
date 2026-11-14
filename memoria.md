@@ -8,12 +8,12 @@ Web app responsive e instalable (PWA) para estudiantes de Andalucía que permite
 
 ## 2. Estado actual
 - Se retiraron del panel la fórmula técnica y la nota normativa bajo el formulario de faltas; las fuentes legales siguen en los ajustes y la documentación.
-- La interfaz ahora indica que el acceso con cuenta aún no está activo y que los datos permanecen en el navegador.
+- La interfaz ofrece Google para la cuenta autorizada y sincronización con Cloudflare; el registro público sigue pendiente.
 - Aplicación completada con rediseño visual moderno y profesional (estética inspirada en Notion, Linear y Apple).
 - Vistas principales: Dashboard (Inicio), Asignaturas, Faltas, Mi horario, Mis tareas, Historial y Ajustes.
 - PWA: manifest, service worker con caché del app shell, iconos 192/512 e instalación.
-- Datos 100% locales en `localStorage` (clave `miAsistenciaState`) con migración segura y copias JSON.
-- La aplicación se publica como sitio estático en GitHub Pages; los datos académicos permanecen en el navegador.
+- Datos locales en `localStorage` (clave `miAsistenciaState`) con migración segura y copias JSON; sincronización con Cloudflare al usar una cuenta.
+- La única web publicada es https://salvatucurso.qirris.workers.dev. GitHub Pages está desactivado; el repositorio es qirris/salvatucurso.
 - Identidad SalvaTuCurso: símbolo de asistencia, birrete, lema «Tus faltas, horario y tareas» y paleta azul marino, coral y turquesa.
 - Tareas y horario muestran resúmenes compactos; los filtros de tareas se despliegan cuando se necesitan.
 - Inicio prioriza la clase actual o siguiente y la entrega más cercana, con acceso a registrar faltas. Las clases de la semana siguiente incluyen fecha.
@@ -122,7 +122,7 @@ Para mantener una identidad profesional y seria, los mensajes de commit futuros 
 *(Ejemplo: `funcionalidad: incorporar la gestión de asignaturas y el registro de asistencia`)*
 
 ## 8. Restricciones permanentes del proyecto
-- Publicación estática en GitHub Pages autorizada por el usuario; los datos académicos siguen siendo locales.
+- Cloudflare es la única web publicada; mantener GitHub Pages desactivado. El repositorio conserva el código y el historial.
 - Almacenamiento local en modo estático (`miAsistenciaState`); sincronización voluntaria con una cuenta de SalvaTuCurso en la versión de Cloudflare.
 - No guardar secretos en el repositorio ni dar por activa una función pendiente de configurar.
 
@@ -163,3 +163,13 @@ Para mantener una identidad profesional y seria, los mensajes de commit futuros 
 - El usuario autorizó después una prueba programada manteniendo la app cerrada. Se añadió un único aviso temporal a la cola del dispositivo ya probado, sin crear ni modificar tareas, faltas, asignaturas o el curso. Fecha prevista UTC: 14/11/2026 01:18:04; confirmar ejecución y recepción antes de dar la comprobación por terminada y retirar únicamente ese aviso temporal. Su identificador está en .wrangler/prueba-cierre.local.json (archivo local excluido de GitHub).
 - Prueba programada terminada: la cola quedó en sent, attempts=1, y el usuario confirmó expresamente «Sí, llegó con la app cerrada». Se retiró únicamente ese aviso temporal enviado. El móvil queda registrado para los avisos de su cuenta; no se borró ni modificó su curso.
 - La funcionalidad de avisos con la app cerrada queda comprobada en el móvil del usuario. Pendientes reales: trasladar sus datos antiguos desde GitHub Pages y comprobar esos contenidos en ambos dispositivos; abrir el acceso de Google a otras cuentas requiere completar la marca y publicar Google. Correo/contraseña siguen aplazados para mantener el plan gratuito.
+
+## 11. Repositorio salvatucurso y retirada de GitHub Pages
+
+- Repositorio renombrado de qirris/mi-asistencia a qirris/salvatucurso, conservando su identidad, la rama main y el historial. Mantener libre el nombre anterior para que GitHub conserve sus redirecciones.
+- GitHub Pages desactivado con rama de publicación None, antes del renombrado. La configuración mostró «GitHub Pages is currently disabled» y la API del repositorio confirmó has_pages=false.
+- La versión antigua estaba vacía; no se necesitó copia ni migración. Quedan superadas las notas anteriores sobre un traslado pendiente desde Pages.
+- Actualizadas las referencias del repositorio y la documentación de publicación. Cloudflare mantiene la dirección https://salvatucurso.qirris.workers.dev; su configuración, credenciales, datos y avisos se conservan. Sin cambios en el formato de almacenamiento ni en las claves locales.
+- Alcance limitado a este primer paso. La presentación del README y el acceso público de Google quedan para después.
+- Comprobación pública: el enlace anterior del repositorio devuelve 301 al nuevo; las direcciones de Pages antiguas y nuevas devuelven 404. Cloudflare devuelve 200, mantiene Google y Web Push configurados y rechaza con 401 la consulta del curso sin sesión.
+- Commit: mantenimiento: renombrar el repositorio y retirar GitHub Pages.

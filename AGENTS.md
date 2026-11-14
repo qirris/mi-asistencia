@@ -21,9 +21,9 @@ Punto de entrada del proyecto. Proyecto: web app responsive e instalable (PWA) p
 - Registro de faltas por día desde el horario: clases completas, minutos precisos, revisión de coincidencias y Deshacer del último lote.
 - Datos en `localStorage` con migración segura y copias JSON.
 - Código organizado en `src/css/` y `src/js/`; pruebas en `tests/`.
-- Repositorio: <https://github.com/qirris/mi-asistencia>.
-- Publicación estática en GitHub Pages autorizada por el usuario; ese modo mantiene datos locales.
-- Cloudflare y Google conectados: Worker publicado en https://salvatucurso.qirris.workers.dev y D1 de la UE con migraciones aplicadas. Claves de producción guardadas como secretos. Acceso real, primer guardado y notificación programada recibida con la app cerrada verificados con el usuario. Google sigue en modo Prueba. Pendientes: traslado de los datos anteriores, comprobación de sus contenidos en dos dispositivos y apertura general de Google. Consultar docs/notificaciones.md antes de activar o desplegar. No se utiliza Supabase.
+- Repositorio: <https://github.com/qirris/salvatucurso>. Se conserva el historial; mantener libre el nombre anterior mi-asistencia para conservar la redirección de GitHub.
+- GitHub Pages desactivado el 14/11/2026 con rama de publicación None. Cloudflare es la única web publicada. No reactivar Pages al guardar cambios.
+- Cloudflare y Google conectados: Worker publicado en https://salvatucurso.qirris.workers.dev y D1 de la UE con migraciones aplicadas. Claves de producción guardadas como secretos. Acceso real, primer guardado y notificación programada recibida con la app cerrada verificados con el usuario. Google sigue en modo Prueba. La versión antigua estaba vacía y no requirió traslado. Pendientes: comprobación de contenidos en dos dispositivos y apertura general de Google. Consultar docs/notificaciones.md antes de activar o desplegar. No se utiliza Supabase.
 - El usuario eligió el 14/11/2026 mantener el plan gratuito y activar primero Google; no tiene dominio propio. Correo/contraseña aplazados. No contratar planes ni habilitar correo.
 - npm test incluye las pruebas de cuentas y backend, además de las anteriores. Las claves locales y dist se excluyen con .gitignore.
 - Pendiente: prueba real de instalación PWA en dispositivo. La interfaz se revisó en móvil estrecho y escritorio.
