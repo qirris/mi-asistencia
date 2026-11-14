@@ -23,7 +23,7 @@ Punto de entrada del proyecto. Proyecto: web app responsive e instalable (PWA) p
 - Código organizado en `src/css/` y `src/js/`; pruebas en `tests/`.
 - Repositorio: <https://github.com/qirris/salvatucurso>. Se conserva el historial; mantener libre el nombre anterior mi-asistencia para conservar la redirección de GitHub.
 - GitHub Pages desactivado el 14/11/2026 con rama de publicación None. Cloudflare es la única web publicada. No reactivar Pages al guardar cambios.
-- Cloudflare y Google conectados: Worker publicado en https://salvatucurso.qirris.workers.dev y D1 de la UE con migraciones aplicadas. Claves de producción guardadas como secretos. Acceso real, primer guardado y notificación programada recibida con la app cerrada verificados con el usuario. Google sigue en modo Prueba. La versión antigua estaba vacía y no requirió traslado. Pendientes: comprobación de contenidos en dos dispositivos y apertura general de Google. Consultar docs/notificaciones.md antes de activar o desplegar. No se utiliza Supabase.
+- Cloudflare y Google conectados: Worker publicado en https://salvatucurso.qirris.workers.dev y D1 de la UE con migraciones aplicadas. Claves de producción guardadas como secretos. Acceso real, primer guardado y notificación programada recibida con la app cerrada verificados con el usuario. Google está en producción para cualquier cuenta externa, con página principal y política de privacidad públicas; solicita solo `openid`, `email` y `profile`. La versión antigua estaba vacía y no requirió traslado. Queda pendiente comprobar los contenidos del curso en dos dispositivos. Consultar docs/notificaciones.md antes de activar o desplegar. No se utiliza Supabase.
 - El usuario eligió el 14/11/2026 mantener el plan gratuito y activar primero Google; no tiene dominio propio. Correo/contraseña aplazados. No contratar planes ni habilitar correo.
 - npm test incluye las pruebas de cuentas y backend, además de las anteriores. Las claves locales y dist se excluyen con .gitignore.
 - Pendiente: prueba real de instalación PWA en dispositivo. La interfaz se revisó en móvil estrecho y escritorio.
@@ -34,3 +34,5 @@ Punto de entrada del proyecto. Proyecto: web app responsive e instalable (PWA) p
 - No usar «Aprobado»/«Suspendido» como resultado de asistencia.
 - No guardar secretos en el repositorio.
 - Todo cambio importante se registra en `memoria.md`.
+
+

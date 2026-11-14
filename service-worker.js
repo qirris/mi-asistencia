@@ -1,9 +1,11 @@
 /* Service Worker — SalvaTuCurso
    Cachea los recursos esenciales para funcionar sin conexión. */
 
-const CACHE_VERSION = 'salvatucurso-v46';
+const CACHE_VERSION = 'salvatucurso-v47';
 const APP_SHELL = [
   './index.html',
+  './privacidad.html',
+  './src/css/legal.css',
   './src/css/styles.css?v=43',
   './src/js/theme.js?v=43',
   './src/js/attendance.js?v=43',
@@ -129,3 +131,5 @@ self.addEventListener('notificationclick', event => {
     }
   })());
 });
+
+

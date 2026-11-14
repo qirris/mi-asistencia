@@ -9,6 +9,7 @@ if (fs.existsSync(output)) {
   fs.rmSync(resolvedOutput, { recursive: true });
 }
 fs.mkdirSync(output, { recursive: true });
-for (const file of ['index.html', 'service-worker.js', 'manifest.webmanifest']) fs.copyFileSync(path.join(root, file), path.join(output, file));
+for (const file of ['index.html', 'privacidad.html', 'service-worker.js', 'manifest.webmanifest']) fs.copyFileSync(path.join(root, file), path.join(output, file));
 for (const dir of ['src', 'assets']) fs.cpSync(path.join(root, dir), path.join(output, dir), { recursive: true });
 console.log('Recursos públicos preparados en dist.');
+

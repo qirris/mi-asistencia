@@ -10,11 +10,12 @@
   <a href="https://salvatucurso.qirris.workers.dev"><strong>Abrir SalvaTuCurso</strong></a>
   · <a href="#instalar-en-el-móvil">Instalar en el móvil</a>
   · <a href="docs/guia-de-uso.md">Guía de uso</a>
+  · <a href="https://salvatucurso.qirris.workers.dev/privacidad.html">Privacidad</a>
 </p>
 
 SalvaTuCurso te ayuda a organizar el curso: consulta tu próxima clase, prepara los exámenes y lleva un registro de tus faltas. Está pensada para estudiantes de ESO, Bachillerato y Formación Profesional de Andalucía y se adapta al móvil, la tablet y el ordenador.
 
-> **Estado actual:** la app se puede usar sin cuenta. El acceso con Google, la sincronización y los avisos están conectados, pero Google sigue en modo de prueba y solo admite la cuenta autorizada. El registro para otras personas todavía no está abierto.
+> **Estado actual:** la app se puede usar sin cuenta o iniciar sesión con cualquier cuenta de Google. La sincronización entre dispositivos y los avisos con la app cerrada están activos. El registro con correo y contraseña sigue aplazado para mantener el servicio gratuito.
 
 ## Así se ve
 
@@ -74,7 +75,7 @@ La app se instala desde el navegador; no necesitas descargarla de una tienda.
 | Cómo usas la app | Dónde se guarda el curso |
 | --- | --- |
 | **Sin cuenta** | En ese dispositivo y navegador. No aparece automáticamente en otro móvil u ordenador. |
-| **Con una cuenta autorizada** | En Cloudflare y en una copia local del navegador para seguir trabajando sin conexión. La misma cuenta permite compartir el curso entre dispositivos. |
+| **Con una cuenta de Google** | En Cloudflare y en una copia local del navegador para seguir trabajando sin conexión. La misma cuenta permite compartir el curso entre dispositivos. |
 
 La sincronización incluye asignaturas, tareas y notas, faltas, horario, calendario y configuración académica. El tema, el zoom y los ajustes de avisos se eligen por dispositivo.
 
@@ -88,7 +89,7 @@ GitHub contiene el código, la documentación y las capturas de ejemplo. Los cur
 
 ## Avisos de exámenes y entregas
 
-Con una cuenta autorizada y el curso sincronizado, ve a **Más → Ajustes → Notificaciones**, elige la antelación y la hora, pulsa **Activar notificaciones** y acepta el permiso en ese dispositivo. **Enviar prueba** permite comprobar la recepción.
+Con una cuenta de Google y el curso sincronizado, ve a **Más → Ajustes → Notificaciones**, elige la antelación y la hora, pulsa **Activar notificaciones** y acepta el permiso en ese dispositivo. **Enviar prueba** permite comprobar la recepción.
 
 Los avisos se programan en el servidor y pueden llegar aunque la app esté cerrada. En iPhone e iPad requieren iOS/iPadOS 16.4 o posterior y abrir la app desde la pantalla de inicio. [Compatibilidad de Web Push en iOS y iPadOS](https://webkit.org/blog/13878/web-push-for-web-apps-on-ios-and-ipados/).
 
@@ -131,6 +132,7 @@ salvatucurso/
 ├── src/js/             # Interfaz, datos y sincronización
 ├── tests/              # Pruebas
 ├── index.html
+├── privacidad.html     # Política pública de privacidad
 ├── manifest.webmanifest
 └── service-worker.js
 ```
@@ -139,8 +141,10 @@ salvatucurso/
 
 - [Guía de uso: clases, calendario, faltas y recuperación](docs/guia-de-uso.md).
 - [Cuentas, sincronización, avisos y publicación en Cloudflare](docs/notificaciones.md).
+- [Política de privacidad](https://salvatucurso.qirris.workers.dev/privacidad.html).
 - [Fuentes sobre evaluación continua en Andalucía](docs/referencia-normativa-evaluacion-continua-andalucia.txt).
 
-**Cloudflare es la única web publicada.** GitHub Pages está desactivado. El acceso general con Google y el registro con correo y contraseña siguen pendientes; no forman parte de esta actualización de la presentación.
+**Cloudflare es la única web publicada.** GitHub Pages está desactivado. Google está en producción para usuarios externos y solicita únicamente nombre, correo e imagen de perfil. El registro con correo y contraseña continúa aplazado.
 
 SalvaTuCurso es una herramienta informativa. Los indicadores de asistencia no determinan si apruebas o suspendes y no sustituyen al centro educativo ni a la normativa oficial. Consulta los criterios de tu centro y las fuentes enlazadas en Ajustes.
+

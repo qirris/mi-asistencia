@@ -64,6 +64,7 @@ En **Ajustes → Accesibilidad y pantalla** puedes activar **Permitir ampliar co
 
 ## Cuentas y avisos
 
-La [presentación del proyecto](../README.md#dónde-se-guardan-tus-datos) explica dónde se guarda el curso, cómo sincronizarlo y cómo instalar la app. El acceso de Google sigue en modo de prueba para la cuenta autorizada.
+La [presentación del proyecto](../README.md#dónde-se-guardan-tus-datos) explica dónde se guarda el curso, cómo sincronizarlo y cómo instalar la app. Google está disponible para cualquier cuenta externa.
 
 Para conocer el funcionamiento de las cuentas, los conflictos y los recordatorios, consulta [Cuentas, sincronización y avisos en Cloudflare](notificaciones.md).
+
