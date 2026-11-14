@@ -2,9 +2,11 @@
 
 ## Estado
 
-El código está preparado y probado localmente. **El servicio de Cloudflare todavía no está conectado y las notificaciones reales no están activadas.** La versión estática de GitHub Pages conserva los datos en el navegador y muestra el estado pendiente. No se han creado recursos remotos, configurado credenciales de Google, contratado planes ni enviado datos académicos reales.
+**Cloudflare y Google están conectados en https://salvatucurso.qirris.workers.dev. Se ha verificado un inicio de sesión real y el primer guardado del curso.** Google sigue en modo Prueba, con la cuenta del propietario autorizada; todavía no se admite el acceso general de otras cuentas. La base D1 tiene jurisdicción de la Unión Europea y ambas migraciones aplicadas. Las claves de producción están guardadas como secretos del Worker y el cron está publicado. Falta activar y comprobar una notificación real en el móvil.
 
-La elección del usuario es Cloudflare, acceso con Google y correo/contraseña, sincronización entre móvil y ordenador y avisos con la app cerrada.
+El 14/11/2026 el usuario eligió mantener el plan gratuito y activar primero Google; no dispone de dominio propio. El registro con correo/contraseña queda aplazado. No se ha contratado ningún plan ni activado envío de correo. La base comenzó vacía; después del acceso real se comprobaron una cuenta, un curso y cero dispositivos de avisos. No se han importado los datos académicos anteriores de GitHub Pages, que conserva el guardado local y el acceso a las copias JSON.
+
+La configuración pública solo habilita el acceso cuando existe un proveedor y un secreto de sesión válido. La versión de Cloudflare ofrece Google; la versión estática de GitHub Pages mantiene el acceso desactivado. Los avisos se habilitan en cada dispositivo después de sincronizar la cuenta y aceptar el permiso del navegador.
 
 ## Arquitectura
 
@@ -12,12 +14,12 @@ La elección del usuario es Cloudflare, acceso con Google y correo/contraseña, 
 - Worker con recursos estáticos y API en el mismo origen: evita depender de cookies de terceros en Safari. La versión con cuentas se abrirá desde su dirección de Cloudflare.
 - D1 guarda usuarios, sesiones, curso, cinco copias recientes y recordatorios. Better Auth 1.7.22 gestiona Google, contraseñas, verificación y recuperación. No se implementan algoritmos de contraseñas propios.
 - Las sesiones usan cookies de Better Auth. No se guardan contraseñas ni tokens de sesión en localStorage. Los datos académicos y las copias locales siguen disponibles en este navegador.
-- Cloudflare Email Service envía verificaciones y recuperaciones. Requiere un dominio habilitado y, para destinatarios arbitrarios, Workers Paid. A 13/11/2026, Workers parte de 5 USD/mes; Email Sending incluye 3000 correos mensuales y después 0,35 USD por 1000. No activar servicios de pago sin autorización.
+- La implementación de correo admite verificaciones y recuperaciones mediante Cloudflare Email Service, pero está desactivada: AUTH_EMAIL_ENABLED=false y no hay binding EMAIL en el despliegue gratuito. Requiere un dominio habilitado y, para destinatarios arbitrarios, Workers Paid. A 13/11/2026, Workers parte de 5 USD/mes; Email Sending incluye 3000 correos mensuales y después 0,35 USD por 1000. No activar servicios de pago sin autorización.
 - El cron llama al Worker cada minuto; Web Push usa la clave VAPID privada del servidor. Los avisos no dependen de temporizadores de una pestaña abierta.
 
 ## Entrar y sincronizar
 
-En Ajustes, «Tu cuenta y tus datos» ofrece Google, correo y contraseña, registro, verificación y recuperación. Las contraseñas nuevas tienen al menos 12 caracteres. Las opciones sin conectar quedan desactivadas.
+En Ajustes, «Tu cuenta y tus datos» ofrece Google. Con el correo aplazado se ocultan sus campos, registro y recuperación, y el foco comienza en el acceso disponible. La implementación de correo/contraseña sigue preparada; cuando se active, las contraseñas nuevas tendrán al menos 12 caracteres.
 
 La cuenta comparte asignaturas, tareas y notas, faltas con sus detalles, horario, calendario y configuración académica. Apariencia, zoom, antelación y permiso de notificaciones son propios del dispositivo.
 
@@ -51,11 +53,11 @@ En iPhone/iPad se requiere iOS/iPadOS 16.4 o posterior y abrir la app añadida a
 
 ## Publicación
 
-1. Iniciar sesión en Cloudflare y autorizar el acceso necesario a Workers y D1. Revisar plan y dominio antes de activar correo.
-2. Crear D1, sustituir el identificador de ejemplo de wrangler.jsonc y aplicar las migraciones en remoto. Las migraciones se generan y prueban primero en local; no hay una ruta pública de migración.
-3. Elegir la dirección HTTPS definitiva y configurar APP_ORIGIN. Configurar Google con la devolución exacta `https://DIRECCION/api/auth/callback/google`.
-4. Guardar BETTER_AUTH_SECRET, GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET, VAPID_PUBLIC_KEY, VAPID_PRIVATE_KEY y VAPID_SUBJECT como secretos del Worker. Generar claves de producción independientes de las pruebas locales y conservar la pareja VAPID.
-5. Habilitar el dominio de Email Service y el remitente EMAIL_FROM. Solo entonces configurar AUTH_EMAIL_ENABLED=true y el binding EMAIL. Probar verificación y recuperación con una cuenta real.
+1. Conexión de Cloudflare autorizada. Para este despliegue se usan account:read, user:read, workers_scripts:write y d1:write, además de offline_access. No se necesita permiso de correo ni dominios para la primera entrega con Google. La conexión se guarda cifrada con clave en el almacén de credenciales de Windows.
+2. D1 remoto creado y migraciones aplicadas. El identificador real y jurisdiction=eu están en wrangler.jsonc. No volver a crear ni reiniciar la base. No hay una ruta pública de migración.
+3. APP_ORIGIN configurado con la dirección devuelta por la API de Cloudflare: `https://salvatucurso.qirris.workers.dev`. El proyecto Google SalvaTuCurso (`qirris-salvatucurso`) está creado con autorización expresa del usuario y sin activar facturación. El usuario aceptó la política de Google y el correo de asistencia, creó el cliente web y proporcionó su archivo de conexión. La devolución exacta es `https://salvatucurso.qirris.workers.dev/api/auth/callback/google`. Google solicita únicamente email, profile y openid. El propietario autorizó y completó el primer acceso real. La publicación general de Google queda pendiente: el panel pide completar la información de marca, que todavía no tiene página principal ni política de privacidad enlazadas.
+4. BETTER_AUTH_SECRET, VAPID_PUBLIC_KEY, VAPID_PRIVATE_KEY, VAPID_SUBJECT, GOOGLE_CLIENT_ID y GOOGLE_CLIENT_SECRET están guardados como secretos del Worker. No regenerarlos al volver a desplegar. Nunca guardar el archivo de conexión ni las claves en GitHub, recursos públicos o mensajes.
+5. Mantener AUTH_EMAIL_ENABLED=false y sin binding EMAIL durante esta entrega gratuita. Si se retoma el correo, revisar por separado dominio, remitente y autorización de pago antes de habilitarlo; probar entonces verificación y recuperación reales.
 6. Ejecutar `npm test`, `npm run build` y `npx wrangler deploy --dry-run`. Publicar después de completar la configuración y las autorizaciones necesarias.
 7. Comprobar Google y correo en dos navegadores, sesiones, conflictos, traslado de datos y cambios sin conexión. Instalar en un móvil, activar avisos, enviar una prueba, cerrar la app y verificar una entrega programada.
 8. Publicar la dirección definitiva y conservar acceso a la exportación en GitHub Pages.
@@ -70,7 +72,11 @@ Las migraciones se aplicaron correctamente en D1 local y el Worker se compiló e
 
 Se revisaron los formularios en claro y oscuro a 320, 390, 768 y 1280 píxeles y con altura de 480 píxeles: sin desbordamiento de página, entradas de 16 px y acciones visibles. Escape devolvió el foco al botón de origen. La recarga con el servidor local apagado conservó interfaz, tema y preferencias. Se adaptó la respuesta de navegación guardada para alojamientos que redirigen index.html a /.
 
-**Pendiente:** conexión de Cloudflare, dominio/remitente, credenciales reales de Google, configuración del plan si corresponde, despliegue, pruebas de correo real y notificaciones con un móvil cerrado. Las pruebas locales no sustituyen esas comprobaciones.
+En el despliegue remoto se comprobó la respuesta de la configuración pública, sesión nula sin autenticar, rechazo 401 para cursos sin sesión y rechazo 403 al guardar desde otro origen. La configuración no expone claves privadas. Se repitió npm test después de añadir la protección de disponibilidad de proveedores: todas las suites pasaron.
+
+El acceso real con Google volvió a la app y mostró «Curso sincronizado». La cuenta se conservó al recargar. Se corrigió el refresco de los avisos al cambiar el estado de la cuenta: el botón de activación reconoce la sincronización sin necesitar otra recarga. La caché actual es salvatucurso-v46, con account.js?v=44. Pasaron las pruebas completas y se publicó y revisó la corrección.
+
+**Pendiente:** trasladar los datos anteriores con revisión del usuario, comprobar el mismo curso en móvil y ordenador, instalar la versión nueva en el móvil y verificar una entrega Push real con la app cerrada. La apertura general del acceso de Google necesita completar la información de marca y publicar la app en Google; por ahora solo entra la cuenta de prueba autorizada. El correo queda aplazado por decisión del usuario. No dar por verificadas estas comprobaciones con las pruebas locales.
 
 ## Fuentes
 

@@ -2,7 +2,7 @@
 
 Web app responsive e instalable (PWA) para que estudiantes de Andalucía controlen sus faltas y su situación respecto a la evaluación continua en ESO, Bachillerato y Formación Profesional.
 
-> **Ampliación preparada, pendiente de conectar:** cuentas con Google y correo, sincronización y avisos con la app cerrada mediante Cloudflare. La versión estática mantiene el guardado local. [Configuración, pruebas y límites](docs/notificaciones.md).
+> **Cloudflare y Google conectados:** [versión publicada en Cloudflare](https://salvatucurso.qirris.workers.dev), con acceso real y primer guardado del curso verificados. Google sigue en modo Prueba para la cuenta autorizada; faltan el acceso general y la comprobación de avisos reales en móvil. El usuario eligió mantener el plan gratuito y aplazar correo/contraseña. Los datos anteriores de GitHub Pages requieren exportar e importar una copia. [Configuración, pruebas y límites](docs/notificaciones.md).
 
 > Herramienta informativa. No sustituye al centro educativo ni a la normativa oficial.
 

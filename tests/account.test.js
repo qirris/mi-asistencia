@@ -1,7 +1,7 @@
 /* Versiones del curso, copias, sesión y cambios sin conexión en la interfaz. */
 const assert = require('assert/strict'), fs = require('fs'), vm = require('vm');
 function environment(options = {}) {
-  const nodes = new Map(), values = {}, timers = new Map(), events = {}, calls = [];
+  const nodes = new Map(), values = {}, timers = new Map(), events = {}, calls = [], reminderStates = [];
   let nextTimer = 0, revisionNumber = 1, offline = false, blocked = false, exported = 0, courseApi;
   const clone = value => JSON.parse(JSON.stringify(value));
   const guest = { version: 2, asignaturas: [{ id: 'local', nombre: 'Local' }], tareas: [], faltas: [], config: {} };
@@ -11,7 +11,7 @@ function environment(options = {}) {
     querySelector(selector) { return selector === 'dialog[open]' ? [...nodes.values()].find(node => node.open) || null : node(selector); } };
   function node(selector) {
     if (!nodes.has(selector)) nodes.set(selector, { value: '', textContent: '', hidden: false, disabled: false, open: false,
-      addEventListener(name, fn) { this[name] = fn; }, focus() {},
+      addEventListener(name, fn) { this[name] = fn; }, focus() { doc.activeElement = this; },
       showModal() { this.open = true; }, close() { this.open = false; if (typeof this.onclose === 'function') this.onclose(); },
       set autocomplete(value) { this._autocomplete = value; }
     });
@@ -33,7 +33,7 @@ function environment(options = {}) {
     state: clone(guest), STORAGE_KEY: 'miAsistenciaState', DEFAULT_STATE: clone(guest), $: node,
     normalizeState: clone, isStoredStateCurrent: () => values.miAsistenciaState === JSON.stringify(context.state),
     saveState() { values.miAsistenciaState = JSON.stringify(context.state); courseApi?.queueSync(); },
-    render() { courseApi.renderSettings(); }, UndoManager: { clear() {} }, TaskReminders: { queueSync() {}, async disableForLogout() { return true; } },
+    render() { courseApi.renderSettings(); }, UndoManager: { clear() {} }, TaskReminders: { queueSync() {}, renderSettings() { reminderStates.push(courseApi?.ready() || false); }, async disableForLogout() { return true; } },
     exportJSON() { exported++; }, importJSON() {},
     setTimeout(fn, delay) { timers.set(++nextTimer, { fn, delay }); return nextTimer; }, clearTimeout(id) { timers.delete(id); },
     async fetch(url, init) {
@@ -53,7 +53,7 @@ function environment(options = {}) {
   };
   vm.createContext(context); vm.runInContext(fs.readFileSync('src/js/account.js', 'utf8') + '\nthis.api = CourseAccount;', context);
   courseApi = context.api; courseApi.bind();
-  return { context, api: courseApi, node, values, calls, timers, events, guest,
+  return { context, api: courseApi, node, values, calls, timers, events, guest, reminderStates,
     get server() { return server; }, get exported() { return exported; },
     changeServer(state) { server = { state: clone(state), revision: 'r' + (++revisionNumber) }; },
     offline(value) { offline = value; }, blocked(value) { blocked = value; } };
@@ -66,6 +66,7 @@ function environment(options = {}) {
   e.node('#sync-cancel').click(); assert.equal(e.context.state.asignaturas[0].id, 'local');
   e.node('#account-sync').click(); await e.node('#sync-use-cloud').click();
   assert.equal(e.context.state.asignaturas[0].id, 'nube'); assert.equal(e.api.ready(), true);
+  assert.equal(e.reminderStates.at(-1), true, 'los avisos reconocen la cuenta al terminar la sincronización');
   assert.ok(Object.keys(e.values).some(key => key.startsWith('salvatucursoCopiaSync_')));
   e.context.state.tareas.push({ id: 'tarea-local', titulo: 'Cambio sin conexión' }); e.context.saveState();
   e.offline(true); await e.api.sync();
@@ -85,6 +86,7 @@ function environment(options = {}) {
   await e.api.sync();
   await e.node('#account-logout').click();
   assert.equal(e.api.user(), null); assert.equal(e.context.state.asignaturas[0].id, 'local', 'salir recupera los datos de invitado');
+  assert.equal(e.reminderStates.at(-1), false, 'los avisos se actualizan al salir de la cuenta');
   e.node('#account-login').click(); e.node('#auth-email').value = 'prueba@example.test'; e.node('#auth-password').value = 'no-guardar-esta-clave';
   await e.node('#auth-form').submit({ preventDefault() {} });
   assert.equal(e.context.state.asignaturas[0].nombre, 'Cambio posterior', 'vuelve a la copia de la cuenta al entrar');
@@ -94,5 +96,12 @@ function environment(options = {}) {
   a.node('#account-login').click(); a.node('#auth-mode-register').click(); assert.equal(a.node('#auth-password').minLength, 12);
   a.node('#auth-forgot').click(); assert.equal(a.node('#auth-password-field').hidden, true); assert.equal(a.node('#auth-password').required, false);
   a.node('#auth-cancel').click(); assert.equal(a.node('#dialog-account').open, false);
+  const googleOnly = environment({ anonymous: true }); await googleOnly.api.started();
+  googleOnly.context.window.SalvaTuCursoPushConfig.email = false;
+  googleOnly.node('#account-login').click();
+  assert.equal(googleOnly.node('#auth-form').hidden, true, 'no ofrece campos de correo cuando solo está conectado Google');
+  assert.equal(googleOnly.node('#auth-options').hidden, true);
+  assert.equal(googleOnly.node('#auth-submit').hidden, true);
+  assert.equal(googleOnly.context.document.activeElement, googleOnly.node('#auth-google'), 'el foco empieza en el acceso disponible');
   console.log('OK: revisión inicial, datos locales y de cuenta, cambios sin conexión, conflictos, copias, fallos de guardado, salida y contraseñas no persistidas');
 })().catch(error => { console.error(error); process.exitCode = 1; });

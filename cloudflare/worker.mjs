@@ -99,7 +99,12 @@ export async function dispatch(env, sender = send) {
 export default {
   async fetch(request, env, ctx) {
     const url = new URL(request.url);
-    if (url.pathname === '/src/js/push-config.js') return new Response('window.SalvaTuCursoPushConfig = ' + JSON.stringify({ enabled: true, apiBase: '/api', vapidPublicKey: env.VAPID_PUBLIC_KEY || '', google: !!env.GOOGLE_CLIENT_ID && !!env.GOOGLE_CLIENT_SECRET, email: env.AUTH_EMAIL_ENABLED === 'true' && !!env.EMAIL && !!env.EMAIL_FROM }) + ';', { headers: { 'Content-Type': 'text/javascript', 'Cache-Control': 'no-store' } });
+    if (url.pathname === '/src/js/push-config.js') {
+      const google = !!env.GOOGLE_CLIENT_ID && !!env.GOOGLE_CLIENT_SECRET;
+      const email = env.AUTH_EMAIL_ENABLED === 'true' && !!env.EMAIL && !!env.EMAIL_FROM;
+      const enabled = (google || email) && !!env.BETTER_AUTH_SECRET && env.BETTER_AUTH_SECRET.length >= 32;
+      return new Response('window.SalvaTuCursoPushConfig = ' + JSON.stringify({ enabled, apiBase: '/api', vapidPublicKey: env.VAPID_PUBLIC_KEY || '', google, email }) + ';', { headers: { 'Content-Type': 'text/javascript', 'Cache-Control': 'no-store' } });
+    }
     if (!url.pathname.startsWith('/api/')) return env.ASSETS.fetch(request);
     if (!env.BETTER_AUTH_SECRET || env.BETTER_AUTH_SECRET.length < 32) return json({ error: 'El servicio aún no está configurado' }, 503);
     try {

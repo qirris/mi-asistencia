@@ -59,6 +59,19 @@ async function register(name) {
   return { cookie: cookieOf(signin), email, password };
 }
 try {
+  const configRequest = new Request(env.APP_ORIGIN + '/src/js/push-config.js');
+  const publicConfig = async values => {
+    const response = await worker.fetch(configRequest, values, ctx);
+    assert.equal(response.headers.get('Cache-Control'), 'no-store');
+    const script = await response.text();
+    assert.ok(!script.includes(env.BETTER_AUTH_SECRET), 'la configuración pública no expone secretos');
+    return JSON.parse(script.slice(script.indexOf('=') + 1, -1));
+  };
+  assert.equal((await publicConfig({})).enabled, false, 'sin proveedor conectado no se anuncia acceso disponible');
+  assert.equal((await publicConfig(env)).email, true);
+  const googleConfig = await publicConfig({ BETTER_AUTH_SECRET: env.BETTER_AUTH_SECRET, GOOGLE_CLIENT_ID: 'cliente', GOOGLE_CLIENT_SECRET: 'secreto-google' });
+  assert.equal(googleConfig.enabled, true); assert.equal(googleConfig.google, true); assert.equal(googleConfig.email, false);
+  assert.ok(!JSON.stringify(googleConfig).includes('secreto-google'));
   const a = await register('alumna');
   const b = await register('alumno');
   const before = await call('/api/course'); assert.equal(before.status, 401);

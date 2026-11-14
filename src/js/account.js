@@ -29,6 +29,7 @@ const CourseAccount = (() => {
     $('#account-login').disabled = busy || !configured() || (!config().google && !config().email);
     $('#account-logout').disabled = busy; $('#account-sync').disabled = busy;
     $('#account-sync').textContent = pending ? 'Revisar sincronización' : 'Sincronizar ahora';
+    if (typeof TaskReminders !== 'undefined') TaskReminders.renderSettings?.();
   }
   async function api(path, body, method = 'POST') {
     const controller = new AbortController(), timeout = setTimeout(() => controller.abort(), 15000);
@@ -109,6 +110,8 @@ const CourseAccount = (() => {
     pollTimer = setTimeout(poll, 30000);
   }
   function openAuth(mode = 'login') {
+    const emailEnabled = config().email === true;
+    if (!emailEnabled) mode = 'login';
     formMode = mode;
     const registering = mode === 'register', recovering = mode === 'forgot', resetting = mode === 'reset';
     $('#account-dialog-title').textContent = registering ? 'Crea tu cuenta' : recovering ? 'Recupera tu acceso' : resetting ? 'Elige una contraseña nueva' : 'Entra en SalvaTuCurso';
@@ -119,14 +122,16 @@ const CourseAccount = (() => {
     $('#auth-password').autocomplete = mode === 'login' ? 'current-password' : 'new-password';
     $('#auth-password-help').hidden = mode === 'login' || recovering;
     $('#auth-password').value = '';
+    $('#auth-form').hidden = !emailEnabled;
     $('#auth-google').hidden = recovering || resetting; $('#auth-google').disabled = !config().google;
-    $('#auth-options').hidden = recovering || resetting;
+    $('#auth-options').hidden = !emailEnabled || recovering || resetting;
     $('#auth-submit').textContent = registering ? 'Crear cuenta' : recovering ? 'Enviar enlace' : resetting ? 'Guardar contraseña' : 'Entrar';
     $('#auth-submit').disabled = !config().email;
-    $('#auth-status').textContent = config().email ? '' : 'El acceso con correo todavía no está conectado.';
+    $('#auth-submit').hidden = !emailEnabled;
+    $('#auth-status').textContent = emailEnabled ? '' : 'Continúa con Google para entrar o crear tu cuenta.';
     $('#auth-mode-register').hidden = registering; $('#auth-mode-login').hidden = !registering;
     const dialog = $('#dialog-account'); if (!dialog.open) dialog.showModal();
-    (resetting ? $('#auth-password') : registering ? $('#auth-name') : $('#auth-email')).focus();
+    (!emailEnabled ? $('#auth-google') : resetting ? $('#auth-password') : registering ? $('#auth-name') : $('#auth-email')).focus();
   }
   async function refreshSession() {
     try {
